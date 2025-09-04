@@ -1,0 +1,3 @@
+# Repositories - Data Access Pattern
+# Esta capa contiene las implementaciones concretas de acceso a datos
+# Implementa las interfaces definidas para ser intercambiables sin afectar use cases

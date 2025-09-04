@@ -1,0 +1,3 @@
+# Domain Entities
+# User, Class, Booking, Attendance, Payment, Schedule, Notification
+# Entidades puras con métodos de negocio (ej: user.isActive(), booking.canCancel())

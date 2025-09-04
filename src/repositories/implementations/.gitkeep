@@ -1,0 +1,3 @@
+# Repository Implementations
+# UserRepositoryMySQL, ClassRepositoryMySQL, BookingRepositoryMySQL, etc.
+# Implementaciones concretas intercambiables (MySQL, MongoDB, etc.)
