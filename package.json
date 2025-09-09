@@ -1,25 +1,26 @@
 {
-  "name": "sgf-backend",
+  "name": "sga-p-backend",
   "version": "1.0.0",
-  "description": "Sistema Web de Gestión para Espacios Formativos - Backend",
+  "description": "Sistema de Gestión Integral para Academias Preuniversitarias (SGA-P) - Backend API",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "migrate": "node src/infrastructure/database/migrations/run-migrations.js",
+    "seed": "node src/infrastructure/database/seeders/run-seeders.js"
   },
   "keywords": [
-    "gestión",
-    "espacios formativos",
-    "reservas",
-    "clases",
-    "academia",
-    "mvc",
-    "clean-architecture"
+    "sga-p",
+    "academias-preuniversitarias",
+    "educación-perú",
+    "gestión-académica",
+    "tutorías",
+    "rbac"
   ],
-  "author": "Equipo SGF",
+  "author": "Equipo SGA-P",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",

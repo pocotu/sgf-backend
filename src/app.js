@@ -70,10 +70,9 @@ app.get('/health', (req, res) => {
 // Welcome endpoint
 app.get(API_PREFIX, (req, res) => {
   res.json({
-    message: 'SGF Backend API - Sistema de Gestión para Espacios Formativos',
+    message: 'SGA-P Backend API - Sistema de Gestión Integral para Academias Preuniversitarias',
     version: require('../package.json').version,
     environment: process.env.NODE_ENV,
-    documentation: `${req.protocol}://${req.get('host')}${API_PREFIX}/docs`,
     health: `${req.protocol}://${req.get('host')}/health`
   });
 });
@@ -110,11 +109,11 @@ app.use((err, req, res) => {
 // Start server
 const server = app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`🚀 SGF Backend running on port ${PORT}`);
+  console.log(`🚀 SGA-P Backend ejecutándose en puerto ${PORT}`);
   // eslint-disable-next-line no-console
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📍 Entorno: ${process.env.NODE_ENV || 'desarrollo'}`);
   // eslint-disable-next-line no-console
-  console.log(`🌐 API Base URL: http://localhost:${PORT}${API_PREFIX}`);
+  console.log(`🌐 URL Base API: http://localhost:${PORT}${API_PREFIX}`);
   // eslint-disable-next-line no-console
   console.log(`❤️  Health Check: http://localhost:${PORT}/health`);
 });
