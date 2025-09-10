@@ -10,7 +10,7 @@ Sistema integral diseñado para academias preuniversitarias peruanas que prepara
 
 ### **Arquitectura MVC + Clean Architecture Híbrida**
 
-Sistema diseñado específicamente para **academias preuniversitarias peruanas** con arquitectura escalable que soporta **8 roles académicos** y módulos especializados en preparación universitaria.
+Sistema diseñado específicamente para **academias preuniversitarias peruanas** con arquitectura escalable que soporta **3 roles académicos básicos** y módulos especializados en preparación universitaria.
 
 #### **🏛️ Estructura de Directorios Actual**
 
@@ -24,19 +24,14 @@ sgf-backend/
 │
 ├── src/                             # Código fuente principal
 │   ├── controllers/                 # 🎮 MVC Controllers (HTTP layer)
-│   │   ├── auth/                    # Autenticación y autorización RBAC
+│   │   ├── auth/                    # Autenticación y autorización básica
 │   │   │   ├── LoginController.js   # Login con roles académicos
 │   │   │   ├── RegisterController.js # Registro por tipos de usuario
 │   │   │   └── AuthMiddleware.js    # Middleware autenticación JWT
 │   │   ├── users/                   # Gestión usuarios académicos
 │   │   │   ├── AdminController.js   # Gestión administradores
-│   │   │   ├── CoordinadorController.js # Coordinadores académicos
 │   │   │   ├── DocenteController.js # Gestión docentes
-│   │   │   ├── TutorController.js   # Gestión tutores (específico Perú)
-│   │   │   ├── EstudianteController.js # Gestión estudiantes
-│   │   │   ├── PadreController.js   # Gestión padres/apoderados
-│   │   │   ├── OficialAdmisionesController.js # Oficial admisiones
-│   │   │   └── OficialFinancieroController.js # Oficial financiero
+│   │   │   └── EstudianteController.js # Gestión estudiantes
 │   │   ├── academic/                # Módulo académico preuniversitario
 │   │   │   ├── CursoController.js   # Cursos por carrera universitaria
 │   │   │   ├── CicloController.js   # Ciclos académicos (Verano, Anual)
@@ -98,7 +93,6 @@ sgf-backend/
 │   │   │   ├── User.js              # Usuario base sistema
 │   │   │   ├── Estudiante.js        # Estudiante academia
 │   │   │   ├── Docente.js           # Docente especializado
-│   │   │   ├── Tutor.js             # Tutor personalizado
 │   │   │   ├── Curso.js             # Curso preuniversitario
 │   │   │   ├── Ciclo.js             # Ciclo académico
 │   │   │   ├── Asistencia.js        # Asistencia estudiante
@@ -205,10 +199,10 @@ sgf-backend/
 
 #### **🎯 Características Específicas SGA-P**
 
-- **8 Roles Académicos:** Administrador, Coordinador Académico, Oficial de Admisiones, Docente, Tutor, Estudiante, Padre/Apoderado, Oficial Financiero
+- **3 Roles Académicos:** Administrador, Docente, Estudiante
 - **Módulos Especializados:** Académico, Admisiones, Financiero, Comunicaciones
 - **Clean Architecture + MVC:** Separación clara de responsabilidades
-- **RBAC Sistema:** Control acceso basado en roles académicos
+- **Sistema de Roles:** Control acceso basado en 3 roles académicos básicos
 
 ## 🚀 **Stack Tecnológico SGA-P**
 
@@ -220,7 +214,7 @@ sgf-backend/
 
 ### **Seguridad y Autenticación**
 - **Autenticación:** JWT (jsonwebtoken + bcryptjs)
-- **Autorización:** RBAC (Role-Based Access Control) - 8 roles académicos
+- **Autorización:** Sistema de roles básico - 3 roles académicos
 - **Seguridad:** Helmet + CORS + Rate Limiting
 - **Encriptación:** bcryptjs para passwords, crypto para datos sensibles
 
@@ -251,7 +245,7 @@ sgf-backend/
 - ✅ **CQRS Light** - Separación comandos y consultas complejas
 
 ### **Academic Domain Patterns**
-- ✅ **Role-Based Access Control (RBAC)** - 8 roles específicos academia
+- ✅ **Sistema de Roles Simplificado** - 3 roles específicos academia
 - ✅ **Academic Calendar Pattern** - Gestión ciclos y periodos académicos
 - ✅ **Grade Book Pattern** - Sistema calificaciones y promedios
 - ✅ **Enrollment Pattern** - Proceso matrícula y admisiones
@@ -260,15 +254,15 @@ sgf-backend/
 
 ### 🔐 **Autenticación y Autorización Académica**
 - Sistema JWT con refresh tokens específico para roles académicos
-- **8 Roles:** Administrador, Coordinador Académico, Oficial de Admisiones, Docente, Tutor, Estudiante, Padre/Apoderado, Oficial Financiero
+- **3 Roles:** Administrador, Docente, Estudiante
 - Middleware autorización por endpoints y funcionalidades académicas
-- Sesiones multipantalla para padres/estudiantes
+- Sesiones administrativas para gestión completa del sistema
 
 ### 👥 **Gestión de Usuarios Académicos**
 - CRUD completo usuarios con roles específicos de academia
-- Gestión perfiles académicos diferenciados por rol
+- Gestión perfiles académicos diferenciados por rol básico
 - Cambio contraseñas seguro con políticas institucionales
-- Gestión relaciones Padre-Estudiante y Tutor-Estudiante
+- Gestión relaciones académicas básicas
 
 ### 📚 **Módulo Académico Preuniversitario**
 - **Gestión Cursos:** CRUD cursos especializados por carrera universitaria (Medicina, Ingeniería, Ciencias, Letras)
@@ -407,7 +401,7 @@ npm run test:coverage
 - `GET /:id` - Obtener perfil usuario
 - `PUT /:id` - Actualizar perfil usuario
 - `DELETE /:id` - Eliminar usuario (soft delete)
-- `GET /by-role/:role` - Obtener usuarios por rol específico
+- `GET /by-role/:role` - Obtener usuarios por rol (admin/docente/estudiante)
 - `PUT /:id/change-password` - Cambiar contraseña
 - `PUT /:id/toggle-status` - Activar/desactivar usuario
 
@@ -483,7 +477,7 @@ npm run test:coverage
 4. **Use Cases** → Repositories (acceso a datos)
 5. **Repositories** → Infrastructure (MySQL + servicios externos)
 
-### **🔄 Flujo Específico Académico**
+### **🔄 Flujo Académico Simplificado**
 ```
 Estudiante marca asistencia → 
 AuthController (JWT validation) → 
@@ -492,8 +486,7 @@ RegisterAsistenciaUseCase (business logic) →
 AcademicService (domain rules) → 
 AsistenciaRepository (data access) → 
 MySQL Database → 
-NotificationService (alert parents) → 
-EmailService/SMSService
+NotificationService (alert system)
 ```
 
 ### **🎯 Principios de Diseño Aplicados**
@@ -513,19 +506,23 @@ EmailService/SMSService
 - Use cases reciben repositories por interfaz
 - Infrastructure implementa interfaces de dominio
 
-### **🔐 Modelo de Seguridad RBAC**
+### **🔐 Modelo de Seguridad Simplificado**
 
-#### **Matriz de Permisos por Rol**
+#### **Matriz de Permisos Simplificada (3 Roles)**
 ```
-Funcionalidad           | Admin | Coord | Admis | Doc | Tutor | Est | Padre | Finan
-------------------------|-------|-------|-------|-----|-------|-----|-------|-------
-Gestionar Usuarios      |   ✅   |   ❌   |   ❌   |  ❌  |   ❌   |  ❌  |   ❌   |   ❌
-Crear Cursos            |   ✅   |   ✅   |   ❌   |  ❌  |   ❌   |  ❌  |   ❌   |   ❌
-Registrar Asistencia    |   ✅   |   ✅   |   ❌   |  ✅  |   ✅   |  ❌  |   ❌   |   ❌
-Ver Notas Propias       |   ✅   |   ✅   |   ✅   |  ✅  |   ✅   |  ✅  |   ✅   |   ❌
-Procesar Pagos          |   ✅   |   ❌   |   ❌   |  ❌  |   ❌   |  ❌  |   ❌   |   ✅
-Inscribir Postulantes   |   ✅   |   ✅   |   ✅   |  ❌  |   ❌   |  ❌  |   ❌   |   ❌
-Generar Reportes        |   ✅   |   ✅   |   ❌   |  ✅  |   ✅   |  ❌  |   ❌   |   ✅
+Funcionalidad                    | Admin | Docente | Estudiante
+---------------------------------|-------|---------|------------
+Gestionar Usuarios               |   ✅   |    ❌    |     ❌
+Crear/Editar Cursos              |   ✅   |    ❌    |     ❌
+Registrar Asistencia             |   ✅   |    ✅    |     ❌
+Ver Asistencia Propia            |   ✅   |    ✅    |     ✅
+Registrar Calificaciones         |   ✅   |    ✅    |     ❌
+Ver Calificaciones Propias       |   ✅   |    ✅    |     ✅
+Procesar Pagos                   |   ✅   |    ❌    |     ❌
+Ver Estado Financiero Propio     |   ✅   |    ❌    |     ✅
+Gestionar Admisiones             |   ✅   |    ❌    |     ❌
+Generar Reportes                 |   ✅   |    ✅    |     ❌
+Enviar Comunicaciones            |   ✅   |    ✅    |     ❌
 ```
 
 ## 🔧 **Scripts Disponibles**
