@@ -6,19 +6,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-// TODO: Import middleware
-// const authMiddleware = require('./middleware/auth');
-// const errorHandler = require('./middleware/errorHandler');
-// const logger = require('./infrastructure/logging/logger');
-
-// TODO: Import routes
-// const authRoutes = require('./routes/authRoutes');
-// const userRoutes = require('./routes/userRoutes');
-// const classRoutes = require('./routes/classRoutes');
-// const bookingRoutes = require('./routes/bookingRoutes');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 
 // Security middleware
@@ -61,16 +49,10 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes (TODO: Uncomment when routes are implemented)
-// app.use(`${API_PREFIX}/auth`, authRoutes);
-// app.use(`${API_PREFIX}/users`, userRoutes);
-// app.use(`${API_PREFIX}/classes`, classRoutes);
-// app.use(`${API_PREFIX}/bookings`, bookingRoutes);
-
 // Welcome endpoint
 app.get(API_PREFIX, (req, res) => {
   res.json({
-    message: 'SGA-P Backend API - Sistema de Gestión Integral para Academias Preuniversitarias',
+    message: 'SGA-P Backend API - Sistema de Gestion Integral para Academias Preuniversitarias',
     version: require('../package.json').version,
     environment: process.env.NODE_ENV,
     health: `${req.protocol}://${req.get('host')}/health`
@@ -78,19 +60,19 @@ app.get(API_PREFIX, (req, res) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({
     error: 'Route not found',
     message: `Cannot ${req.method} ${req.originalUrl}`,
     availableEndpoints: {
       health: '/health',
-      api: API_PREFIX
-    }
+      api: API_PREFIX,
+    },
   });
 });
 
-// Global error handler (TODO: Replace with proper error handling middleware)
-app.use((err, req, res) => {
+// Global error handler
+app.use((err, req, res, next) => {
   // eslint-disable-next-line no-console
   console.error('Error:', err);
   
@@ -106,27 +88,5 @@ app.use((err, req, res) => {
   });
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`🚀 SGA-P Backend ejecutándose en puerto ${PORT}`);
-  // eslint-disable-next-line no-console
-  console.log(`📍 Entorno: ${process.env.NODE_ENV || 'desarrollo'}`);
-  // eslint-disable-next-line no-console
-  console.log(`🌐 URL Base API: http://localhost:${PORT}${API_PREFIX}`);
-  // eslint-disable-next-line no-console
-  console.log(`❤️  Health Check: http://localhost:${PORT}/health`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  // eslint-disable-next-line no-console
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    // eslint-disable-next-line no-console
-    console.log('Process terminated');
-    process.exit(0);
-  });
-});
-
+// Export app (el servidor se inicia en src/server.js)
 module.exports = app;

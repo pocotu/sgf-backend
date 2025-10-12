@@ -1,3 +1,1 @@
-# Esta carpeta contiene los controladores MVC
-# Los controladores son la capa HTTP que delega la lógica de negocio a los Use Cases
-# Mantienen una separación clara entre presentación y lógica de dominio
+# Controladores HTTP

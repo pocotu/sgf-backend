@@ -1,3 +1,0 @@
-# Interfaces - Dependency Inversion Principle
-# Esta capa define contratos/ports para la inversión de dependencias
-# Permite desacoplar completamente las capas superiores de las implementaciones

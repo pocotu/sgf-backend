@@ -1,3 +1,0 @@
-# Use Cases - Clean Architecture
-# Esta capa contiene la lógica de aplicación pura, independiente de frameworks
-# Cada use case representa una funcionalidad específica del negocio

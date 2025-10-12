@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Database
+migrations/
+seeders/
+
+# Uploads
+uploads/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Git
+.git/
