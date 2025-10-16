@@ -1,296 +1,247 @@
-# SGA-P Backend - Sistema de Gestión Integral para Academias Preuniversitarias
+# SGA-P Backend
 
+> Sistema de Gestión Integral para Academias Preuniversitarias - API REST
 
-```
-ARQUITECTURA VISUAL - BACKEND SGA-P
+## Stack Tecnológico
+
+- **Runtime:** Node.js 22+
+- **Framework:** Express.js 5.1
+- **Base de Datos:** MySQL 8.0
+- **Autenticación:** JWT (jsonwebtoken)
+- **Seguridad:** bcryptjs, helmet, cors
+- **Validación:** Joi
+- **Testing:** Jest + Supertest
+- **Logs:** Winston
+- **Rate Limiting:** express-rate-limit
+
+## Estructura del Proyecto
 
 ```
 sgf-backend/
-|
-+-- src/                          Codigo fuente principal
-|   +-- config/                   Configuracion del sistema
-|   +-- routes/                   Definicion de rutas REST
-|   +-- middleware/               Middleware Express
-|   +-- controllers/              Controladores HTTP
-|   +-- services/                 Logica de negocio
-|   +-- repositories/             Acceso a datos
-|   +-- models/                   Modelos de datos
-|   +-- utils/                    Utilidades
-|   +-- app.js                    Configuracion Express
-|   +-- server.js                 Punto de entrada del servidor
-|
-+-- migrations/                   Migraciones de BD
-+-- seeders/                      Datos iniciales
-+-- scripts/                      Scripts de utilidad
-+-- logs/                         Archivos de logs
-|
-+-- uploads/                      Archivos subidos
-|   +-- documents/                Documentos
-|   +-- photos/                   Fotos de perfil
-|   +-- temp/                     Temporales
-|
-+-- tests/                        Tests
-|   +-- unit/                     Tests unitarios
-|   +-- integration/              Tests de integracion
-|   +-- fixtures/                 Datos de prueba
-|
-+-- .env.example                  Variables de entorno
-+-- package.json                  Dependencias
-+-- README.md                     Documentacion
-+-- Arquitectura.md               Este archivo
+├── src/                          # Código fuente principal
+│   ├── config/                   # Configuración del sistema
+│   │
+│   ├── routes/                   # Definición de rutas REST
+│   │
+│   ├── middleware/               # Middleware Express
+│   │
+│   ├── controllers/              # Controladores HTTP
+│   │
+│   ├── services/                 # Lógica de negocio
+│   │
+│   ├── repositories/             # Acceso a datos
+│   │
+│   ├── models/                   # Modelos de datos
+│   ├── utils/                    # Utilidades
+│   ├── app.js                    # Configuración Express
+│   └── server.js                 # Punto de entrada del servidor
+│
+├── migrations/                   # Migraciones de BD
+├── seeders/                      # Datos iniciales
+├── scripts/                      # Scripts de utilidad
+├── logs/                         # Archivos de logs
+│
+├── uploads/                      # Archivos subidos
+│   ├── documents/                # Documentos
+│   ├── photos/                   # Fotos de perfil
+│   └── temp/                     # Temporales
+│
+├── tests/                        # Tests
+│   ├── unit/                     # Tests unitarios
+│   ├── integration/              # Tests de integración
+│   └── fixtures/                 # Datos de prueba
+│
+├── .env.example                  # Variables de entorno ejemplo
+├── package.json                  # Dependencias
+└── README.md                     # Este archivo
 ```
 
----
+## Arquitectura Clean Architecture
 
-FLUJO DE ARQUITECTURA CLEAN
+El proyecto sigue el patrón Clean Architecture con separación clara de responsabilidades:
 
-+---------------------------------------------------------------+
-|                        CLIENTE                                |
-|                    (Frontend React)                           |
-+-------------------------------+-------------------------------+
-                                |
-                                | HTTP Request
-                                v
-+---------------------------------------------------------------+
-|                    src/server.js                              |
-|  - Inicia servidor Express                                    |
-|  - Escucha en puerto configurado                              |
-+-------------------------------+-------------------------------+
-                                |
-                                v
-+---------------------------------------------------------------+
-|                    src/app.js                                 |
-|  - Aplica middleware de seguridad (helmet, cors)             |
-|  - Aplica rate limiting                                       |
-|  - Parsea body JSON                                           |
-+-------------------------------+-------------------------------+
-                                |
-                                | Route Handler
-                                v
-+---------------------------------------------------------------+
-|                    CAPA DE RUTAS                              |
-|                   (routes/*.js)                               |
-|  - auth.routes.js                                             |
-|  - student.routes.js                                          |
-|  - course.routes.js                                           |
-+-------------------------------+-------------------------------+
-                                |
-                                | Middleware Chain
-                                v
-+---------------------------------------------------------------+
-|                  CAPA DE MIDDLEWARE                           |
-|                  (middleware/*.js)                            |
-|  - authMiddleware.js      -> Verifica JWT                     |
-|  - roleMiddleware.js      -> Verifica permisos                |
-|  - validatorMiddleware.js -> Valida datos                     |
-+-------------------------------+-------------------------------+
-                                |
-                                | Validated Request
-                                v
-+---------------------------------------------------------------+
-|                CAPA DE CONTROLADORES                          |
-|                  (controllers/*.js)                           |
-|  - AuthController.js                                          |
-|  - StudentController.js                                       |
-|  - CourseController.js                                        |
-|                                                               |
-|  Responsabilidad:                                             |
-|  - Recibir request HTTP                                       |
-|  - Llamar al servicio correspondiente                         |
-|  - Formatear respuesta HTTP                                   |
-+-------------------------------+-------------------------------+
-                                |
-                                | Business Logic Call
-                                v
-+---------------------------------------------------------------+
-|                  CAPA DE SERVICIOS                            |
-|                   (services/*.js)                             |
-|  - AuthService.js                                             |
-|  - StudentService.js                                          |
-|  - GradeService.js                                            |
-|                                                               |
-|  Responsabilidad:                                             |
-|  - Logica de negocio                                          |
-|  - Validaciones de reglas de negocio                          |
-|  - Orquestacion de repositorios                               |
-+-------------------------------+-------------------------------+
-                                |
-                                | Data Access Call
-                                v
-+---------------------------------------------------------------+
-|                CAPA DE REPOSITORIOS                           |
-|                 (repositories/*.js)                           |
-|  - UserRepository.js                                          |
-|  - StudentRepository.js                                       |
-|  - CourseRepository.js                                        |
-|                                                               |
-|  Responsabilidad:                                             |
-|  - Queries SQL                                                |
-|  - Acceso a base de datos                                     |
-|  - Mapeo de datos                                             |
-+-------------------------------+-------------------------------+
-                                |
-                                | SQL Query
-                                v
-+---------------------------------------------------------------+
-|                    BASE DE DATOS                              |
-|                      MySQL 8.0                                |
-|                                                               |
-|  Tablas:                                                      |
-|  - USUARIOS                                                   |
-|  - ESTUDIANTES                                                |
-|  - CURSOS                                                     |
-|  - GRUPOS                                                     |
-|  - MATRICULAS                                                 |
-|  - ASISTENCIAS                                                |
-|  - EVALUACIONES                                               |
-|  - NOTAS                                                      |
-+---------------------------------------------------------------+
-
----
-
-MODULOS POR IMPLEMENTAR (Sprints 2-7)
-
-Sprint 2: Autenticacion
 ```
-src/
-├── controllers/
-│   └── AuthController.js
-├── services/
-│   └── AuthService.js
-├── repositories/
-│   └── UserRepository.js
-├── middleware/
-│   ├── authMiddleware.js
-│   └── roleMiddleware.js
-└── routes/
-    └── auth.routes.js
+┌─────────────────────────────────────────────────────────────┐
+│                    CLIENTE (Frontend React)                  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTP Request
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      src/server.js                           │
+│  • Inicia servidor Express                                   │
+│  • Escucha en puerto configurado                             │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       src/app.js                             │
+│  • Middleware de seguridad (helmet, cors)                    │
+│  • Rate limiting                                             │
+│  • Parser de body JSON                                       │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Route Handler
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   CAPA DE RUTAS (routes/)                    │
+│  • auth.routes.js                                            │
+│  • student.routes.js                                         │
+│  • course.routes.js                                          │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Middleware Chain
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                CAPA DE MIDDLEWARE (middleware/)              │
+│  • authMiddleware.js      → Verifica JWT                     │
+│  • roleMiddleware.js      → Verifica permisos                │
+│  • validatorMiddleware.js → Valida datos                     │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Validated Request
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│              CAPA DE CONTROLADORES (controllers/)            │
+│  • AuthController.js                                         │
+│  • StudentController.js                                      │
+│  • CourseController.js                                       │
+│                                                              │
+│  Responsabilidad:                                            │
+│  • Recibir request HTTP                                      │
+│  • Llamar al servicio correspondiente                        │
+│  • Formatear respuesta HTTP                                  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Business Logic Call
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                CAPA DE SERVICIOS (services/)                 │
+│  • AuthService.js                                            │
+│  • StudentService.js                                         │
+│  • GradeService.js                                           │
+│                                                              │
+│  Responsabilidad:                                            │
+│  • Lógica de negocio                                         │
+│  • Validaciones de reglas de negocio                         │
+│  • Orquestación de repositorios                              │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Data Access Call
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│              CAPA DE REPOSITORIOS (repositories/)            │
+│  • UserRepository.js                                         │
+│  • StudentRepository.js                                      │
+│  • CourseRepository.js                                       │
+│                                                              │
+│  Responsabilidad:                                            │
+│  • Queries SQL                                               │
+│  • Acceso a base de datos                                    │
+│  • Mapeo de datos                                            │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ SQL Query
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   BASE DE DATOS MySQL 8.0                    │
+│                                                              │
+│  Tablas:                                                     │
+│  • USUARIOS        • GRUPOS                                  │
+│  • ESTUDIANTES     • MATRICULAS                              │
+│  • CURSOS          • ASISTENCIAS                             │
+│  • EVALUACIONES    • NOTAS                                   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-Sprint 3: Estudiantes, Cursos, Grupos
-```
-src/
-├── controllers/
-│   ├── StudentController.js
-│   ├── CourseController.js
-│   └── GroupController.js
-├── services/
-│   ├── StudentService.js
-│   ├── CourseService.js
-│   └── GroupService.js
-├── repositories/
-│   ├── StudentRepository.js
-│   ├── CourseRepository.js
-│   └── GroupRepository.js
-└── routes/
-    ├── student.routes.js
-    ├── course.routes.js
-    └── group.routes.js
-```
+## Modelo de Base de Datos
 
-Sprint 4: Matriculas y Asistencias
-```
-src/
-├── controllers/
-│   ├── EnrollmentController.js
-│   └── AttendanceController.js
-├── services/
-│   ├── EnrollmentService.js
-│   └── AttendanceService.js
-├── repositories/
-│   ├── EnrollmentRepository.js
-│   └── AttendanceRepository.js
-└── routes/
-    ├── enrollment.routes.js
-    └── attendance.routes.js
-```
+### Tablas Principales
 
-Sprint 5: Evaluaciones y Notas
-```
-src/
-├── controllers/
-│   ├── EvaluationController.js
-│   └── GradeController.js
-├── services/
-│   ├── EvaluationService.js
-│   └── GradeService.js
-├── repositories/
-│   ├── EvaluationRepository.js
-│   └── GradeRepository.js
-└── routes/
-    ├── evaluation.routes.js
-    └── grade.routes.js
-```
+1. **USUARIOS**: Gestión de usuarios del sistema (admin, docente, estudiante)
+2. **ESTUDIANTES**: Información de estudiantes con modalidad UNSAAC
+3. **CURSOS**: Cursos organizados por área académica (A, B, C, D)
+4. **GRUPOS**: Grupos con modalidad, área, horarios y capacidad
+5. **MATRICULAS**: Control de inscripciones estudiante-grupo
+6. **ASISTENCIAS**: Registro de asistencia (Presente, Tardanza, Ausente)
+7. **EVALUACIONES**: Simulacros semanales estilo UNSAAC
+8. **NOTAS**: Calificaciones por curso (escala 0-20)
 
-Sprint 6: Rankings y Reportes
-```
-src/
-├── controllers/
-│   ├── RankingController.js
-│   └── ReportController.js
-├── services/
-│   ├── RankingService.js
-│   └── ReportService.js
-├── repositories/
-│   ├── RankingRepository.js
-│   └── ReportRepository.js
-└── routes/
-    ├── ranking.routes.js
-    └── report.routes.js
-```
+## Instalación y Configuración
 
-Sprint 7: Dashboards
-```
-src/
-├── controllers/
-│   └── DashboardController.js
-├── services/
-│   └── DashboardService.js
-└── routes/
-    └── dashboard.routes.js
-```
+### Requisitos Previos
 
----
+- Node.js 22+ instalado
+- MySQL 8.0+ instalado y ejecutándose
+- npm o yarn como gestor de paquetes
 
+### Pasos de Instalación
 
-src/config/
-```
-config/
-├── database.js          # Configuración MySQL
-├── jwt.js               # Configuración JWT
-├── constants.js         # Constantes del sistema
-└── logger.js            # Configuración de logs
-```
-
-src/utils/
-```
-utils/
-├── dateHelper.js        # Formateo de fechas
-├── validators.js        # Validaciones personalizadas
-├── formatters.js        # Formateo de datos
-└── errorHandler.js      # Manejo de errores
-```
----
-
-### **4. Ejecutar la aplicación**
+1. **Clonar el repositorio**
 ```bash
-# Desarrollo con hot reload
+git clone <repository-url>
+cd sgf-backend
+```
+
+2. **Instalar dependencias**
+```bash
+npm install
+```
+
+3. **Configurar variables de entorno**
+```bash
+cp .env.example .env
+```
+
+Editar `.env` con tus configuraciones:
+```env
+NODE_ENV=development
+PORT=3000
+
+# Database
+DB_HOST=localhost
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=sgf_database
+DB_PORT=3306
+
+# JWT
+JWT_SECRET=your_super_secret_jwt_key_here_minimum_32_characters
+JWT_EXPIRES_IN=24h
+JWT_REFRESH_SECRET=your_refresh_token_secret_here
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Security
+BCRYPT_SALT_ROUNDS=12
+RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW_MS=900000
+```
+
+4. **Crear base de datos**
+```bash
+mysql -u root -p
+CREATE DATABASE sgf_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+5. **Ejecutar migraciones**
+```bash
+npm run migrate
+```
+
+6. **Ejecutar seeders (opcional)**
+```bash
+npm run seed
+```
+
+## Ejecución
+
+### Modo Desarrollo
+```bash
 npm run dev
+```
+Servidor con hot reload en `http://localhost:3000`
 
-# Producción
+### Modo Producción
+```bash
 npm start
-
-# Tests
-npm test
-
-# Tests con coverage
-npm run test:coverage
 ```
 
-## 🧪 **Testing**
-
+### Ejecutar Tests
 ```bash
-# Ejecutar todos los tests
+# Todos los tests
 npm test
 
 # Tests en modo watch
@@ -299,5 +250,142 @@ npm run test:watch
 # Coverage report
 npm run test:coverage
 ```
+
+## API Endpoints
+
+### Autenticación
+- `POST /api/v1/auth/login` - Iniciar sesión
+- `POST /api/v1/auth/register` - Registrar usuario
+- `POST /api/v1/auth/refresh` - Renovar token
+- `POST /api/v1/auth/logout` - Cerrar sesión
+
+### Estudiantes
+- `GET /api/v1/students` - Listar estudiantes
+- `GET /api/v1/students/:id` - Obtener estudiante
+- `POST /api/v1/students` - Crear estudiante
+- `PUT /api/v1/students/:id` - Actualizar estudiante
+- `DELETE /api/v1/students/:id` - Eliminar estudiante
+
+### Cursos
+- `GET /api/v1/courses` - Listar cursos
+- `GET /api/v1/courses/:id` - Obtener curso
+- `POST /api/v1/courses` - Crear curso
+- `PUT /api/v1/courses/:id` - Actualizar curso
+- `DELETE /api/v1/courses/:id` - Eliminar curso
+
+### Grupos
+- `GET /api/v1/groups` - Listar grupos
+- `GET /api/v1/groups/:id` - Obtener grupo
+- `POST /api/v1/groups` - Crear grupo
+- `PUT /api/v1/groups/:id` - Actualizar grupo
+- `DELETE /api/v1/groups/:id` - Eliminar grupo
+
+### Matrículas
+- `GET /api/v1/enrollments` - Listar matrículas
+- `POST /api/v1/enrollments` - Matricular estudiante
+- `DELETE /api/v1/enrollments/:id` - Anular matrícula
+
+### Asistencias
+- `GET /api/v1/attendances` - Listar asistencias
+- `POST /api/v1/attendances` - Registrar asistencia
+- `PUT /api/v1/attendances/:id` - Actualizar asistencia
+
+### Evaluaciones y Notas
+- `GET /api/v1/evaluations` - Listar evaluaciones
+- `POST /api/v1/evaluations` - Crear evaluación
+- `GET /api/v1/grades` - Listar notas
+- `POST /api/v1/grades` - Registrar notas
+
+### Rankings y Reportes
+- `GET /api/v1/rankings/:groupId` - Ranking de grupo
+- `GET /api/v1/reports/academic` - Reporte académico
+- `GET /api/v1/reports/attendance` - Reporte de asistencia
+
+### Dashboards
+- `GET /api/v1/dashboard/admin` - Dashboard administrador
+- `GET /api/v1/dashboard/teacher` - Dashboard docente
+- `GET /api/v1/dashboard/student` - Dashboard estudiante
+
+## Autenticación y Autorización
+
+El sistema implementa autenticación JWT con 3 roles:
+
+- **Admin**: Acceso completo al sistema
+- **Docente**: Gestión de grupos, asistencia y notas
+- **Estudiante**: Consulta de información personal
+
+### Ejemplo de uso
+```javascript
+// Headers requeridos
+Authorization: Bearer <token>
+```
+
+## Testing
+
+### Estructura de Tests
+```
+tests/
+├── unit/                    # Tests unitarios
+│   ├── services/
+│   ├── repositories/
+│   └── utils/
+├── integration/             # Tests de integración
+│   ├── auth.test.js
+│   ├── students.test.js
+│   └── courses.test.js
+└── fixtures/                # Datos de prueba
+```
+
+### Cobertura Objetivo
+- Statements: >80%
+- Branches: >75%
+- Functions: >80%
+- Lines: >80%
+
+## Scripts Disponibles
+
+```bash
+npm start              # Iniciar servidor en producción
+npm run dev            # Iniciar servidor en desarrollo
+npm test               # Ejecutar tests
+npm run test:watch     # Tests en modo watch
+npm run test:coverage  # Generar reporte de cobertura
+npm run migrate        # Ejecutar migraciones
+npm run seed           # Ejecutar seeders
+npm run lint           # Ejecutar linter
+npm run format         # Formatear código
+```
+
+## Desarrollo por Sprints
+
+### Sprint 2: Autenticación (Completado)
+- Sistema JWT con 3 roles
+- Middleware de autenticación y autorización
+- CRUD de usuarios
+
+### Sprint 3: Estudiantes, Cursos, Grupos (En Progreso)
+- CRUD de estudiantes con modalidades
+- CRUD de cursos por área académica
+- CRUD de grupos con horarios
+
+### Sprint 4: Matrículas y Asistencias (Pendiente)
+- Sistema de matrículas con validaciones
+- Control de asistencia con 3 estados
+
+### Sprint 5: Evaluaciones y Notas (Pendiente)
+- Programación de simulacros
+- Registro de notas (escala 0-20)
+
+### Sprint 6: Rankings y Reportes (Pendiente)
+- Sistema de rankings automático
+- Reportes académicos y de asistencia
+
+### Sprint 7: Dashboards (Pendiente)
+- Dashboard por rol de usuario
+- Métricas y visualizaciones
+
+
+
+
 
 
