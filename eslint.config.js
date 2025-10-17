@@ -107,6 +107,7 @@ module.exports = [
       '*.min.js',
       'migrations/**',
       'seeders/**',
+      'prisma/**',
       '.env',
       '.env.*',
     ],

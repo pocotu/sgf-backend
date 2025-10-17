@@ -21,9 +21,6 @@
     "format": "prettier --write \"**/*.{js,json}\"",
     "format:check": "prettier --check \"**/*.{js,json}\""
   },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
   "keywords": [
     "sga-p",
     "academias-preuniversitarias",

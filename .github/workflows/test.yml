@@ -50,6 +50,8 @@ jobs:
       
       - name: Generate Prisma Client
         run: npx prisma generate
+        env:
+          DATABASE_URL: mysql://root:test_password@127.0.0.1:3306/academias_db_test
       
       - name: Run Prisma Migrations
         run: npx prisma migrate deploy
