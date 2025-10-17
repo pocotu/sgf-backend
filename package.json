@@ -13,8 +13,8 @@
     "seed": "node src/infrastructure/database/seeders/run-seeders.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"**/*.{js,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,json,md}\""
+    "format": "prettier --write \"**/*.{js,json}\"",
+    "format:check": "prettier --check \"**/*.{js,json}\""
   },
   "keywords": [
     "sga-p",
