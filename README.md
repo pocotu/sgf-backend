@@ -171,22 +171,26 @@ El proyecto sigue el patrón Clean Architecture con separación clara de respons
 ### Pasos de Instalación
 
 1. **Clonar el repositorio**
+
 ```bash
 git clone <repository-url>
 cd sgf-backend
 ```
 
 2. **Instalar dependencias**
+
 ```bash
 npm install
 ```
 
 3. **Configurar variables de entorno**
+
 ```bash
 cp .env.example .env
 ```
 
 Editar `.env` con tus configuraciones:
+
 ```env
 NODE_ENV=development
 PORT=3000
@@ -211,17 +215,20 @@ RATE_LIMIT_WINDOW_MS=900000
 ```
 
 4. **Crear base de datos**
+
 ```bash
 mysql -u root -p
 CREATE DATABASE sgf_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 5. **Ejecutar migraciones**
+
 ```bash
 npm run migrate
 ```
 
 6. **Ejecutar seeders (opcional)**
+
 ```bash
 npm run seed
 ```
@@ -229,17 +236,21 @@ npm run seed
 ## Ejecución
 
 ### Modo Desarrollo
+
 ```bash
 npm run dev
 ```
+
 Servidor con hot reload en `http://localhost:3000`
 
 ### Modo Producción
+
 ```bash
 npm start
 ```
 
 ### Ejecutar Tests
+
 ```bash
 # Todos los tests
 npm test
@@ -254,12 +265,14 @@ npm run test:coverage
 ## API Endpoints
 
 ### Autenticación
+
 - `POST /api/v1/auth/login` - Iniciar sesión
 - `POST /api/v1/auth/register` - Registrar usuario
 - `POST /api/v1/auth/refresh` - Renovar token
 - `POST /api/v1/auth/logout` - Cerrar sesión
 
 ### Estudiantes
+
 - `GET /api/v1/students` - Listar estudiantes
 - `GET /api/v1/students/:id` - Obtener estudiante
 - `POST /api/v1/students` - Crear estudiante
@@ -267,6 +280,7 @@ npm run test:coverage
 - `DELETE /api/v1/students/:id` - Eliminar estudiante
 
 ### Cursos
+
 - `GET /api/v1/courses` - Listar cursos
 - `GET /api/v1/courses/:id` - Obtener curso
 - `POST /api/v1/courses` - Crear curso
@@ -274,6 +288,7 @@ npm run test:coverage
 - `DELETE /api/v1/courses/:id` - Eliminar curso
 
 ### Grupos
+
 - `GET /api/v1/groups` - Listar grupos
 - `GET /api/v1/groups/:id` - Obtener grupo
 - `POST /api/v1/groups` - Crear grupo
@@ -281,27 +296,32 @@ npm run test:coverage
 - `DELETE /api/v1/groups/:id` - Eliminar grupo
 
 ### Matrículas
+
 - `GET /api/v1/enrollments` - Listar matrículas
 - `POST /api/v1/enrollments` - Matricular estudiante
 - `DELETE /api/v1/enrollments/:id` - Anular matrícula
 
 ### Asistencias
+
 - `GET /api/v1/attendances` - Listar asistencias
 - `POST /api/v1/attendances` - Registrar asistencia
 - `PUT /api/v1/attendances/:id` - Actualizar asistencia
 
 ### Evaluaciones y Notas
+
 - `GET /api/v1/evaluations` - Listar evaluaciones
 - `POST /api/v1/evaluations` - Crear evaluación
 - `GET /api/v1/grades` - Listar notas
 - `POST /api/v1/grades` - Registrar notas
 
 ### Rankings y Reportes
+
 - `GET /api/v1/rankings/:groupId` - Ranking de grupo
 - `GET /api/v1/reports/academic` - Reporte académico
 - `GET /api/v1/reports/attendance` - Reporte de asistencia
 
 ### Dashboards
+
 - `GET /api/v1/dashboard/admin` - Dashboard administrador
 - `GET /api/v1/dashboard/teacher` - Dashboard docente
 - `GET /api/v1/dashboard/student` - Dashboard estudiante
@@ -315,6 +335,7 @@ El sistema implementa autenticación JWT con 3 roles:
 - **Estudiante**: Consulta de información personal
 
 ### Ejemplo de uso
+
 ```javascript
 // Headers requeridos
 Authorization: Bearer <token>
@@ -323,6 +344,7 @@ Authorization: Bearer <token>
 ## Testing
 
 ### Estructura de Tests
+
 ```
 tests/
 ├── unit/                    # Tests unitarios
@@ -337,6 +359,7 @@ tests/
 ```
 
 ### Cobertura Objetivo
+
 - Statements: >80%
 - Branches: >75%
 - Functions: >80%
@@ -353,39 +376,76 @@ npm run test:coverage  # Generar reporte de cobertura
 npm run migrate        # Ejecutar migraciones
 npm run seed           # Ejecutar seeders
 npm run lint           # Ejecutar linter
-npm run format         # Formatear código
+npm run lint:fix       # Arreglar errores de linting automáticamente
+npm run format         # Formatear código con Prettier
+npm run format:check   # Verificar formato sin modificar
 ```
+
+## 🚀 CI/CD - Protección del Repositorio
+
+El proyecto cuenta con protección automática del código mediante GitHub Actions.
+
+### ✅ Workflows Activos
+
+- ✅ **Lint**: Verifica código con ESLint y Prettier en cada PR
+- ✅ **Test**: Ejecuta tests con coverage en cada PR
+- ✅ **Branch Protection**: Requiere aprobación y checks pasando antes de merge
+
+### 📊 Estado Actual
+
+- ✅ Linting: 0 errores
+- ✅ Tests: 4/4 pasando
+- ✅ Workflows: 2/2 funcionando
+
+### 🔒 Configurar Branch Protection
+
+Para activar la protección en GitHub:
+
+1. Ir a **Settings** → **Branches** → **Add rule**
+2. Branch name pattern: `main`
+3. Marcar:
+   - ✅ Require a pull request before merging
+   - ✅ Require approvals: 1
+   - ✅ Require status checks to pass before merging
+   - ✅ Status checks: `lint`, `test`
+   - ✅ Include administrators
+4. Save changes
+5. Repetir para branch `develop`
+
+**Resultado:** Nadie puede hacer push directo a `main` o `develop` sin PR aprobado y checks pasando.
+
+📖 **Guía de configuración**: [Quick Start CI/CD](./docs/QUICK_START_CI_CD.md)
 
 ## Desarrollo por Sprints
 
 ### Sprint 2: Autenticación (Completado)
+
 - Sistema JWT con 3 roles
 - Middleware de autenticación y autorización
 - CRUD de usuarios
 
 ### Sprint 3: Estudiantes, Cursos, Grupos (En Progreso)
+
 - CRUD de estudiantes con modalidades
 - CRUD de cursos por área académica
 - CRUD de grupos con horarios
 
 ### Sprint 4: Matrículas y Asistencias (Pendiente)
+
 - Sistema de matrículas con validaciones
 - Control de asistencia con 3 estados
 
 ### Sprint 5: Evaluaciones y Notas (Pendiente)
+
 - Programación de simulacros
 - Registro de notas (escala 0-20)
 
 ### Sprint 6: Rankings y Reportes (Pendiente)
+
 - Sistema de rankings automático
 - Reportes académicos y de asistencia
 
 ### Sprint 7: Dashboards (Pendiente)
+
 - Dashboard por rol de usuario
 - Métricas y visualizaciones
-
-
-
-
-
-

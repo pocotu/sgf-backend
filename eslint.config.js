@@ -1,10 +1,18 @@
 /* eslint-env node */
 const js = require('@eslint/js');
+const prettierConfig = require('eslint-config-prettier');
 
 module.exports = [
   js.configs.recommended,
+  prettierConfig,
   {
-    files: ['src/**/*.js', 'tests/**/*.js', 'jest.config.js', 'scripts/**/*.js'],
+    files: [
+      'src/**/*.js',
+      'tests/**/*.js',
+      'jest.config.js',
+      'scripts/**/*.js',
+      'eslint.config.js',
+    ],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'commonjs',
@@ -41,7 +49,7 @@ module.exports = [
       // Single Responsibility Principle
       'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
       'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
-      'complexity': ['warn', 10],
+      complexity: ['warn', 10],
 
       // Open/Closed Principle
       'no-var': 'error',
@@ -55,8 +63,8 @@ module.exports = [
       'no-debugger': 'warn',
 
       // Best practices
-      'eqeqeq': ['error', 'always'],
-      'curly': ['error', 'all'],
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
       'no-throw-literal': 'error',
       'no-return-await': 'error',
       'require-await': 'warn',
@@ -71,17 +79,8 @@ module.exports = [
       'no-async-promise-executor': 'error',
       'no-await-in-loop': 'warn',
 
-      // Code style
-      'semi': ['error', 'always'],
-      'quotes': ['error', 'single', { avoidEscape: true }],
-      'indent': ['error', 2, { SwitchCase: 1 }],
-      'comma-dangle': ['error', 'always-multiline'],
-      'no-trailing-spaces': 'error',
-      'eol-last': ['error', 'always'],
-      'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
-
       // Naming conventions
-      'camelcase': ['warn', { properties: 'never' }],
+      camelcase: ['warn', { properties: 'never' }],
 
       // Security
       'no-eval': 'error',

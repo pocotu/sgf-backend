@@ -13,20 +13,23 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 app.use(helmet());
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? ['https://yourdomain.com']
+        : ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
   max: parseInt(process.env.RATE_LIMIT_MAX) || 100, // limit each IP to 100 requests per windowMs
   message: {
-    error: 'Too many requests from this IP, please try again later.'
-  }
+    error: 'Too many requests from this IP, please try again later.',
+  },
 });
 app.use(API_PREFIX, limiter);
 
@@ -45,7 +48,7 @@ app.get('/health', (req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
-    version: require('../package.json').version
+    version: require('../package.json').version,
   });
 });
 
@@ -55,7 +58,7 @@ app.get(API_PREFIX, (req, res) => {
     message: 'SGA-P Backend API - Sistema de Gestion Integral para Academias Preuniversitarias',
     version: require('../package.json').version,
     environment: process.env.NODE_ENV,
-    health: `${req.protocol}://${req.get('host')}/health`
+    health: `${req.protocol}://${req.get('host')}/health`,
   });
 });
 
@@ -72,19 +75,16 @@ app.use((req, res) => {
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
-  // eslint-disable-next-line no-console
+app.use((err, req, res, _next) => {
   console.error('Error:', err);
-  
+
   const statusCode = err.statusCode || err.status || 500;
-  const message = process.env.NODE_ENV === 'production' 
-    ? 'Internal server error' 
-    : err.message;
+  const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message;
 
   res.status(statusCode).json({
     error: true,
-    message: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 });
 
