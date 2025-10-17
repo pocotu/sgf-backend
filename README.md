@@ -257,6 +257,35 @@ npm run test:watch
 npm run test:coverage
 ```
 
+## 🚀 Deployment en Producción
+
+### Render (Recomendado)
+
+```bash
+# Ver guía rápida
+cat QUICK_DEPLOY.md
+
+# Ver guía completa
+cat DEPLOYMENT.md
+
+# Troubleshooting
+cat RENDER_TROUBLESHOOTING.md
+```
+
+**Pasos básicos:**
+1. Crear base de datos MySQL (Railway/PlanetScale)
+2. Crear Web Service en Render
+3. Configurar variables de entorno
+4. Deploy automático desde GitHub
+
+**Variables mínimas requeridas:**
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `NODE_ENV=production`
+
+Ver `DEPLOYMENT.md` para instrucciones detalladas.
+
 ## API Endpoints
 
 ### Autenticación

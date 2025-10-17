@@ -13,20 +13,23 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 app.use(helmet());
 
 // CORS configuration
+const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? corsOrigin.split(',').map(origin => origin.trim())
+    : corsOrigin.split(',').map(origin => origin.trim());
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? ['https://yourdomain.com']
-        : ['http://localhost:3000', 'http://localhost:3001'],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100, // limit each IP to 100 requests per windowMs
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000,
+  max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
   message: {
     error: 'Too many requests from this IP, please try again later.',
   },
@@ -34,8 +37,9 @@ const limiter = rateLimit({
 app.use(API_PREFIX, limiter);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+const bodyLimit = process.env.BODY_LIMIT || '10mb';
+app.use(express.json({ limit: bodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: bodyLimit }));
 
 // Logging middleware
 if (process.env.NODE_ENV !== 'test') {
@@ -75,7 +79,7 @@ app.use((req, res) => {
 });
 
 // Global error handler
-app.use((err, req, res, _next) => {
+app.use((err, _req, res, _next) => {
   console.error('Error:', err);
 
   const statusCode = err.statusCode || err.status || 500;

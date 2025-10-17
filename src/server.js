@@ -10,7 +10,8 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 
 // Iniciar servidor solo si este archivo se ejecuta directamente
 if (require.main === module) {
-  const server = app.listen(PORT, () => {
+  const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  const server = app.listen(PORT, HOST, () => {
     console.log('================================================================');
 
     console.log('   SGA-P Backend - Sistema de Gestion Academias              ');
@@ -21,11 +22,13 @@ if (require.main === module) {
 
     console.log(`[*] Entorno:      ${process.env.NODE_ENV || 'development'}`);
 
+    console.log(`[*] Host:         ${HOST}`);
+
     console.log(`[*] Puerto:       ${PORT}`);
 
-    console.log(`[*] URL Base API: http://localhost:${PORT}${API_PREFIX}`);
+    console.log(`[*] URL Base API: http://${HOST}:${PORT}${API_PREFIX}`);
 
-    console.log(`[*] Health Check: http://localhost:${PORT}/health`);
+    console.log(`[*] Health Check: http://${HOST}:${PORT}/health`);
 
     console.log('');
 
