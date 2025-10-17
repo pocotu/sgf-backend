@@ -183,51 +183,13 @@ cd sgf-backend
 npm install
 ```
 
-3. **Configurar variables de entorno**
-
-```bash
-cp .env.example .env
-```
-
-Editar `.env` con tus configuraciones:
-
-```env
-NODE_ENV=development
-PORT=3000
-
-# Database
-DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=sgf_database
-DB_PORT=3306
-
-# JWT
-JWT_SECRET=your_super_secret_jwt_key_here_minimum_32_characters
-JWT_EXPIRES_IN=24h
-JWT_REFRESH_SECRET=your_refresh_token_secret_here
-JWT_REFRESH_EXPIRES_IN=7d
-
-# Security
-BCRYPT_SALT_ROUNDS=12
-RATE_LIMIT_MAX=100
-RATE_LIMIT_WINDOW_MS=900000
-```
-
-4. **Crear base de datos**
-
-```bash
-mysql -u root -p
-CREATE DATABASE sgf_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-5. **Ejecutar migraciones**
+3. **Ejecutar migraciones**
 
 ```bash
 npm run migrate
 ```
 
-6. **Ejecutar seeders (opcional)**
+4. **Ejecutar seeders (opcional)**
 
 ```bash
 npm run seed
@@ -413,39 +375,3 @@ Para activar la protección en GitHub:
 5. Repetir para branch `develop`
 
 **Resultado:** Nadie puede hacer push directo a `main` o `develop` sin PR aprobado y checks pasando.
-
-📖 **Guía de configuración**: [Quick Start CI/CD](./docs/QUICK_START_CI_CD.md)
-
-## Desarrollo por Sprints
-
-### Sprint 2: Autenticación (Completado)
-
-- Sistema JWT con 3 roles
-- Middleware de autenticación y autorización
-- CRUD de usuarios
-
-### Sprint 3: Estudiantes, Cursos, Grupos (En Progreso)
-
-- CRUD de estudiantes con modalidades
-- CRUD de cursos por área académica
-- CRUD de grupos con horarios
-
-### Sprint 4: Matrículas y Asistencias (Pendiente)
-
-- Sistema de matrículas con validaciones
-- Control de asistencia con 3 estados
-
-### Sprint 5: Evaluaciones y Notas (Pendiente)
-
-- Programación de simulacros
-- Registro de notas (escala 0-20)
-
-### Sprint 6: Rankings y Reportes (Pendiente)
-
-- Sistema de rankings automático
-- Reportes académicos y de asistencia
-
-### Sprint 7: Dashboards (Pendiente)
-
-- Dashboard por rol de usuario
-- Métricas y visualizaciones
