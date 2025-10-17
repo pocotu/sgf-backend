@@ -35,10 +35,11 @@ async function main() {
     create: {
       dni: '12345678',
       correo: 'admin@sga-p.edu.pe',
-      password: adminPassword,
-      rol: 'ADMIN',
+      contrasenaHash: adminPassword,
+      rol: 'admin',
       nombres: 'Administrador',
       apellidos: 'Sistema',
+      telefono: '987654321',
     },
   });
   console.log('  ✅ Admin creado:', admin.correo);
@@ -50,10 +51,11 @@ async function main() {
     create: {
       dni: '23456789',
       correo: 'docente@sga-p.edu.pe',
-      password: docentePassword,
-      rol: 'DOCENTE',
+      contrasenaHash: docentePassword,
+      rol: 'docente',
       nombres: 'Juan Carlos',
       apellidos: 'Pérez García',
+      telefono: '987654322',
     },
   });
   console.log('  ✅ Docente creado:', docente.correo);
@@ -65,10 +67,11 @@ async function main() {
     create: {
       dni: '34567890',
       correo: 'estudiante@sga-p.edu.pe',
-      password: estudiantePassword,
-      rol: 'ESTUDIANTE',
+      contrasenaHash: estudiantePassword,
+      rol: 'estudiante',
       nombres: 'María Elena',
       apellidos: 'Quispe Huamán',
+      telefono: '987654323',
     },
   });
   console.log('  ✅ Estudiante creado:', estudiante.correo);
