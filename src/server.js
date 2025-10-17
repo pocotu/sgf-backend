@@ -14,18 +14,22 @@ if (require.main === module) {
   const server = app.listen(PORT, HOST, () => {
     const nodeEnv = process.env.NODE_ENV || 'development';
 
-    console.log('================================================================');
-    console.log('   SGA-P Backend - Sistema de Gestion Academias              ');
-    console.log('================================================================');
-    console.log('');
-    console.log(`[*] Entorno:      ${nodeEnv}`);
-    console.log(`[*] Host:         ${HOST}`);
-    console.log(`[*] Puerto:       ${PORT}`);
-    console.log(`[*] URL Base API: ${API_PREFIX}`);
-    console.log(`[*] Health Check: /health`);
-    console.log('');
-    console.log('[OK] Servidor listo para recibir peticiones');
-    console.log('');
+    if (nodeEnv === 'production') {
+      console.log('[OK] Server started successfully');
+    } else {
+      console.log('================================================================');
+      console.log('   SGA-P Backend - Sistema de Gestion Academias              ');
+      console.log('================================================================');
+      console.log('');
+      console.log(`[*] Entorno:      ${nodeEnv}`);
+      console.log(`[*] Host:         ${HOST}`);
+      console.log(`[*] Puerto:       ${PORT}`);
+      console.log(`[*] URL Base API: ${API_PREFIX}`);
+      console.log(`[*] Health Check: /health`);
+      console.log('');
+      console.log('[OK] Servidor listo para recibir peticiones');
+      console.log('');
+    }
   });
 
   // Manejo de cierre graceful
