@@ -80,31 +80,3 @@ jobs:
           file: ./coverage/coverage-final.json
           flags: backend
           fail_ci_if_error: false
-      
-      - name: Comment PR with coverage
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
-            const total = coverage.total;
-            
-            const status = total.statements.pct >= 80 ? 'PASS' : 'WARN';
-            const body = `## Test Coverage Report
-            
-            | Metric | Coverage |
-            |--------|----------|
-            | Statements | ${total.statements.pct}% |
-            | Branches | ${total.branches.pct}% |
-            | Functions | ${total.functions.pct}% |
-            | Lines | ${total.lines.pct}% |
-            
-            [${status}] Coverage ${total.statements.pct >= 80 ? 'meets' : 'below'} 80% threshold`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              body: body
-            })

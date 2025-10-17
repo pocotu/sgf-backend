@@ -62,97 +62,6 @@ sgf-backend/
 └── README.md                     # Este archivo
 ```
 
-## Arquitectura Clean Architecture
-
-El proyecto sigue el patrón Clean Architecture con separación clara de responsabilidades:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    CLIENTE (Frontend React)                  │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ HTTP Request
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      src/server.js                           │
-│  • Inicia servidor Express                                   │
-│  • Escucha en puerto configurado                             │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                       src/app.js                             │
-│  • Middleware de seguridad (helmet, cors)                    │
-│  • Rate limiting                                             │
-│  • Parser de body JSON                                       │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ Route Handler
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   CAPA DE RUTAS (routes/)                    │
-│  • auth.routes.js                                            │
-│  • student.routes.js                                         │
-│  • course.routes.js                                          │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ Middleware Chain
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                CAPA DE MIDDLEWARE (middleware/)              │
-│  • authMiddleware.js      → Verifica JWT                     │
-│  • roleMiddleware.js      → Verifica permisos                │
-│  • validatorMiddleware.js → Valida datos                     │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ Validated Request
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│              CAPA DE CONTROLADORES (controllers/)            │
-│  • AuthController.js                                         │
-│  • StudentController.js                                      │
-│  • CourseController.js                                       │
-│                                                              │
-│  Responsabilidad:                                            │
-│  • Recibir request HTTP                                      │
-│  • Llamar al servicio correspondiente                        │
-│  • Formatear respuesta HTTP                                  │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ Business Logic Call
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                CAPA DE SERVICIOS (services/)                 │
-│  • AuthService.js                                            │
-│  • StudentService.js                                         │
-│  • GradeService.js                                           │
-│                                                              │
-│  Responsabilidad:                                            │
-│  • Lógica de negocio                                         │
-│  • Validaciones de reglas de negocio                         │
-│  • Orquestación de repositorios                              │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ Data Access Call
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│              CAPA DE REPOSITORIOS (repositories/)            │
-│  • UserRepository.js                                         │
-│  • StudentRepository.js                                      │
-│  • CourseRepository.js                                       │
-│                                                              │
-│  Responsabilidad:                                            │
-│  • Queries SQL                                               │
-│  • Acceso a base de datos                                    │
-│  • Mapeo de datos                                            │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ SQL Query
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   BASE DE DATOS MySQL 8.0                    │
-│                                                              │
-│  Tablas:                                                     │
-│  • USUARIOS        • GRUPOS                                  │
-│  • ESTUDIANTES     • MATRICULAS                              │
-│  • CURSOS          • ASISTENCIAS                             │
-│  • EVALUACIONES    • NOTAS                                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
 ## Modelo de Base de Datos
 
 ### Tablas Principales
@@ -226,8 +135,6 @@ npm run seed
 npm run prisma:studio
 ```
 
-> 📖 **Guía completa de Prisma:** Ver [PRISMA_SETUP.md](./PRISMA_SETUP.md)
-
 ## Ejecución
 
 ### Modo Desarrollo
@@ -256,35 +163,6 @@ npm run test:watch
 # Coverage report
 npm run test:coverage
 ```
-
-## 🚀 Deployment en Producción
-
-### Render (Recomendado)
-
-```bash
-# Ver guía rápida
-cat QUICK_DEPLOY.md
-
-# Ver guía completa
-cat DEPLOYMENT.md
-
-# Troubleshooting
-cat RENDER_TROUBLESHOOTING.md
-```
-
-**Pasos básicos:**
-1. Crear base de datos MySQL (Railway/PlanetScale)
-2. Crear Web Service en Render
-3. Configurar variables de entorno
-4. Deploy automático desde GitHub
-
-**Variables mínimas requeridas:**
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `JWT_REFRESH_SECRET`
-- `NODE_ENV=production`
-
-Ver `DEPLOYMENT.md` para instrucciones detalladas.
 
 ## API Endpoints
 
@@ -358,63 +236,6 @@ El sistema implementa autenticación JWT con 3 roles:
 - **Docente**: Gestión de grupos, asistencia y notas
 - **Estudiante**: Consulta de información personal
 
-### Ejemplo de uso
-
-```javascript
-// Headers requeridos
-Authorization: Bearer <token>
-```
-
-## Testing
-
-### Estructura de Tests
-
-```
-tests/
-├── unit/                    # Tests unitarios
-│   ├── services/
-│   ├── repositories/
-│   └── utils/
-├── integration/             # Tests de integración
-│   ├── auth.test.js
-│   ├── students.test.js
-│   └── courses.test.js
-└── fixtures/                # Datos de prueba
-```
-
-### Cobertura Objetivo
-
-- Statements: >80%
-- Branches: >75%
-- Functions: >80%
-- Lines: >80%
-
-## Scripts Disponibles
-
-### Servidor
-```bash
-npm start              # Iniciar servidor en producción
-npm run dev            # Iniciar servidor en desarrollo
-```
-
-### Testing
-```bash
-npm test               # Ejecutar tests
-npm run test:watch     # Tests en modo watch
-npm run test:coverage  # Generar reporte de cobertura
-```
-
-### Prisma
-```bash
-npm run migrate              # Crear y aplicar migración (desarrollo)
-npm run migrate:deploy       # Aplicar migraciones (producción)
-npm run migrate:reset        # Reset completo de BD
-npm run seed                 # Ejecutar seeders
-npm run prisma:generate      # Generar Prisma Client
-npm run prisma:studio        # Abrir Prisma Studio GUI
-npm run prisma:validate      # Validar schema.prisma
-```
-
 ### Code Quality
 ```bash
 npm run lint           # Ejecutar linter
@@ -423,35 +244,14 @@ npm run format         # Formatear código con Prettier
 npm run format:check   # Verificar formato sin modificar
 ```
 
-## 🚀 CI/CD - Protección del Repositorio
+## CI/CD - Protección del Repositorio
 
 El proyecto cuenta con protección automática del código mediante GitHub Actions.
 
-### ✅ Workflows Activos
+### Workflows Activos
 
-- ✅ **Lint**: Verifica código con ESLint y Prettier en cada PR
-- ✅ **Test**: Ejecuta tests con coverage en cada PR
-- ✅ **Branch Protection**: Requiere aprobación y checks pasando antes de merge
+- **Lint**: Verifica código con ESLint y Prettier en cada PR
+- **Test**: Ejecuta tests con coverage en cada PR
+- **Branch Protection**: Requiere aprobación y checks pasando antes de merge
 
-### 📊 Estado Actual
-
-- ✅ Linting: 0 errores
-- ✅ Tests: 4/4 pasando
-- ✅ Workflows: 2/2 funcionando
-
-### 🔒 Configurar Branch Protection
-
-Para activar la protección en GitHub:
-
-1. Ir a **Settings** → **Branches** → **Add rule**
-2. Branch name pattern: `main`
-3. Marcar:
-   - ✅ Require a pull request before merging
-   - ✅ Require approvals: 1
-   - ✅ Require status checks to pass before merging
-   - ✅ Status checks: `lint`, `test`
-   - ✅ Include administrators
-4. Save changes
-5. Repetir para branch `develop`
-
-**Resultado:** Nadie puede hacer push directo a `main` o `develop` sin PR aprobado y checks pasando.
+**Resultado:** Nadie puede hacer push directo a `main` sin PR aprobado y checks pasando.
