@@ -1,0 +1,219 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// ENUMS
+// ========================================
+
+enum Rol {
+  ADMIN
+  DOCENTE
+  ESTUDIANTE
+}
+
+enum Modalidad {
+  ORDINARIO
+  EXTRAORDINARIO
+  CEPRE
+}
+
+enum Area {
+  A // Ciencias Sociales
+  B // Ciencias Biomédicas
+  C // Ingenierías
+  D // Económico Empresariales
+}
+
+enum EstadoAsistencia {
+  PRESENTE
+  TARDANZA
+  AUSENTE
+}
+
+enum EstadoMatricula {
+  ACTIVA
+  INACTIVA
+  RETIRADA
+}
+
+// ========================================
+// MODELOS
+// ========================================
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  dni       String   @unique @db.VarChar(8)
+  correo    String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(255)
+  nombres   String   @db.VarChar(100)
+  apellidos String   @db.VarChar(100)
+  rol       Rol      @default(ESTUDIANTE)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  estudiante Estudiante?
+
+  @@index([dni])
+  @@index([correo])
+  @@index([rol])
+  @@map("usuarios")
+}
+
+model Estudiante {
+  id              Int        @id @default(autoincrement())
+  usuarioId       Int        @unique
+  codigoInterno   String     @unique @db.VarChar(20)
+  modalidad       Modalidad
+  fechaNacimiento DateTime?  @db.Date
+  telefono        String?    @db.VarChar(15)
+  direccion       String?    @db.VarChar(255)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relaciones
+  usuario    Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  matriculas Matricula[]
+  asistencias Asistencia[]
+  notas      Nota[]
+
+  @@index([codigoInterno])
+  @@index([modalidad])
+  @@map("estudiantes")
+}
+
+model Curso {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(100)
+  descripcion String?  @db.Text
+  area        Area
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  grupos Grupo[]
+  notas  Nota[]
+
+  @@index([area])
+  @@index([activo])
+  @@map("cursos")
+}
+
+model Grupo {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @db.VarChar(50)
+  cursoId     Int
+  modalidad   Modalidad
+  area        Area
+  horaInicio  String    @db.VarChar(5) // "08:00"
+  horaFin     String    @db.VarChar(5) // "10:00"
+  capacidad   Int       @default(30)
+  activo      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relaciones
+  curso       Curso        @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  matriculas  Matricula[]
+  asistencias Asistencia[]
+  evaluaciones Evaluacion[]
+
+  @@unique([area, modalidad, nombre])
+  @@index([modalidad])
+  @@index([area])
+  @@index([activo])
+  @@map("grupos")
+}
+
+model Matricula {
+  id           Int              @id @default(autoincrement())
+  estudianteId Int
+  grupoId      Int
+  estado       EstadoMatricula  @default(ACTIVA)
+  fechaInicio  DateTime         @default(now())
+  fechaFin     DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relaciones
+  estudiante Estudiante @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  grupo      Grupo      @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+
+  @@unique([estudianteId, grupoId])
+  @@index([estudianteId])
+  @@index([grupoId])
+  @@index([estado])
+  @@map("matriculas")
+}
+
+model Asistencia {
+  id           Int               @id @default(autoincrement())
+  estudianteId Int
+  grupoId      Int
+  fecha        DateTime          @db.Date
+  estado       EstadoAsistencia
+  observacion  String?           @db.Text
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  // Relaciones
+  estudiante Estudiante @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  grupo      Grupo      @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+
+  @@unique([estudianteId, grupoId, fecha])
+  @@index([estudianteId])
+  @@index([grupoId])
+  @@index([fecha])
+  @@map("asistencias")
+}
+
+model Evaluacion {
+  id          Int      @id @default(autoincrement())
+  grupoId     Int
+  nombre      String   @db.VarChar(100)
+  descripcion String?  @db.Text
+  fecha       DateTime @db.Date
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  grupo Grupo  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  notas Nota[]
+
+  @@index([grupoId])
+  @@index([fecha])
+  @@map("evaluaciones")
+}
+
+model Nota {
+  id           Int      @id @default(autoincrement())
+  estudianteId Int
+  evaluacionId Int
+  cursoId      Int
+  nota         Float    @db.Float // 0-20
+  observacion  String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relaciones
+  estudiante Estudiante @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  curso      Curso      @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+
+  @@unique([estudianteId, evaluacionId, cursoId])
+  @@index([estudianteId])
+  @@index([evaluacionId])
+  @@index([cursoId])
+  @@map("notas")
+}

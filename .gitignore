@@ -41,3 +41,8 @@ uploads/
 tmp/
 temp/
 *.tmp
+
+# Prisma
+.env
+prisma/migrations/**/migration.sql.bak
+node_modules/.prisma/

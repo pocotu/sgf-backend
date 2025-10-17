@@ -7,6 +7,7 @@
 - **Runtime:** Node.js 22+
 - **Framework:** Express.js 5.1
 - **Base de Datos:** MySQL 8.0
+- **ORM:** Prisma 6.0+
 - **Autenticación:** JWT (jsonwebtoken)
 - **Seguridad:** bcryptjs, helmet, cors
 - **Validación:** Joi
@@ -20,6 +21,7 @@
 sgf-backend/
 ├── src/                          # Código fuente principal
 │   ├── config/                   # Configuración del sistema
+│   │   └── database.js           # Prisma Client singleton
 │   │
 │   ├── routes/                   # Definición de rutas REST
 │   │
@@ -29,15 +31,18 @@ sgf-backend/
 │   │
 │   ├── services/                 # Lógica de negocio
 │   │
-│   ├── repositories/             # Acceso a datos
+│   ├── repositories/             # Acceso a datos (usando Prisma)
 │   │
 │   ├── models/                   # Modelos de datos
 │   ├── utils/                    # Utilidades
 │   ├── app.js                    # Configuración Express
 │   └── server.js                 # Punto de entrada del servidor
 │
-├── migrations/                   # Migraciones de BD
-├── seeders/                      # Datos iniciales
+├── prisma/                       # Prisma ORM
+│   ├── schema.prisma             # Definición del schema
+│   ├── migrations/               # Migraciones de BD
+│   └── seed.js                   # Datos iniciales
+│
 ├── scripts/                      # Scripts de utilidad
 ├── logs/                         # Archivos de logs
 │
@@ -53,6 +58,7 @@ sgf-backend/
 │
 ├── .env.example                  # Variables de entorno ejemplo
 ├── package.json                  # Dependencias
+├── PRISMA_SETUP.md               # Guía de setup Prisma
 └── README.md                     # Este archivo
 ```
 
@@ -183,17 +189,44 @@ cd sgf-backend
 npm install
 ```
 
-3. **Ejecutar migraciones**
+3. **Configurar variables de entorno**
+
+```bash
+cp .env.example .env
+# Editar .env con tus credenciales de MySQL
+```
+
+4. **Configurar Prisma**
+
+```bash
+# Inicializar Prisma (si no existe schema.prisma)
+npx prisma init
+
+# Generar Prisma Client
+npx prisma generate
+```
+
+5. **Ejecutar migraciones**
 
 ```bash
 npm run migrate
+# o para producción
+npm run migrate:deploy
 ```
 
-4. **Ejecutar seeders (opcional)**
+6. **Ejecutar seeders (opcional)**
 
 ```bash
 npm run seed
 ```
+
+7. **Verificar instalación con Prisma Studio**
+
+```bash
+npm run prisma:studio
+```
+
+> 📖 **Guía completa de Prisma:** Ver [PRISMA_SETUP.md](./PRISMA_SETUP.md)
 
 ## Ejecución
 
@@ -329,14 +362,32 @@ tests/
 
 ## Scripts Disponibles
 
+### Servidor
 ```bash
 npm start              # Iniciar servidor en producción
 npm run dev            # Iniciar servidor en desarrollo
+```
+
+### Testing
+```bash
 npm test               # Ejecutar tests
 npm run test:watch     # Tests en modo watch
 npm run test:coverage  # Generar reporte de cobertura
-npm run migrate        # Ejecutar migraciones
-npm run seed           # Ejecutar seeders
+```
+
+### Prisma
+```bash
+npm run migrate              # Crear y aplicar migración (desarrollo)
+npm run migrate:deploy       # Aplicar migraciones (producción)
+npm run migrate:reset        # Reset completo de BD
+npm run seed                 # Ejecutar seeders
+npm run prisma:generate      # Generar Prisma Client
+npm run prisma:studio        # Abrir Prisma Studio GUI
+npm run prisma:validate      # Validar schema.prisma
+```
+
+### Code Quality
+```bash
 npm run lint           # Ejecutar linter
 npm run lint:fix       # Arreglar errores de linting automáticamente
 npm run format         # Formatear código con Prettier
