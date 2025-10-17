@@ -13,4 +13,4 @@ jest.setTimeout(10000);
 // Add any global mocks here
 // jest.mock('../src/infrastructure/database/connection');
 
-console.log('🧪 Test environment initialized');
+console.log('Test environment initialized');

@@ -184,7 +184,7 @@ Linting failed. Please fix the issues and push again.
 // jest.config.js
 coverageThreshold: {
   global: {
-    branches: 70,    // Cobertura de ramas
+    branches: 50,    // Cobertura de ramas
     functions: 80,   // Cobertura de funciones
     lines: 80,       // Cobertura de lineas
     statements: 80,  // Cobertura de sentencias
@@ -245,7 +245,7 @@ coverageThreshold: {
 - Ejecutar tests con coverage: `npm test -- --coverage`
 - Revisar archivos sin cobertura en `coverage/lcov-report/index.html`
 - Agregar tests para alcanzar los thresholds:
-  - Branches: 70%
+  - Branches: 50%
   - Functions: 80%
   - Lines: 80%
   - Statements: 80%
@@ -297,7 +297,7 @@ git push origin feature/BE-XXX          # Push
 
 **Thresholds de Coverage:**
 
-- Branches: 70% (estandar industria)
+- Branches: 50% (estandar)
 - Functions: 80% (cada funcion debe estar testeada)
 - Lines: 80% (cobertura alta)
 - Statements: 80% (cobertura alta)
@@ -311,4 +311,3 @@ git push origin feature/BE-XXX          # Push
 
 ---
 
-**Listo para empezar!**

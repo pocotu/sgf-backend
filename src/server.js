@@ -1,5 +1,4 @@
 /**
- * Punto de entrada del servidor SGA-P Backend
  * Este archivo inicia el servidor Express configurado en app.js
  */
 
