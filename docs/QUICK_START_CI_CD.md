@@ -1,31 +1,31 @@
-# 🚀 Quick Start - Protección del Repositorio
+# Quick Start - Proteccion del Repositorio
 
-Guía rápida para configurar la protección del repositorio en 5 minutos.
+Guia rapida para configurar la proteccion del repositorio en 5 minutos.
 
-## 🎯 ¿Qué obtienes?
+## Que obtienes?
 
-- ✅ Lint automático en cada PR (ESLint + Prettier)
-- ✅ Tests automáticos en cada PR (Jest + MySQL)
-- ✅ Branch protection (requiere aprobación para merge)
-- ✅ No se puede mergear código con errores
-- ✅ Code review obligatorio
+- Lint automatico en cada PR (ESLint + Prettier)
+- Tests automaticos en cada PR (Jest + MySQL)
+- Branch protection (requiere aprobacion para merge)
+- No se puede mergear codigo con errores
+- Code review obligatorio
 
-## 📋 Configuración (5 minutos)
+## Configuracion (5 minutos)
 
 ### Paso 1: Configurar Branch Protection en GitHub
 
 ```bash
 1. Ir a tu repositorio en GitHub
-2. Settings → Branches → Add rule
+2. Settings -> Branches -> Add rule
 3. Branch name pattern: main
 4. Marcar:
-   ✅ Require a pull request before merging
-   ✅ Require approvals: 1
-   ✅ Require status checks to pass before merging
-   ✅ Status checks that are required:
+   [x] Require a pull request before merging
+   [x] Require approvals: 1
+   [x] Require status checks to pass before merging
+   [x] Status checks that are required:
       - lint
       - test
-   ✅ Include administrators
+   [x] Include administrators
 5. Save changes
 6. Repetir para branch: develop
 ```
@@ -41,14 +41,14 @@ git commit -m "test: verificar CI/CD"
 git push origin test/ci-cd
 
 # Ir a GitHub y crear un Pull Request hacia develop
-# Verificar que se ejecuten automáticamente:
-# 1. Backend Lint ✅
-# 2. Backend Tests ✅
+# Verificar que se ejecuten automaticamente:
+# 1. Backend Lint [PASS]
+# 2. Backend Tests [PASS]
 ```
 
-**✅ Listo!** Ahora tienes protección del repositorio funcionando.
+**Listo!** Ahora tienes proteccion del repositorio funcionando.
 
-## 🔄 Flujo de Trabajo
+## Flujo de Trabajo
 
 ### 1. Desarrollador crea feature branch
 
@@ -58,7 +58,7 @@ git pull origin develop
 git checkout -b feature/BE-XXX-descripcion
 ```
 
-### 2. Desarrolla código
+### 2. Desarrolla codigo
 
 ```bash
 # Hacer cambios
@@ -66,7 +66,7 @@ npm run lint        # Verificar estilo
 npm test            # Ejecutar tests
 
 git add .
-git commit -m "feat: descripción del cambio"
+git commit -m "feat: descripcion del cambio"
 git push origin feature/BE-XXX-descripcion
 ```
 
@@ -74,24 +74,24 @@ git push origin feature/BE-XXX-descripcion
 
 ```bash
 # En GitHub:
-1. Ir a Pull Requests → New Pull Request
-2. Base: develop ← Compare: feature/BE-XXX-descripcion
+1. Ir a Pull Requests -> New Pull Request
+2. Base: develop <- Compare: feature/BE-XXX-descripcion
 3. Crear PR
 
-# GitHub Actions ejecutará automáticamente:
-✅ Lint Workflow (1-2 min)
-✅ Test Workflow (3-5 min)
+# GitHub Actions ejecutara automaticamente:
+[RUNNING] Lint Workflow (1-2 min)
+[RUNNING] Test Workflow (3-5 min)
 ```
 
 ### 4. Code Review
 
 ```bash
-# Otro desarrollador revisa el código
+# Otro desarrollador revisa el codigo
 # Si hay cambios solicitados:
 - Hacer los cambios
 - git push (los workflows se ejecutan de nuevo)
 
-# Si todo está bien:
+# Si todo esta bien:
 - Reviewer aprueba el PR
 ```
 
@@ -100,25 +100,25 @@ git push origin feature/BE-XXX-descripcion
 ```bash
 # Una vez aprobado y con checks pasando:
 - Click en "Merge pull request"
-- El código se integra a develop
+- El codigo se integra a develop
 ```
 
-## 🚫 Qué NO se puede hacer
+## Que NO se puede hacer
 
-Con la protección activada:
+Con la proteccion activada:
 
-- ❌ Push directo a `main` o `develop`
-- ❌ Merge sin aprobación de reviewer
-- ❌ Merge con tests fallando
-- ❌ Merge con errores de linting
-- ❌ Bypass de protección (ni siquiera admins)
+- [x] Push directo a `main` o `develop`
+- [x] Merge sin aprobacion de reviewer
+- [x] Merge con tests fallando
+- [x] Merge con errores de linting
+- [x] Bypass de proteccion (ni siquiera admins)
 
-## ✅ Verificación
+## Verificacion
 
-Para verificar que la protección está activa:
+Para verificar que la proteccion esta activa:
 
 ```bash
-# Intentar push directo a develop (debería fallar)
+# Intentar push directo a develop (deberia fallar)
 git checkout develop
 echo "test" >> README.md
 git add README.md
@@ -126,10 +126,10 @@ git commit -m "test"
 git push origin develop
 
 # Resultado esperado:
-# ❌ Error: protected branch hook declined
+# [FAIL] Error: protected branch hook declined
 ```
 
-## 📊 Workflows Disponibles
+## Workflows Disponibles
 
 ### 1. Lint Workflow
 
@@ -142,14 +142,19 @@ git push origin develop
 
 **Acciones:**
 
-1. Checkout código
+1. Checkout codigo
 2. Setup Node.js 22
 3. Instalar dependencias (`npm ci`)
 4. Ejecutar ESLint (`npm run lint`)
 5. Verificar formato Prettier (`npm run format:check`)
-6. Comentar en PR si falla
+6. Comentar en PR si falla (texto ASCII puro)
 
 **Tiempo:** 1-2 minutos
+
+**Mensaje de error en PR:**
+```
+Linting failed. Please fix the issues and push again.
+```
 
 ### 2. Test Workflow
 
@@ -162,35 +167,71 @@ git push origin develop
 
 **Acciones:**
 
-1. Checkout código
+1. Checkout codigo
 2. Setup Node.js 22
 3. Levantar MySQL 8.0 en contenedor Docker
 4. Instalar dependencias (`npm ci`)
-5. Ejecutar migraciones (`npm run migrate`)
-6. Ejecutar tests con coverage (`npm test -- --coverage`)
-7. Subir coverage a Codecov (opcional)
-8. Comentar coverage en PR
+5. Esperar a que MySQL este listo (health check)
+6. Ejecutar migraciones (`npm run migrate`)
+7. Ejecutar tests con coverage (`npm test -- --coverage --verbose`)
+8. Subir coverage a Codecov (opcional)
+9. Comentar coverage en PR (formato tabla ASCII)
 
 **Tiempo:** 3-5 minutos
 
-## 🆘 Troubleshooting
+**Configuracion de Jest:**
+```javascript
+// jest.config.js
+coverageThreshold: {
+  global: {
+    branches: 70,    // Cobertura de ramas
+    functions: 80,   // Cobertura de funciones
+    lines: 80,       // Cobertura de lineas
+    statements: 80,  // Cobertura de sentencias
+  }
+}
+
+// Archivos excluidos del coverage:
+- src/server.js (bootstrapping)
+- src/app.js (configuracion de middleware)
+- src/config/** (configuracion estatica)
+- src/infrastructure/database/migrations/** (scripts de BD)
+- src/infrastructure/database/seeders/** (scripts de BD)
+```
+
+**Mensaje de coverage en PR:**
+```
+## Test Coverage Report
+
+| Metric | Coverage |
+|--------|----------|
+| Statements | XX.XX% |
+| Branches | XX.XX% |
+| Functions | XX.XX% |
+| Lines | XX.XX% |
+
+[PASS/WARN] Coverage meets/below 80% threshold
+```
+
+## Troubleshooting
 
 ### "Workflow not found"
 
-- Verificar que los archivos estén en `.github/workflows/`
-- Verificar que tengan extensión `.yml`
+- Verificar que los archivos esten en `.github/workflows/`
+- Verificar que tengan extension `.yml`
 - Hacer push de los archivos al repositorio
 
 ### "Status check not found"
 
 - Esperar a que los workflows se ejecuten al menos una vez
-- Luego aparecerán en la lista de status checks
+- Luego apareceran en la lista de status checks
 
 ### "Tests failed"
 
 - Ejecutar tests localmente: `npm test`
-- Verificar que todas las dependencias estén instaladas
+- Verificar que todas las dependencias esten instaladas
 - Revisar los logs en GitHub Actions
+- Verificar que MySQL este corriendo (el workflow usa MySQL 8.0)
 
 ### "Linting failed"
 
@@ -199,16 +240,26 @@ git push origin develop
 - Verificar formato: `npm run format:check`
 - Arreglar formato: `npm run format`
 
-## 📚 Comandos Útiles
+### "Coverage below threshold"
+
+- Ejecutar tests con coverage: `npm test -- --coverage`
+- Revisar archivos sin cobertura en `coverage/lcov-report/index.html`
+- Agregar tests para alcanzar los thresholds:
+  - Branches: 70%
+  - Functions: 80%
+  - Lines: 80%
+  - Statements: 80%
+
+## Comandos Utiles
 
 ```bash
-# Verificar código localmente antes de push
+# Verificar codigo localmente antes de push
 npm run lint              # Verificar estilo
-npm run lint:fix          # Arreglar automáticamente
-npm run format            # Formatear código
+npm run lint:fix          # Arreglar automaticamente
+npm run format            # Formatear codigo
 npm run format:check      # Verificar formato
 npm test                  # Ejecutar tests
-npm run test:coverage     # Tests con coverage
+npm test -- --coverage    # Tests con coverage
 
 # Git workflow
 git checkout develop                    # Ir a develop
@@ -216,34 +267,48 @@ git pull origin develop                 # Actualizar
 git checkout -b feature/BE-XXX          # Crear feature
 # ... hacer cambios ...
 git add .                               # Agregar cambios
-git commit -m "feat: descripción"       # Commit
+git commit -m "feat: descripcion"       # Commit
 git push origin feature/BE-XXX          # Push
 # ... crear PR en GitHub ...
 ```
 
-## 🎯 Resumen
+## Resumen
 
-**Configuración:**
+**Configuracion:**
 
-- ⏱️ Tiempo: 5 minutos
-- 📝 Pasos: 2 (Branch protection + Verificación)
-- 💰 Costo: $0 (GitHub Actions gratis)
+- Tiempo: 5 minutos
+- Pasos: 2 (Branch protection + Verificacion)
+- Costo: $0 (GitHub Actions gratis para repos publicos)
 
 **Beneficios:**
 
-- ✅ Código siempre revisado
-- ✅ Tests siempre pasando
-- ✅ Estilo de código consistente
-- ✅ Menos bugs en producción
-- ✅ Mejor calidad de código
+- Codigo siempre revisado
+- Tests siempre pasando
+- Estilo de codigo consistente
+- Menos bugs en produccion
+- Mejor calidad de codigo
 
 **Resultado:**
 
-- 🔒 Repositorio protegido
-- 🚫 No se puede mergear código malo
-- ✅ Code review obligatorio
-- 📊 Coverage tracking automático
+- Repositorio protegido
+- No se puede mergear codigo malo
+- Code review obligatorio
+- Coverage tracking automatico
+
+**Thresholds de Coverage:**
+
+- Branches: 70% (estandar industria)
+- Functions: 80% (cada funcion debe estar testeada)
+- Lines: 80% (cobertura alta)
+- Statements: 80% (cobertura alta)
+
+**Archivos excluidos del coverage:**
+
+- server.js - Solo bootstrapping
+- app.js - Solo configuracion de middleware
+- config/** - Configuracion estatica
+- migrations/** y seeders/** - Scripts de BD
 
 ---
 
-**¡Listo para empezar! 🚀**
+**Listo para empezar!**
