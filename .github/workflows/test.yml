@@ -88,7 +88,8 @@ jobs:
             const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
             const total = coverage.total;
             
-            const body = `## 📊 Test Coverage Report
+            const status = total.statements.pct >= 80 ? 'PASS' : 'WARN';
+            const body = `## Test Coverage Report
             
             | Metric | Coverage |
             |--------|----------|
@@ -97,7 +98,7 @@ jobs:
             | Functions | ${total.functions.pct}% |
             | Lines | ${total.lines.pct}% |
             
-            ${total.statements.pct >= 80 ? '✅' : '⚠️'} Coverage ${total.statements.pct >= 80 ? 'meets' : 'below'} 80% threshold`;
+            [${status}] Coverage ${total.statements.pct >= 80 ? 'meets' : 'below'} 80% threshold`;
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
