@@ -15,7 +15,7 @@ if (require.main === module) {
     const nodeEnv = process.env.NODE_ENV || 'development';
 
     if (nodeEnv === 'production') {
-      console.log('[OK] Server started successfully');
+      console.log('[OK] El servidor se ha iniciado correctamente.');
     } else {
       console.log('================================================================');
       console.log('   SGA-P Backend - Sistema de Gestion Academias              ');
