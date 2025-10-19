@@ -7,6 +7,12 @@
 const fs = require('fs');
 const path = require('path');
 
+// Skip check in CI/CD environments
+if (process.env.CI || process.env.GITHUB_ACTIONS) {
+  console.log('[CHECK] CI/CD detected, skipping .env.test check\n');
+  process.exit(0);
+}
+
 const envTestPath = path.join(__dirname, '..', '.env.test');
 
 console.log('[CHECK] Verificando configuracion de testing...\n');
