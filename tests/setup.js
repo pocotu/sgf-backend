@@ -1,11 +1,11 @@
 // Test setup file for Jest
 // Global test configurations and mocks
 
-// Mock environment variables for testing
+// Load test environment variables
+require('dotenv').config({ path: '.env.test' });
+
+// Ensure NODE_ENV is set to test
 process.env.NODE_ENV = 'test';
-process.env.JWT_SECRET = 'test-jwt-secret-key-minimum-32-characters';
-process.env.JWT_EXPIRES_IN = '1h';
-process.env.BCRYPT_SALT_ROUNDS = '10';
 
 // Global test timeout
 jest.setTimeout(10000);
@@ -14,3 +14,4 @@ jest.setTimeout(10000);
 // jest.mock('../src/infrastructure/database/connection');
 
 console.log('Test environment initialized');
+console.log('Database:', process.env.DATABASE_URL?.replace(/:[^:@]+@/, ':****@'));

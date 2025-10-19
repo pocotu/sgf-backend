@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,9 +7,159 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ========================================
-// ENUMS
-// ========================================
+model Usuario {
+  usuarioId          Int           @id @default(autoincrement()) @map("usuario_id")
+  dni                String        @unique @db.VarChar(8)
+  correo             String        @unique @db.VarChar(100)
+  contrasenaHash     String        @map("contrasena_hash") @db.VarChar(255)
+  rol                Rol
+  nombres            String        @db.VarChar(100)
+  apellidos          String        @db.VarChar(100)
+  telefono           String?       @db.VarChar(15)
+  fechaCreacion      DateTime      @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime      @updatedAt @map("fecha_actualizacion")
+  estado             EstadoUsuario @default(activo)
+  estudiante         Estudiante?
+
+  @@index([dni], map: "idx_usuarios_dni")
+  @@index([correo], map: "idx_usuarios_correo")
+  @@index([rol], map: "idx_usuarios_rol")
+  @@index([estado], map: "idx_usuarios_estado")
+  @@map("usuarios")
+}
+
+model Estudiante {
+  estudianteId       Int          @id @default(autoincrement()) @map("estudiante_id")
+  usuarioId          Int          @unique @map("usuario_id")
+  codigoInterno      String       @unique @map("codigo_interno") @db.VarChar(20)
+  modalidad          Modalidad
+  fechaCreacion      DateTime     @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime     @updatedAt @map("fecha_actualizacion")
+  asistencias        Asistencia[]
+  usuario            Usuario      @relation(fields: [usuarioId], references: [usuarioId], onDelete: Cascade)
+  matriculas         Matricula[]
+  notas              Nota[]
+
+  @@index([codigoInterno], map: "idx_estudiantes_codigo")
+  @@index([modalidad], map: "idx_modalidad")
+  @@map("estudiantes")
+}
+
+model Curso {
+  cursoId       Int         @id @default(autoincrement()) @map("curso_id")
+  nombre        String      @db.VarChar(100)
+  area          Area
+  descripcion   String?     @db.Text
+  fechaCreacion DateTime    @default(now()) @map("fecha_creacion")
+  estado        EstadoCurso @default(activo)
+  notas         Nota[]
+
+  @@index([area], map: "idx_area")
+  @@index([estado], map: "idx_estado")
+  @@map("cursos")
+}
+
+model Grupo {
+  grupoId            Int          @id @default(autoincrement()) @map("grupo_id")
+  area               Area
+  modalidad          Modalidad
+  nombreGrupo        String       @map("nombre_grupo") @db.VarChar(50)
+  dias               String       @db.VarChar(50)
+  horaInicio         DateTime     @map("hora_inicio") @db.Time(0)
+  horaFin            DateTime     @map("hora_fin") @db.Time(0)
+  capacidad          Int          @default(30)
+  estado             EstadoGrupo  @default(ACTIVO)
+  fechaCreacion      DateTime     @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime     @updatedAt @map("fecha_actualizacion")
+  asistencias        Asistencia[]
+  evaluaciones       Evaluacion[]
+  matriculas         Matricula[]
+
+  @@unique([area, modalidad, nombreGrupo], map: "uk_grupo_unico")
+  @@index([area, modalidad], map: "idx_area_modalidad")
+  @@index([estado], map: "idx_estado")
+  @@map("grupos")
+}
+
+model Matricula {
+  matriculaId        Int             @id @default(autoincrement()) @map("matricula_id")
+  estudianteId       Int             @map("estudiante_id")
+  grupoId            Int             @map("grupo_id")
+  fechaMatricula     DateTime        @map("fecha_matricula") @db.Date
+  montoPagado        Decimal         @map("monto_pagado") @db.Decimal(10, 2)
+  estado             EstadoMatricula @default(MATRICULADO)
+  fechaRetiro        DateTime?       @map("fecha_retiro") @db.Date
+  motivoRetiro       String?         @map("motivo_retiro") @db.Text
+  fechaCreacion      DateTime        @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime        @updatedAt @map("fecha_actualizacion")
+  estudiante         Estudiante      @relation(fields: [estudianteId], references: [estudianteId], onDelete: Cascade)
+  grupo              Grupo           @relation(fields: [grupoId], references: [grupoId], onDelete: Cascade)
+
+  @@index([estudianteId], map: "idx_estudiante")
+  @@index([grupoId], map: "idx_grupo")
+  @@index([fechaMatricula], map: "idx_fecha_matricula")
+  @@index([estado], map: "idx_estado")
+  @@map("matriculas")
+}
+
+model Asistencia {
+  asistenciaId  Int              @id @default(autoincrement()) @map("asistencia_id")
+  estudianteId  Int              @map("estudiante_id")
+  grupoId       Int              @map("grupo_id")
+  fechaClase    DateTime         @map("fecha_clase") @db.Date
+  estado        EstadoAsistencia
+  horaRegistro  DateTime?        @map("hora_registro") @db.Time(0)
+  observaciones String?          @db.Text
+  fechaCreacion DateTime         @default(now()) @map("fecha_creacion")
+  estudiante    Estudiante       @relation(fields: [estudianteId], references: [estudianteId], onDelete: Cascade)
+  grupo         Grupo            @relation(fields: [grupoId], references: [grupoId], onDelete: Cascade)
+
+  @@unique([estudianteId, grupoId, fechaClase], map: "uk_asistencia_diaria")
+  @@index([fechaClase], map: "idx_fecha_clase")
+  @@index([estudianteId, fechaClase], map: "idx_estudiante_fecha")
+  @@index([grupoId, fechaClase], map: "idx_grupo_fecha")
+  @@map("asistencias")
+}
+
+model Evaluacion {
+  evaluacionId       Int              @id @default(autoincrement()) @map("evaluacion_id")
+  grupoId            Int              @map("grupo_id")
+  numeroSemana       Int              @map("numero_semana")
+  fechaEvaluacion    DateTime         @map("fecha_evaluacion") @db.Date
+  descripcion        String?          @db.VarChar(200)
+  duracionMinutos    Int              @default(120) @map("duracion_minutos")
+  estado             EstadoEvaluacion @default(PROGRAMADA)
+  fechaCreacion      DateTime         @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime         @updatedAt @map("fecha_actualizacion")
+  grupo              Grupo            @relation(fields: [grupoId], references: [grupoId], onDelete: Cascade)
+  notas              Nota[]
+
+  @@index([grupoId, fechaEvaluacion], map: "idx_grupo_fecha")
+  @@index([numeroSemana], map: "idx_numero_semana")
+  @@index([estado], map: "idx_estado")
+  @@map("evaluaciones")
+}
+
+model Nota {
+  notaId             Int        @id @default(autoincrement()) @map("nota_id")
+  evaluacionId       Int        @map("evaluacion_id")
+  estudianteId       Int        @map("estudiante_id")
+  cursoId            Int        @map("curso_id")
+  nota               Decimal    @db.Decimal(4, 2)
+  observaciones      String?    @db.Text
+  fechaCreacion      DateTime   @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime   @updatedAt @map("fecha_actualizacion")
+  curso              Curso      @relation(fields: [cursoId], references: [cursoId], onDelete: Cascade)
+  estudiante         Estudiante @relation(fields: [estudianteId], references: [estudianteId], onDelete: Cascade)
+  evaluacion         Evaluacion @relation(fields: [evaluacionId], references: [evaluacionId], onDelete: Cascade)
+
+  @@unique([evaluacionId, estudianteId, cursoId], map: "uk_nota_unica")
+  @@index([evaluacionId], map: "idx_evaluacion")
+  @@index([estudianteId], map: "idx_estudiante")
+  @@index([cursoId], map: "idx_curso")
+  @@index([nota], map: "idx_nota")
+  @@map("notas")
+}
 
 enum Rol {
   admin
@@ -27,10 +174,10 @@ enum Modalidad {
 }
 
 enum Area {
-  A // Ciencias Sociales
-  B // Ciencias Biomédicas
-  C // Ingenierías
-  D // Económico Empresariales
+  A
+  B
+  C
+  D
 }
 
 enum EstadoAsistencia {
@@ -64,178 +211,4 @@ enum EstadoEvaluacion {
   EN_CURSO
   FINALIZADA
   CANCELADA
-}
-
-// ========================================
-// MODELOS
-// ========================================
-
-model Usuario {
-  usuarioId            Int            @id @default(autoincrement()) @map("usuario_id")
-  dni                  String         @unique @db.VarChar(8)
-  correo               String         @unique @db.VarChar(100)
-  contrasenaHash       String         @map("contrasena_hash") @db.VarChar(255)
-  rol                  Rol
-  nombres              String         @db.VarChar(100)
-  apellidos            String         @db.VarChar(100)
-  telefono             String?        @db.VarChar(15)
-  fechaCreacion        DateTime       @default(now()) @map("fecha_creacion")
-  fechaActualizacion   DateTime       @updatedAt @map("fecha_actualizacion")
-  estado               EstadoUsuario  @default(activo)
-
-  // Relaciones
-  estudiante Estudiante?
-
-  @@index([dni], map: "idx_usuarios_dni")
-  @@index([correo], map: "idx_usuarios_correo")
-  @@index([rol], map: "idx_usuarios_rol")
-  @@index([estado], map: "idx_usuarios_estado")
-  @@map("usuarios")
-}
-
-model Estudiante {
-  estudianteId       Int        @id @default(autoincrement()) @map("estudiante_id")
-  usuarioId          Int        @unique @map("usuario_id")
-  codigoInterno      String     @unique @map("codigo_interno") @db.VarChar(20)
-  modalidad          Modalidad
-  fechaCreacion      DateTime   @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime   @updatedAt @map("fecha_actualizacion")
-
-  // Relaciones
-  usuario     Usuario       @relation(fields: [usuarioId], references: [usuarioId], onDelete: Cascade)
-  matriculas  Matricula[]
-  asistencias Asistencia[]
-  notas       Nota[]
-
-  @@index([codigoInterno], map: "idx_estudiantes_codigo")
-  @@index([modalidad], map: "idx_modalidad")
-  @@map("estudiantes")
-}
-
-model Curso {
-  cursoId       Int          @id @default(autoincrement()) @map("curso_id")
-  nombre        String       @db.VarChar(100)
-  area          Area
-  descripcion   String?      @db.Text
-  fechaCreacion DateTime     @default(now()) @map("fecha_creacion")
-  estado        EstadoCurso  @default(activo)
-
-  // Relaciones
-  notas Nota[]
-
-  @@index([area], map: "idx_area")
-  @@index([estado], map: "idx_estado")
-  @@map("cursos")
-}
-
-model Grupo {
-  grupoId            Int          @id @default(autoincrement()) @map("grupo_id")
-  area               Area
-  modalidad          Modalidad
-  nombreGrupo        String       @map("nombre_grupo") @db.VarChar(50)
-  dias               String       @db.VarChar(50) // "L-M-Mi-J-V-S"
-  horaInicio         DateTime     @map("hora_inicio") @db.Time()
-  horaFin            DateTime     @map("hora_fin") @db.Time()
-  capacidad          Int          @default(30)
-  estado             EstadoGrupo  @default(ACTIVO)
-  fechaCreacion      DateTime     @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime     @updatedAt @map("fecha_actualizacion")
-
-  // Relaciones
-  matriculas   Matricula[]
-  asistencias  Asistencia[]
-  evaluaciones Evaluacion[]
-
-  @@unique([area, modalidad, nombreGrupo], map: "uk_grupo_unico")
-  @@index([area, modalidad], map: "idx_area_modalidad")
-  @@index([estado], map: "idx_estado")
-  @@map("grupos")
-}
-
-model Matricula {
-  matriculaId        Int              @id @default(autoincrement()) @map("matricula_id")
-  estudianteId       Int              @map("estudiante_id")
-  grupoId            Int              @map("grupo_id")
-  fechaMatricula     DateTime         @default(now()) @map("fecha_matricula") @db.Date
-  montoPagado        Decimal          @map("monto_pagado") @db.Decimal(10, 2)
-  estado             EstadoMatricula  @default(MATRICULADO)
-  fechaRetiro        DateTime?        @map("fecha_retiro") @db.Date
-  motivoRetiro       String?          @map("motivo_retiro") @db.Text
-  fechaCreacion      DateTime         @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime         @updatedAt @map("fecha_actualizacion")
-
-  // Relaciones
-  estudiante Estudiante @relation(fields: [estudianteId], references: [estudianteId], onDelete: Cascade)
-  grupo      Grupo      @relation(fields: [grupoId], references: [grupoId], onDelete: Cascade)
-
-  @@index([estudianteId], map: "idx_estudiante")
-  @@index([grupoId], map: "idx_grupo")
-  @@index([fechaMatricula], map: "idx_fecha_matricula")
-  @@index([estado], map: "idx_estado")
-  @@map("matriculas")
-}
-
-model Asistencia {
-  asistenciaId  Int               @id @default(autoincrement()) @map("asistencia_id")
-  estudianteId  Int               @map("estudiante_id")
-  grupoId       Int               @map("grupo_id")
-  fechaClase    DateTime          @map("fecha_clase") @db.Date
-  estado        EstadoAsistencia
-  horaRegistro  DateTime?         @map("hora_registro") @db.Time()
-  observaciones String?           @db.Text
-  fechaCreacion DateTime          @default(now()) @map("fecha_creacion")
-
-  // Relaciones
-  estudiante Estudiante @relation(fields: [estudianteId], references: [estudianteId], onDelete: Cascade)
-  grupo      Grupo      @relation(fields: [grupoId], references: [grupoId], onDelete: Cascade)
-
-  @@unique([estudianteId, grupoId, fechaClase], map: "uk_asistencia_diaria")
-  @@index([fechaClase], map: "idx_fecha_clase")
-  @@index([estudianteId, fechaClase], map: "idx_estudiante_fecha")
-  @@index([grupoId, fechaClase], map: "idx_grupo_fecha")
-  @@map("asistencias")
-}
-
-model Evaluacion {
-  evaluacionId       Int               @id @default(autoincrement()) @map("evaluacion_id")
-  grupoId            Int               @map("grupo_id")
-  numeroSemana       Int               @map("numero_semana")
-  fechaEvaluacion    DateTime          @map("fecha_evaluacion") @db.Date
-  descripcion        String?           @db.VarChar(200)
-  duracionMinutos    Int               @default(120) @map("duracion_minutos")
-  estado             EstadoEvaluacion  @default(PROGRAMADA)
-  fechaCreacion      DateTime          @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime          @updatedAt @map("fecha_actualizacion")
-
-  // Relaciones
-  grupo Grupo  @relation(fields: [grupoId], references: [grupoId], onDelete: Cascade)
-  notas Nota[]
-
-  @@index([grupoId, fechaEvaluacion], map: "idx_grupo_fecha")
-  @@index([numeroSemana], map: "idx_numero_semana")
-  @@index([estado], map: "idx_estado")
-  @@map("evaluaciones")
-}
-
-model Nota {
-  notaId             Int      @id @default(autoincrement()) @map("nota_id")
-  evaluacionId       Int      @map("evaluacion_id")
-  estudianteId       Int      @map("estudiante_id")
-  cursoId            Int      @map("curso_id")
-  nota               Decimal  @db.Decimal(4, 2) // 0-20
-  observaciones      String?  @db.Text
-  fechaCreacion      DateTime @default(now()) @map("fecha_creacion")
-  fechaActualizacion DateTime @updatedAt @map("fecha_actualizacion")
-
-  // Relaciones
-  estudiante Estudiante @relation(fields: [estudianteId], references: [estudianteId], onDelete: Cascade)
-  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [evaluacionId], onDelete: Cascade)
-  curso      Curso      @relation(fields: [cursoId], references: [cursoId], onDelete: Cascade)
-
-  @@unique([evaluacionId, estudianteId, cursoId], map: "uk_nota_unica")
-  @@index([evaluacionId], map: "idx_evaluacion")
-  @@index([estudianteId], map: "idx_estudiante")
-  @@index([cursoId], map: "idx_curso")
-  @@index([nota], map: "idx_nota")
-  @@map("notas")
 }

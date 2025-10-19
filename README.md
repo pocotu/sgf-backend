@@ -153,6 +153,22 @@ npm start
 
 ### Ejecutar Tests
 
+**⚠️ IMPORTANTE:** Los tests usan una base de datos separada (`academias_db_test`)
+
+#### Primera vez - Configurar entorno de testing
+
+```bash
+# 1. Copiar archivo de configuración
+cp .env.test.example .env.test
+
+# 2. Editar .env.test y cambiar 'your_password' por tu password de MySQL
+
+# 3. Configurar BD de test (Prisma la crea automáticamente)
+npm run test:setup
+```
+
+#### Ejecutar tests
+
 ```bash
 # Todos los tests
 npm test
@@ -162,7 +178,14 @@ npm run test:watch
 
 # Coverage report
 npm run test:coverage
+
+# Resetear BD de test
+npm run test:reset
 ```
+
+**Nota:** El archivo `.env.test` NO se sube a Git (contiene credenciales). Solo se sube `.env.test.example` como plantilla.
+
+Ver `tests/README.md` para documentación completa de testing.
 
 ## API Endpoints
 

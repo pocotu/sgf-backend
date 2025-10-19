@@ -9,9 +9,12 @@
     "build": "npx prisma generate",
     "postinstall": "npx prisma generate",
     "deploy": "npx prisma migrate deploy && npx prisma generate",
+    "pretest": "node scripts/check-test-env.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:setup": "node scripts/setup-test-db.js",
+    "test:reset": "dotenv -e .env.test -- npx prisma migrate reset --force",
     "migrate": "npx prisma migrate dev",
     "migrate:deploy": "npx prisma migrate deploy",
     "migrate:reset": "npx prisma migrate reset",
@@ -22,7 +25,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{js,json}\"",
-    "format:check": "prettier --check \"**/*.{js,json}\""
+    "format:check": "prettier --check \"**/*.{js,json}\"",
+    "ci": "npm run lint && npm run format:check && npm run build && npm run test:coverage",
+    "ci:local": "npm run lint && npm run format:check && npx prisma validate && npm run build && npm test"
   },
   "keywords": [
     "sga-p",
@@ -50,6 +55,7 @@
     "winston": "^3.18.3"
   },
   "devDependencies": {
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.4.0",
