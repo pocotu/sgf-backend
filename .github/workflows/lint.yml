@@ -33,6 +33,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
       
+      - name: Build application
+        run: npm run build
+      
       - name: Run ESLint
         run: npm run lint
       

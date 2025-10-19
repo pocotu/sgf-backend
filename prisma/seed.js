@@ -12,17 +12,17 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando seeding de la base de datos...\n');
+  console.log('[SEED] Iniciando seeding de la base de datos...\n');
 
   // Limpiar datos existentes (opcional, comentar si no deseas limpiar)
-  console.log('🗑️  Limpiando datos existentes...');
+  console.log('[SEED] Limpiando datos existentes...');
   // await prisma.usuario.deleteMany();
-  // console.log('✅ Datos limpiados\n');
+  // console.log('[SEED] Datos limpiados\n');
 
   // ========================================
   // USUARIOS
   // ========================================
-  console.log('👥 Creando usuarios...');
+  console.log('[SEED] Creando usuarios...');
 
   const adminPassword = await bcrypt.hash('admin123', 10);
   const docentePassword = await bcrypt.hash('docente123', 10);
@@ -42,7 +42,7 @@ async function main() {
       telefono: '987654321',
     },
   });
-  console.log('  ✅ Admin creado:', admin.correo);
+  console.log('  [OK] Admin creado:', admin.correo);
 
   // Usuario Docente
   const docente = await prisma.usuario.upsert({
@@ -58,7 +58,7 @@ async function main() {
       telefono: '987654322',
     },
   });
-  console.log('  ✅ Docente creado:', docente.correo);
+  console.log('  [OK] Docente creado:', docente.correo);
 
   // Usuario Estudiante
   const estudiante = await prisma.usuario.upsert({
@@ -74,14 +74,14 @@ async function main() {
       telefono: '987654323',
     },
   });
-  console.log('  ✅ Estudiante creado:', estudiante.correo);
+  console.log('  [OK] Estudiante creado:', estudiante.correo);
 
-  console.log('\n✅ Seeding completado exitosamente!\n');
+  console.log('\n[SEED] Seeding completado exitosamente!\n');
 
   // Mostrar resumen
-  console.log('📊 Resumen:');
+  console.log('[SUMMARY] Resumen:');
   console.log('  - Usuarios creados: 3');
-  console.log('\n🔐 Credenciales de prueba:');
+  console.log('\n[CREDENTIALS] Credenciales de prueba:');
   console.log('  Admin:      DNI: 12345678 | Password: admin123');
   console.log('  Docente:    DNI: 23456789 | Password: docente123');
   console.log('  Estudiante: DNI: 34567890 | Password: estudiante123');
@@ -90,7 +90,7 @@ async function main() {
 
 main()
   .catch(e => {
-    console.error('❌ Error durante el seeding:');
+    console.error('[ERROR] Error durante el seeding:');
     console.error(e);
     process.exit(1);
   })
