@@ -75,14 +75,6 @@ sgf-backend/
 7. **EVALUACIONES**: Simulacros semanales estilo UNSAAC
 8. **NOTAS**: Calificaciones por curso (escala 0-20)
 
-## Instalación y Configuración
-
-### Requisitos Previos
-
-- Node.js 22+ instalado
-- MySQL 8.0+ instalado y ejecutándose
-- npm o yarn como gestor de paquetes
-
 ### Pasos de Instalación
 
 1. **Clonar el repositorio**
@@ -151,10 +143,6 @@ Servidor con hot reload en `http://localhost:3000`
 npm start
 ```
 
-### Ejecutar Tests
-
-**⚠️ IMPORTANTE:** Los tests usan una base de datos separada (`academias_db_test`)
-
 #### Primera vez - Configurar entorno de testing
 
 ```bash
@@ -182,10 +170,6 @@ npm run test:coverage
 # Resetear BD de test
 npm run test:reset
 ```
-
-**Nota:** El archivo `.env.test` NO se sube a Git (contiene credenciales). Solo se sube `.env.test.example` como plantilla.
-
-Ver `tests/README.md` para documentación completa de testing.
 
 ## API Endpoints
 
@@ -267,14 +251,4 @@ npm run format         # Formatear código con Prettier
 npm run format:check   # Verificar formato sin modificar
 ```
 
-## CI/CD - Protección del Repositorio
-
-El proyecto cuenta con protección automática del código mediante GitHub Actions.
-
-### Workflows Activos
-
-- **Lint**: Verifica código con ESLint y Prettier en cada PR
-- **Test**: Ejecuta tests con coverage en cada PR
-- **Branch Protection**: Requiere aprobación y checks pasando antes de merge
-
-**Resultado:** Nadie puede hacer push directo a `main` sin PR aprobado y checks pasando.
+**Importante:** Nadie puede hacer push directo a `main` sin PR aprobado y checks pasando.
