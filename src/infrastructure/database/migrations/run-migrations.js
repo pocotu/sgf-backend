@@ -10,8 +10,10 @@ function runMigrations() {
   console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Base de datos: ${process.env.DB_NAME || 'academias_db'}`);
 
-  // TODO: Implementar lógica de migraciones
-  // Por ahora, solo simula la ejecución exitosa
+  /*
+   * TODO: Implementar lógica de migraciones
+   * Por ahora, solo simula la ejecución exitosa
+   */
 
   console.log('✅ Migraciones ejecutadas exitosamente');
   process.exit(0);

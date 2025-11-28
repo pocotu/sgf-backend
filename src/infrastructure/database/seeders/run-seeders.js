@@ -10,8 +10,10 @@ function runSeeders() {
   console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Base de datos: ${process.env.DB_NAME || 'academias_db'}`);
 
-  // TODO: Implementar lógica de seeders
-  // Por ahora, solo simula la ejecución exitosa
+  /*
+   * TODO: Implementar lógica de seeders
+   * Por ahora, solo simula la ejecución exitosa
+   */
 
   console.log('✅ Seeders ejecutados exitosamente');
   process.exit(0);

@@ -3,12 +3,23 @@ name: Backend Tests
 on:
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'sgf-backend/**'
+      - '.github/workflows/test.yml'
   push:
     branches: [main, develop]
+    paths:
+      - 'sgf-backend/**'
+      - '.github/workflows/test.yml'
 
 jobs:
   test:
+    name: Unit & Integration Tests
     runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./sgf-backend
     
     services:
       mysql:
@@ -33,18 +44,20 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: sgf-backend/package-lock.json
       
       - name: Install dependencies
         run: npm ci
       
       - name: Wait for MySQL
         run: |
+          echo "Esperando a que MySQL este listo..."
           for i in {1..30}; do
             if mysqladmin ping -h 127.0.0.1 -u root -ptest_password --silent; then
-              echo "MySQL is ready"
+              echo "[OK] MySQL esta listo"
               break
             fi
-            echo "Waiting for MySQL..."
+            echo "[WAIT] Esperando MySQL... ($i/30)"
             sleep 2
           done
       
@@ -74,9 +87,26 @@ jobs:
           JWT_EXPIRES_IN: 24h
           JWT_REFRESH_EXPIRES_IN: 7d
       
+      - name: Coverage Summary
+        if: always()
+        run: |
+          echo "### Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage report not found" >> $GITHUB_STEP_SUMMARY
+          fi
+      
       - name: Upload coverage to Codecov
+        if: success()
         uses: codecov/codecov-action@v4
         with:
-          file: ./coverage/coverage-final.json
+          file: ./sgf-backend/coverage/coverage-final.json
           flags: backend
           fail_ci_if_error: false
+          verbose: true
+      
+
