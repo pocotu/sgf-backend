@@ -73,10 +73,7 @@ class UserService {
     if (dni) {
       const dniExists = await this.userRepository.dniExists(dni, excludeId);
       if (dniExists) {
-        throw new BusinessLogicError(
-          'El DNI ya está registrado',
-          'USER_DNI_EXISTS'
-        );
+        throw new BusinessLogicError('El DNI ya está registrado', 'USER_DNI_EXISTS');
       }
     }
 

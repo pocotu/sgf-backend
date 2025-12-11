@@ -27,20 +27,14 @@ class EnrollmentService {
     // Validar estudianteId
     if (!enrollmentData.estudianteId) {
       errors.estudianteId = 'ID del estudiante es requerido';
-    } else if (
-      !Number.isInteger(enrollmentData.estudianteId) ||
-      enrollmentData.estudianteId <= 0
-    ) {
+    } else if (!Number.isInteger(enrollmentData.estudianteId) || enrollmentData.estudianteId <= 0) {
       errors.estudianteId = 'ID del estudiante debe ser un número válido';
     }
 
     // Validar grupoId
     if (!enrollmentData.grupoId) {
       errors.grupoId = 'ID del grupo es requerido';
-    } else if (
-      !Number.isInteger(enrollmentData.grupoId) ||
-      enrollmentData.grupoId <= 0
-    ) {
+    } else if (!Number.isInteger(enrollmentData.grupoId) || enrollmentData.grupoId <= 0) {
       errors.grupoId = 'ID del grupo debe ser un número válido';
     }
 
@@ -67,17 +61,11 @@ class EnrollmentService {
     const grupo = await this.groupRepository.findWithEnrollmentCount(grupoId);
 
     if (!grupo) {
-      throw new BusinessLogicError(
-        'Grupo no encontrado',
-        'GROUP_NOT_FOUND'
-      );
+      throw new BusinessLogicError('Grupo no encontrado', 'GROUP_NOT_FOUND');
     }
 
     if (grupo.cuposDisponibles <= 0) {
-      throw new BusinessLogicError(
-        'El grupo no tiene cupos disponibles',
-        'ENROLLMENT_NO_CAPACITY'
-      );
+      throw new BusinessLogicError('El grupo no tiene cupos disponibles', 'ENROLLMENT_NO_CAPACITY');
     }
 
     return grupo;
@@ -89,15 +77,10 @@ class EnrollmentService {
    * @param {Object} grupo - Objeto del grupo
    */
   async validateModalidadMatch(estudianteId, grupo) {
-    const estudiante = await this.studentRepository.findByIdWithUser(
-      estudianteId
-    );
+    const estudiante = await this.studentRepository.findByIdWithUser(estudianteId);
 
     if (!estudiante) {
-      throw new BusinessLogicError(
-        'Estudiante no encontrado',
-        'STUDENT_NOT_FOUND'
-      );
+      throw new BusinessLogicError('Estudiante no encontrado', 'STUDENT_NOT_FOUND');
     }
 
     if (estudiante.modalidad !== grupo.modalidad) {
@@ -115,9 +98,7 @@ class EnrollmentService {
    * @param {number} estudianteId - ID del estudiante
    */
   async validateNoActiveEnrollment(estudianteId) {
-    const activeEnrollment = await this.enrollmentRepository.findActiveByStudent(
-      estudianteId
-    );
+    const activeEnrollment = await this.enrollmentRepository.findActiveByStudent(estudianteId);
 
     if (activeEnrollment) {
       throw new BusinessLogicError(
@@ -137,9 +118,7 @@ class EnrollmentService {
     }
 
     if (motivoRetiro.trim().length < 10) {
-      throw new ValidationError(
-        'Motivo de retiro debe tener al menos 10 caracteres'
-      );
+      throw new ValidationError('Motivo de retiro debe tener al menos 10 caracteres');
     }
   }
 }

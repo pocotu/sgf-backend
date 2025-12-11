@@ -38,11 +38,7 @@ const configureEnrollmentRoutes = (enrollmentController, authService) => {
    * Retirar estudiante de un grupo
    * Auth: Admin
    */
-  router.patch(
-    '/:id/withdraw',
-    authorizeRole('admin'),
-    enrollmentController.withdraw
-  );
+  router.patch('/:id/withdraw', authorizeRole('admin'), enrollmentController.withdraw);
 
   return router;
 };

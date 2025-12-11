@@ -117,10 +117,10 @@ describe('AuthService', () => {
       mockUserRepository.findByIdentifier.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(authService.login('12345678', 'password123'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.login('12345678', 'password123'))
-        .rejects.toThrow('Credenciales inválidas');
+      await expect(authService.login('12345678', 'password123')).rejects.toThrow(AuthError);
+      await expect(authService.login('12345678', 'password123')).rejects.toThrow(
+        'Credenciales inválidas'
+      );
     });
 
     it('should throw AuthError for invalid password', async () => {
@@ -129,10 +129,10 @@ describe('AuthService', () => {
       bcrypt.compare.mockResolvedValue(false);
 
       // Act & Assert
-      await expect(authService.login('12345678', 'wrong_password'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.login('12345678', 'wrong_password'))
-        .rejects.toThrow('Credenciales inválidas');
+      await expect(authService.login('12345678', 'wrong_password')).rejects.toThrow(AuthError);
+      await expect(authService.login('12345678', 'wrong_password')).rejects.toThrow(
+        'Credenciales inválidas'
+      );
     });
 
     it('should throw AuthError for inactive user', async () => {
@@ -142,18 +142,16 @@ describe('AuthService', () => {
       bcrypt.compare.mockResolvedValue(true);
 
       // Act & Assert
-      await expect(authService.login('12345678', 'password123'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.login('12345678', 'password123'))
-        .rejects.toThrow('Usuario inactivo');
+      await expect(authService.login('12345678', 'password123')).rejects.toThrow(AuthError);
+      await expect(authService.login('12345678', 'password123')).rejects.toThrow(
+        'Usuario inactivo'
+      );
     });
 
     it('should throw AuthError when credentials are missing', async () => {
       // Act & Assert
-      await expect(authService.login('', 'password123'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.login('12345678', ''))
-        .rejects.toThrow(AuthError);
+      await expect(authService.login('', 'password123')).rejects.toThrow(AuthError);
+      await expect(authService.login('12345678', '')).rejects.toThrow(AuthError);
     });
   });
 
@@ -194,10 +192,12 @@ describe('AuthService', () => {
       const weakPassword = 'password123';
 
       // Act & Assert
-      await expect(authService.changePasswordFirstLogin(1, weakPassword))
-        .rejects.toThrow(ValidationError);
-      await expect(authService.changePasswordFirstLogin(1, weakPassword))
-        .rejects.toThrow('mínimo 8 caracteres, una mayúscula, una minúscula y un número');
+      await expect(authService.changePasswordFirstLogin(1, weakPassword)).rejects.toThrow(
+        ValidationError
+      );
+      await expect(authService.changePasswordFirstLogin(1, weakPassword)).rejects.toThrow(
+        'mínimo 8 caracteres, una mayúscula, una minúscula y un número'
+      );
     });
 
     it('should throw ValidationError for weak password (no lowercase)', async () => {
@@ -205,8 +205,9 @@ describe('AuthService', () => {
       const weakPassword = 'PASSWORD123';
 
       // Act & Assert
-      await expect(authService.changePasswordFirstLogin(1, weakPassword))
-        .rejects.toThrow(ValidationError);
+      await expect(authService.changePasswordFirstLogin(1, weakPassword)).rejects.toThrow(
+        ValidationError
+      );
     });
 
     it('should throw ValidationError for weak password (no number)', async () => {
@@ -214,8 +215,9 @@ describe('AuthService', () => {
       const weakPassword = 'PasswordABC';
 
       // Act & Assert
-      await expect(authService.changePasswordFirstLogin(1, weakPassword))
-        .rejects.toThrow(ValidationError);
+      await expect(authService.changePasswordFirstLogin(1, weakPassword)).rejects.toThrow(
+        ValidationError
+      );
     });
 
     it('should throw ValidationError for weak password (too short)', async () => {
@@ -223,8 +225,9 @@ describe('AuthService', () => {
       const weakPassword = 'Pass1';
 
       // Act & Assert
-      await expect(authService.changePasswordFirstLogin(1, weakPassword))
-        .rejects.toThrow(ValidationError);
+      await expect(authService.changePasswordFirstLogin(1, weakPassword)).rejects.toThrow(
+        ValidationError
+      );
     });
 
     it('should throw AuthError when user not found', async () => {
@@ -232,10 +235,12 @@ describe('AuthService', () => {
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(authService.changePasswordFirstLogin(999, 'NewPass123'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.changePasswordFirstLogin(999, 'NewPass123'))
-        .rejects.toThrow('Usuario no encontrado');
+      await expect(authService.changePasswordFirstLogin(999, 'NewPass123')).rejects.toThrow(
+        AuthError
+      );
+      await expect(authService.changePasswordFirstLogin(999, 'NewPass123')).rejects.toThrow(
+        'Usuario no encontrado'
+      );
     });
   });
 
@@ -265,10 +270,8 @@ describe('AuthService', () => {
 
     it('should throw AuthError when refresh token is missing', async () => {
       // Act & Assert
-      await expect(authService.refreshToken(''))
-        .rejects.toThrow(AuthError);
-      await expect(authService.refreshToken(''))
-        .rejects.toThrow('Refresh token requerido');
+      await expect(authService.refreshToken('')).rejects.toThrow(AuthError);
+      await expect(authService.refreshToken('')).rejects.toThrow('Refresh token requerido');
     });
 
     it('should throw AuthError when refresh token is expired', async () => {
@@ -281,10 +284,10 @@ describe('AuthService', () => {
       });
 
       // Act & Assert
-      await expect(authService.refreshToken(expiredToken))
-        .rejects.toThrow(AuthError);
-      await expect(authService.refreshToken(expiredToken))
-        .rejects.toThrow('Refresh token expirado');
+      await expect(authService.refreshToken(expiredToken)).rejects.toThrow(AuthError);
+      await expect(authService.refreshToken(expiredToken)).rejects.toThrow(
+        'Refresh token expirado'
+      );
     });
 
     it('should throw AuthError when refresh token is invalid', async () => {
@@ -297,10 +300,10 @@ describe('AuthService', () => {
       });
 
       // Act & Assert
-      await expect(authService.refreshToken(invalidToken))
-        .rejects.toThrow(AuthError);
-      await expect(authService.refreshToken(invalidToken))
-        .rejects.toThrow('Refresh token inválido');
+      await expect(authService.refreshToken(invalidToken)).rejects.toThrow(AuthError);
+      await expect(authService.refreshToken(invalidToken)).rejects.toThrow(
+        'Refresh token inválido'
+      );
     });
 
     it('should throw AuthError when user not found', async () => {
@@ -309,10 +312,10 @@ describe('AuthService', () => {
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(authService.refreshToken('valid_token'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.refreshToken('valid_token'))
-        .rejects.toThrow('Usuario no encontrado');
+      await expect(authService.refreshToken('valid_token')).rejects.toThrow(AuthError);
+      await expect(authService.refreshToken('valid_token')).rejects.toThrow(
+        'Usuario no encontrado'
+      );
     });
 
     it('should throw AuthError when user is inactive', async () => {
@@ -322,10 +325,8 @@ describe('AuthService', () => {
       mockUserRepository.findById.mockResolvedValue(inactiveUser);
 
       // Act & Assert
-      await expect(authService.refreshToken('valid_token'))
-        .rejects.toThrow(AuthError);
-      await expect(authService.refreshToken('valid_token'))
-        .rejects.toThrow('Usuario inactivo');
+      await expect(authService.refreshToken('valid_token')).rejects.toThrow(AuthError);
+      await expect(authService.refreshToken('valid_token')).rejects.toThrow('Usuario inactivo');
     });
   });
 

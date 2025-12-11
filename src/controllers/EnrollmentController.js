@@ -12,11 +12,7 @@ class EnrollmentController {
    * @param {Object} getEnrollmentsUseCase - Caso de uso para listar matrículas
    * @param {Object} withdrawStudentUseCase - Caso de uso para retirar estudiante
    */
-  constructor(
-    enrollStudentUseCase,
-    getEnrollmentsUseCase,
-    withdrawStudentUseCase
-  ) {
+  constructor(enrollStudentUseCase, getEnrollmentsUseCase, withdrawStudentUseCase) {
     this.enrollStudentUseCase = enrollStudentUseCase;
     this.getEnrollmentsUseCase = getEnrollmentsUseCase;
     this.withdrawStudentUseCase = withdrawStudentUseCase;
@@ -31,9 +27,7 @@ class EnrollmentController {
 
     const enrollment = await this.enrollStudentUseCase.execute(enrollmentData);
 
-    return res.status(201).json(
-      successResponse(enrollment, 'Estudiante matriculado exitosamente')
-    );
+    return res.status(201).json(successResponse(enrollment, 'Estudiante matriculado exitosamente'));
   });
 
   /**
@@ -46,10 +40,7 @@ class EnrollmentController {
     const filters = { grupoId, estudianteId, estado, search };
     const pagination = { page, limit };
 
-    const result = await this.getEnrollmentsUseCase.execute(
-      filters,
-      pagination
-    );
+    const result = await this.getEnrollmentsUseCase.execute(filters, pagination);
 
     return res.status(200).json(
       paginatedResponse({
@@ -70,14 +61,9 @@ class EnrollmentController {
     const matriculaId = parseInt(req.params.id, 10);
     const { motivoRetiro } = req.body;
 
-    const enrollment = await this.withdrawStudentUseCase.execute(
-      matriculaId,
-      motivoRetiro
-    );
+    const enrollment = await this.withdrawStudentUseCase.execute(matriculaId, motivoRetiro);
 
-    return res.status(200).json(
-      successResponse(enrollment, 'Estudiante retirado exitosamente')
-    );
+    return res.status(200).json(successResponse(enrollment, 'Estudiante retirado exitosamente'));
   });
 }
 

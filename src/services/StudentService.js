@@ -55,17 +55,11 @@ class StudentService {
     }
 
     if (user.rol !== 'estudiante') {
-      throw new BusinessLogicError(
-        'El usuario debe tener rol estudiante',
-        'USER_NOT_STUDENT_ROLE'
-      );
+      throw new BusinessLogicError('El usuario debe tener rol estudiante', 'USER_NOT_STUDENT_ROLE');
     }
 
     if (user.estado !== 'activo') {
-      throw new BusinessLogicError(
-        'El usuario debe estar activo',
-        'USER_NOT_ACTIVE'
-      );
+      throw new BusinessLogicError('El usuario debe estar activo', 'USER_NOT_ACTIVE');
     }
 
     return user;

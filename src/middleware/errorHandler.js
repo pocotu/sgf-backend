@@ -46,60 +46,11 @@ const logError = (error, req) => {
  * @param {Error} error - Error a evaluar
  * @returns {boolean} True si es error operacional
  */
-const isOperationalError = (error) => {
+const isOperationalError = error => {
   if (error instanceof AppError) {
     return error.isOperational;
   }
   return false;
-};
-
-/**
- * Middleware de manejo de errores global
- * Debe ser el último middleware en la cadena
- * @param {Error} err - Error capturado
- * @param {Object} req - Request de Express
- * @param {Object} res - Response de Express
- * @param {Function} next - Next middleware (no usado, pero requerido por Express)
- */
-const errorHandler = (err, req, res, next) => {
-  // Log del error
-  logError(err, req);
-
-  // Si es un error operacional conocido
-  if (isOperationalError(err)) {
-    const statusCode = err.statusCode || 500;
-    const response = errorResponse(err.code, err.message, err.details);
-    return res.status(statusCode).json(response);
-  }
-
-  // Manejo de errores específicos de Prisma
-  if (err.code && err.code.startsWith('P')) {
-    return handlePrismaError(err, res);
-  }
-
-  // Manejo de errores de validación de Express
-  if (err.name === 'ValidationError') {
-    const response = errorResponse(
-      'VALIDATION_FAILED',
-      'Error de validación',
-      err.errors
-    );
-    return res.status(400).json(response);
-  }
-
-  // Error inesperado (de programación)
-  // En producción, no exponer detalles internos
-  const message = process.env.NODE_ENV === 'production'
-    ? 'Error interno del servidor'
-    : err.message;
-
-  const response = errorResponse(
-    'INTERNAL_SERVER_ERROR',
-    message,
-    process.env.NODE_ENV === 'development' ? { stack: err.stack } : null
-  );
-
-  return res.status(500).json(response);
 };
 
 /**
@@ -146,12 +97,58 @@ const handlePrismaError = (err, res) => {
 };
 
 /**
+ * Middleware de manejo de errores global
+ * Debe ser el último middleware en la cadena
+ * @param {Error} err - Error capturado
+ * @param {Object} req - Request de Express
+ * @param {Object} res - Response de Express
+ * @param {Function} _next - Next middleware (no usado, pero requerido por Express)
+ */
+const errorHandler = (err, req, res, _next) => {
+  // Log del error
+  logError(err, req);
+
+  // Si es un error operacional conocido
+  if (isOperationalError(err)) {
+    const statusCode = err.statusCode || 500;
+    const response = errorResponse(err.code, err.message, err.details);
+    return res.status(statusCode).json(response);
+  }
+
+  // Manejo de errores específicos de Prisma
+  if (err.code && err.code.startsWith('P')) {
+    return handlePrismaError(err, res);
+  }
+
+  // Manejo de errores de validación de Express
+  if (err.name === 'ValidationError') {
+    const response = errorResponse('VALIDATION_FAILED', 'Error de validación', err.errors);
+    return res.status(400).json(response);
+  }
+
+  /*
+   * Error inesperado (de programación)
+   * En producción, no exponer detalles internos
+   */
+  const message =
+    process.env.NODE_ENV === 'production' ? 'Error interno del servidor' : err.message;
+
+  const response = errorResponse(
+    'INTERNAL_SERVER_ERROR',
+    message,
+    process.env.NODE_ENV === 'development' ? { stack: err.stack } : null
+  );
+
+  return res.status(500).json(response);
+};
+
+/**
  * Middleware para capturar errores asíncronos
  * Envuelve funciones async para capturar errores automáticamente
  * @param {Function} fn - Función async a envolver
  * @returns {Function} Función envuelta con manejo de errores
  */
-const asyncHandler = (fn) => {
+const asyncHandler = fn => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
@@ -161,7 +158,7 @@ const asyncHandler = (fn) => {
  * Middleware para manejar rutas no encontradas (404)
  * Debe colocarse antes del errorHandler
  */
-const notFoundHandler = (req, res, next) => {
+const notFoundHandler = (req, res, _next) => {
   const response = errorResponse(
     'ROUTE_NOT_FOUND',
     `No se encontró la ruta: ${req.method} ${req.originalUrl}`,

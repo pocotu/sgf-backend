@@ -27,10 +27,7 @@ class GetStudentsUseCase {
     const limit = parseInt(pagination.limit, 10) || 10;
 
     // Obtener estudiantes con paginación
-    const { estudiantes, total } = await this.studentRepository.list(
-      filters,
-      { page, limit }
-    );
+    const { estudiantes, total } = await this.studentRepository.list(filters, { page, limit });
 
     return {
       estudiantes,

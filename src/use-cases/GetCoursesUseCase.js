@@ -27,10 +27,7 @@ class GetCoursesUseCase {
     const limit = parseInt(pagination.limit, 10) || 10;
 
     // Obtener cursos con paginación
-    const { cursos, total } = await this.courseRepository.list(
-      filters,
-      { page, limit }
-    );
+    const { cursos, total } = await this.courseRepository.list(filters, { page, limit });
 
     return {
       cursos,

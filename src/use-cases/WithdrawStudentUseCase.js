@@ -26,9 +26,7 @@ class WithdrawStudentUseCase {
     this.enrollmentService.validateWithdrawalReason(motivoRetiro);
 
     // Verificar que la matrícula existe
-    const enrollment = await this.enrollmentRepository.findByIdWithRelations(
-      matriculaId
-    );
+    const enrollment = await this.enrollmentRepository.findByIdWithRelations(matriculaId);
 
     if (!enrollment) {
       throw new NotFoundError('Matrícula no encontrada');

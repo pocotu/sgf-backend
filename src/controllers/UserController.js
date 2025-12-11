@@ -37,9 +37,7 @@ class UserController {
 
     const user = await this.registerUserUseCase.execute(userData);
 
-    return res.status(201).json(
-      successResponse(user, 'Usuario creado exitosamente')
-    );
+    return res.status(201).json(successResponse(user, 'Usuario creado exitosamente'));
   });
 
   /**
@@ -74,9 +72,7 @@ class UserController {
 
     const user = await this.getUserByIdUseCase.execute(usuarioId);
 
-    return res.status(200).json(
-      successResponse(user, 'Usuario obtenido exitosamente')
-    );
+    return res.status(200).json(successResponse(user, 'Usuario obtenido exitosamente'));
   });
 
   /**
@@ -89,9 +85,7 @@ class UserController {
 
     const user = await this.updateUserUseCase.execute(usuarioId, updateData);
 
-    return res.status(200).json(
-      successResponse(user, 'Usuario actualizado exitosamente')
-    );
+    return res.status(200).json(successResponse(user, 'Usuario actualizado exitosamente'));
   });
 
   /**
@@ -103,9 +97,7 @@ class UserController {
 
     const user = await this.deleteUserUseCase.execute(usuarioId);
 
-    return res.status(200).json(
-      successResponse(user, 'Usuario eliminado exitosamente')
-    );
+    return res.status(200).json(successResponse(user, 'Usuario eliminado exitosamente'));
   });
 }
 

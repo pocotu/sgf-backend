@@ -22,10 +22,7 @@ class GetGroupsUseCase {
     const limit = parseInt(pagination.limit, 10) || 10;
 
     // Obtener grupos con paginación y cupos disponibles
-    const { grupos, total } = await this.groupRepository.list(
-      filters,
-      { page, limit }
-    );
+    const { grupos, total } = await this.groupRepository.list(filters, { page, limit });
 
     return {
       grupos,

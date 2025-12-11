@@ -32,9 +32,7 @@ describe('GroupService', () => {
           fail('Should have thrown ValidationError');
         } catch (error) {
           expect(error).toBeInstanceOf(ValidationError);
-          expect(error.details.horaFin).toBe(
-            'Hora de fin debe ser mayor que hora de inicio'
-          );
+          expect(error.details.horaFin).toBe('Hora de fin debe ser mayor que hora de inicio');
         }
       });
 
@@ -68,9 +66,7 @@ describe('GroupService', () => {
           fail('Should have thrown ValidationError');
         } catch (error) {
           expect(error).toBeInstanceOf(ValidationError);
-          expect(error.details.horaInicio).toBe(
-            'Hora de inicio debe tener formato HH:mm'
-          );
+          expect(error.details.horaInicio).toBe('Hora de inicio debe tener formato HH:mm');
         }
       });
 
@@ -84,9 +80,7 @@ describe('GroupService', () => {
           horaFin: '25:00',
         };
 
-        expect(() => groupService.validateGroupData(groupData)).toThrow(
-          ValidationError
-        );
+        expect(() => groupService.validateGroupData(groupData)).toThrow(ValidationError);
       });
     });
 
@@ -141,9 +135,7 @@ describe('GroupService', () => {
           fail('Should have thrown ValidationError');
         } catch (error) {
           expect(error).toBeInstanceOf(ValidationError);
-          expect(error.details.nombreGrupo).toBe(
-            'Nombre del grupo es requerido'
-          );
+          expect(error.details.nombreGrupo).toBe('Nombre del grupo es requerido');
         }
       });
 
@@ -155,9 +147,7 @@ describe('GroupService', () => {
           horaFin: '12:00',
         };
 
-        expect(() =>
-          groupService.validateGroupData(groupData, true)
-        ).not.toThrow();
+        expect(() => groupService.validateGroupData(groupData, true)).not.toThrow();
       });
     });
 
@@ -220,9 +210,7 @@ describe('GroupService', () => {
           fail('Should have thrown ValidationError');
         } catch (error) {
           expect(error).toBeInstanceOf(ValidationError);
-          expect(error.details.estado).toBe(
-            'Estado debe ser: ACTIVO o INACTIVO'
-          );
+          expect(error.details.estado).toBe('Estado debe ser: ACTIVO o INACTIVO');
         }
       });
 
@@ -244,9 +232,7 @@ describe('GroupService', () => {
           fail('Should have thrown ValidationError');
         } catch (error) {
           expect(error).toBeInstanceOf(ValidationError);
-          expect(error.details.capacidad).toBe(
-            'Capacidad debe ser un número mayor a 0'
-          );
+          expect(error.details.capacidad).toBe('Capacidad debe ser un número mayor a 0');
         }
       });
     });
@@ -263,9 +249,7 @@ describe('GroupService', () => {
 
         await expect(
           groupService.validateUniqueCombination('A', 'ORDINARIO', 'Grupo 1')
-        ).rejects.toThrow(
-          'Ya existe un grupo con la misma área, modalidad y nombre'
-        );
+        ).rejects.toThrow('Ya existe un grupo con la misma área, modalidad y nombre');
       });
 
       it('should not throw error when combination is unique', async () => {
@@ -279,12 +263,7 @@ describe('GroupService', () => {
       it('should pass excludeId to repository', async () => {
         mockGroupRepository.existsUniqueCombination.mockResolvedValue(false);
 
-        await groupService.validateUniqueCombination(
-          'A',
-          'ORDINARIO',
-          'Grupo 1',
-          5
-        );
+        await groupService.validateUniqueCombination('A', 'ORDINARIO', 'Grupo 1', 5);
 
         expect(mockGroupRepository.existsUniqueCombination).toHaveBeenCalledWith(
           'A',

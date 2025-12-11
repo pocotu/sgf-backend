@@ -7,7 +7,7 @@
  * @param {string} dni - DNI a validar
  * @returns {boolean} true si es válido
  */
-const isValidDni = (dni) => {
+const isValidDni = dni => {
   if (!dni) {
     return false;
   }
@@ -20,7 +20,7 @@ const isValidDni = (dni) => {
  * @param {string} email - Email a validar
  * @returns {boolean} true si es válido
  */
-const isValidEmail = (email) => {
+const isValidEmail = email => {
   if (!email) {
     return false;
   }
@@ -33,7 +33,7 @@ const isValidEmail = (email) => {
  * @param {string} date - Fecha a validar
  * @returns {boolean} true si es válido
  */
-const isValidDate = (date) => {
+const isValidDate = date => {
   if (!date) {
     return false;
   }
@@ -43,12 +43,12 @@ const isValidDate = (date) => {
   }
 
   const [year, month, day] = date.split('-').map(Number);
-  
+
   // Validar mes
   if (month < 1 || month > 12) {
     return false;
   }
-  
+
   // Validar día según el mes
   const daysInMonth = new Date(year, month, 0).getDate();
   if (day < 1 || day > daysInMonth) {
@@ -64,7 +64,7 @@ const isValidDate = (date) => {
  * @param {string} time - Hora a validar
  * @returns {boolean} true si es válido
  */
-const isValidTime = (time) => {
+const isValidTime = time => {
   if (!time) {
     return false;
   }
@@ -98,7 +98,7 @@ const isTimeAfter = (startTime, endTime) => {
  * @param {string} password - Contraseña a validar
  * @returns {boolean} true si es válida
  */
-const isValidPassword = (password) => {
+const isValidPassword = password => {
   if (!password || password.length < 8) {
     return false;
   }
@@ -115,7 +115,7 @@ const isValidPassword = (password) => {
  * @param {number} grade - Nota a validar
  * @returns {boolean} true si está en rango válido
  */
-const isValidGrade = (grade) => {
+const isValidGrade = grade => {
   if (typeof grade !== 'number') {
     return false;
   }
@@ -127,7 +127,7 @@ const isValidGrade = (grade) => {
  * @param {number} weekNumber - Número de semana a validar
  * @returns {boolean} true si está en rango válido
  */
-const isValidWeekNumber = (weekNumber) => {
+const isValidWeekNumber = weekNumber => {
   if (typeof weekNumber !== 'number') {
     return false;
   }
@@ -139,7 +139,7 @@ const isValidWeekNumber = (weekNumber) => {
  * @param {string} area - Área a validar
  * @returns {boolean} true si es válida
  */
-const isValidArea = (area) => {
+const isValidArea = area => {
   const validAreas = ['A', 'B', 'C', 'D'];
   return validAreas.includes(area);
 };
@@ -149,7 +149,7 @@ const isValidArea = (area) => {
  * @param {string} modalidad - Modalidad a validar
  * @returns {boolean} true si es válida
  */
-const isValidModalidad = (modalidad) => {
+const isValidModalidad = modalidad => {
   const validModalidades = ['ORDINARIO', 'PRIMERA_OPCION', 'DIRIMENCIA'];
   return validModalidades.includes(modalidad);
 };
@@ -159,7 +159,7 @@ const isValidModalidad = (modalidad) => {
  * @param {string} rol - Rol a validar
  * @returns {boolean} true si es válido
  */
-const isValidRole = (rol) => {
+const isValidRole = rol => {
   const validRoles = ['admin', 'docente', 'estudiante'];
   return validRoles.includes(rol);
 };

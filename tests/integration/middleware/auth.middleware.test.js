@@ -16,7 +16,7 @@ const UserRepository = require('../../../src/repositories/UserRepository');
 describe('Authentication and Authorization Middleware Integration Tests', () => {
   let app;
   let authService;
-  let testUsers = {};
+  const testUsers = {};
   let validToken;
   let expiredToken;
   let invalidToken;
@@ -107,16 +107,12 @@ describe('Authentication and Authorization Middleware Integration Tests', () => 
     app.use(express.json());
 
     // Test routes
-    app.get(
-      '/test/authenticated',
-      authenticateJWT(authService),
-      (req, res) => {
-        res.json({
-          success: true,
-          user: req.user,
-        });
-      }
-    );
+    app.get('/test/authenticated', authenticateJWT(authService), (req, res) => {
+      res.json({
+        success: true,
+        user: req.user,
+      });
+    });
 
     app.get(
       '/test/admin-only',
@@ -208,15 +204,11 @@ describe('Authentication and Authorization Middleware Integration Tests', () => 
         expect(response.status).toBe(401);
         expect(response.body.success).toBe(false);
         expect(response.body.error.code).toBe('AUTH_TOKEN_REQUIRED');
-        expect(response.body.error.message).toBe(
-          'Token de autenticación requerido'
-        );
+        expect(response.body.error.message).toBe('Token de autenticación requerido');
       });
 
       it('should return 401 when Authorization header is empty', async () => {
-        const response = await request(app)
-          .get('/test/authenticated')
-          .set('Authorization', '');
+        const response = await request(app).get('/test/authenticated').set('Authorization', '');
 
         expect(response.status).toBe(401);
         expect(response.body.success).toBe(false);
@@ -339,9 +331,7 @@ describe('Authentication and Authorization Middleware Integration Tests', () => 
         expect(response.status).toBe(403);
         expect(response.body.success).toBe(false);
         expect(response.body.error.code).toBe('AUTH_ACCESS_DENIED');
-        expect(response.body.error.message).toBe(
-          'No tiene permisos para realizar esta operación'
-        );
+        expect(response.body.error.message).toBe('No tiene permisos para realizar esta operación');
       });
 
       it('should return 403 when docente tries to access admin-only endpoint', async () => {

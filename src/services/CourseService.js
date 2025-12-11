@@ -56,9 +56,7 @@ class CourseService {
    * @param {number} cursoId - ID del curso
    */
   async validateCanDelete(cursoId) {
-    const hasRelations = await this.courseRepository.hasActiveRelations(
-      cursoId
-    );
+    const hasRelations = await this.courseRepository.hasActiveRelations(cursoId);
 
     if (hasRelations) {
       throw new BusinessLogicError(

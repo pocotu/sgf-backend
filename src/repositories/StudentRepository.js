@@ -130,7 +130,7 @@ class StudentRepository extends BaseRepository {
    */
   async generateCodigoInterno(modalidad, area = null) {
     const year = new Date().getFullYear();
-    
+
     // Mapear modalidad a código corto
     const modalidadMap = {
       ORDINARIO: 'ORD',
@@ -138,13 +138,13 @@ class StudentRepository extends BaseRepository {
       DIRIMENCIA: 'DIR',
     };
     const modCode = modalidadMap[modalidad] || 'ORD';
-    
+
     // Usar área si se proporciona, sino usar 'X'
     const areaCode = area || 'X';
-    
+
     // Construir prefijo: YYYY-AREA-MOD
     const prefix = `${year}-${areaCode}-${modCode}`;
-    
+
     // Buscar el último código con este prefijo
     const lastStudent = await this.model.findFirst({
       where: {
@@ -156,7 +156,7 @@ class StudentRepository extends BaseRepository {
         codigoInterno: 'desc',
       },
     });
-    
+
     let nextNumber = 1;
     if (lastStudent) {
       // Extraer el número del último código (últimos 3 dígitos)
@@ -164,10 +164,10 @@ class StudentRepository extends BaseRepository {
       const lastNumber = parseInt(lastCode.slice(-3), 10);
       nextNumber = lastNumber + 1;
     }
-    
+
     // Formatear número con 3 dígitos (001, 002, etc.)
     const numberStr = nextNumber.toString().padStart(3, '0');
-    
+
     return `${prefix}-${numberStr}`;
   }
 

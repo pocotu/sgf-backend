@@ -38,11 +38,7 @@ const configureGroupRoutes = (groupController, authService) => {
    * Obtener grupo por ID
    * Auth: Admin, Docente
    */
-  router.get(
-    '/:id',
-    authorizeRole('admin', 'docente'),
-    groupController.getById
-  );
+  router.get('/:id', authorizeRole('admin', 'docente'), groupController.getById);
 
   /**
    * PUT /api/groups/:id
@@ -56,11 +52,7 @@ const configureGroupRoutes = (groupController, authService) => {
    * Cambiar estado del grupo (ACTIVO/INACTIVO)
    * Auth: Admin
    */
-  router.patch(
-    '/:id/status',
-    authorizeRole('admin'),
-    groupController.changeStatus
-  );
+  router.patch('/:id/status', authorizeRole('admin'), groupController.changeStatus);
 
   return router;
 };

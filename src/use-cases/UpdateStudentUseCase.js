@@ -47,10 +47,7 @@ class UpdateStudentUseCase {
     }
 
     // Actualizar estudiante
-    const updatedStudent = await this.studentRepository.update(
-      estudianteId,
-      updateData
-    );
+    const updatedStudent = await this.studentRepository.update(estudianteId, updateData);
 
     // Obtener estudiante con datos de usuario
     const studentWithUser = await this.studentRepository.findByIdWithUser(

@@ -62,16 +62,12 @@ const errorResponse = (code, message, details = null) => {
 const paginatedResponse = ({ data, page, limit, total, message = null }) => {
   const totalPages = Math.ceil(total / limit);
 
-  return successResponse(
-    data,
-    message,
-    {
-      page,
-      limit,
-      total,
-      totalPages,
-    },
-  );
+  return successResponse(data, message, {
+    page,
+    limit,
+    total,
+    totalPages,
+  });
 };
 
 module.exports = {

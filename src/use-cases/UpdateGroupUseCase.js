@@ -33,21 +33,12 @@ class UpdateGroupUseCase {
     this.groupService.validateGroupData(updateData, true);
 
     // Si se actualiza área, modalidad o nombreGrupo, validar unicidad
-    if (
-      updateData.area ||
-      updateData.modalidad ||
-      updateData.nombreGrupo
-    ) {
+    if (updateData.area || updateData.modalidad || updateData.nombreGrupo) {
       const area = updateData.area || existingGroup.area;
       const modalidad = updateData.modalidad || existingGroup.modalidad;
       const nombreGrupo = updateData.nombreGrupo || existingGroup.nombreGrupo;
 
-      await this.groupService.validateUniqueCombination(
-        area,
-        modalidad,
-        nombreGrupo,
-        grupoId
-      );
+      await this.groupService.validateUniqueCombination(area, modalidad, nombreGrupo, grupoId);
     }
 
     // Preparar datos para actualizar
@@ -70,9 +61,7 @@ class UpdateGroupUseCase {
     }
 
     if (updateData.horaInicio) {
-      dataToUpdate.horaInicio = new Date(
-        `1970-01-01T${updateData.horaInicio}:00`
-      );
+      dataToUpdate.horaInicio = new Date(`1970-01-01T${updateData.horaInicio}:00`);
     }
 
     if (updateData.horaFin) {
@@ -84,10 +73,7 @@ class UpdateGroupUseCase {
     }
 
     // Actualizar grupo
-    const updatedGroup = await this.groupRepository.update(
-      grupoId,
-      dataToUpdate
-    );
+    const updatedGroup = await this.groupRepository.update(grupoId, dataToUpdate);
 
     return updatedGroup;
   }

@@ -31,47 +31,47 @@ const configureStudentRoutes = (studentController, authService) => {
    * Auth: Admin, Docente
    * Query params: ?modalidad=ORDINARIO&area=A&search=juan&page=1&limit=10
    */
-  router.get(
-    '/',
-    authorizeRole('admin', 'docente'),
-    studentController.list
-  );
+  router.get('/', authorizeRole('admin', 'docente'), studentController.list);
 
   /**
    * GET /api/students/:id
    * Obtener estudiante por ID
    * Auth: Admin, Docente, Estudiante (solo su propio perfil)
    */
-  router.get('/:id', async (req, res, next) => {
-    const requestedStudentId = parseInt(req.params.id, 10);
-    const currentUserRole = req.user.rol;
+  router.get(
+    '/:id',
+    async (req, res, next) => {
+      const requestedStudentId = parseInt(req.params.id, 10);
+      const currentUserRole = req.user.rol;
 
-    // Admin y Docente pueden ver cualquier estudiante
-    if (currentUserRole === 'admin' || currentUserRole === 'docente') {
-      return next();
-    }
-
-    // Estudiante solo puede ver su propio perfil
-    if (currentUserRole === 'estudiante') {
-      // Necesitamos verificar que el estudianteId corresponde al usuario actual
-      // Esto se puede hacer obteniendo el estudiante y comparando usuarioId
-      const { container } = require('../config/dependencies');
-      const studentRepository = container.resolve('studentRepository');
-      
-      try {
-        const student = await studentRepository.findById(requestedStudentId);
-        if (student && student.usuarioId === req.user.usuarioId) {
-          return next();
-        }
-      } catch (error) {
-        // Si hay error, continuar al siguiente middleware que manejará el error
+      // Admin y Docente pueden ver cualquier estudiante
+      if (currentUserRole === 'admin' || currentUserRole === 'docente') {
+        return next();
       }
-    }
 
-    // Si no cumple ninguna condición, denegar acceso
-    const { ForbiddenError } = require('../utils/errors');
-    throw new ForbiddenError('No tiene permisos para ver este estudiante');
-  }, studentController.getById);
+      // Estudiante solo puede ver su propio perfil
+      if (currentUserRole === 'estudiante') {
+        // Necesitamos verificar que el estudianteId corresponde al usuario actual
+        // Esto se puede hacer obteniendo el estudiante y comparando usuarioId
+        const { container } = require('../config/dependencies');
+        const studentRepository = container.resolve('studentRepository');
+
+        try {
+          const student = await studentRepository.findById(requestedStudentId);
+          if (student && student.usuarioId === req.user.usuarioId) {
+            return next();
+          }
+        } catch (error) {
+          // Si hay error, continuar al siguiente middleware que manejará el error
+        }
+      }
+
+      // Si no cumple ninguna condición, denegar acceso
+      const { ForbiddenError } = require('../utils/errors');
+      throw new ForbiddenError('No tiene permisos para ver este estudiante');
+    },
+    studentController.getById
+  );
 
   /**
    * PUT /api/students/:id

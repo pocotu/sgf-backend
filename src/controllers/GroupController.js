@@ -37,9 +37,7 @@ class GroupController {
 
     const group = await this.createGroupUseCase.execute(groupData);
 
-    return res.status(201).json(
-      successResponse(group, 'Grupo creado exitosamente')
-    );
+    return res.status(201).json(successResponse(group, 'Grupo creado exitosamente'));
   });
 
   /**
@@ -74,9 +72,7 @@ class GroupController {
 
     const group = await this.getGroupByIdUseCase.execute(grupoId);
 
-    return res.status(200).json(
-      successResponse(group, 'Grupo obtenido exitosamente')
-    );
+    return res.status(200).json(successResponse(group, 'Grupo obtenido exitosamente'));
   });
 
   /**
@@ -89,9 +85,7 @@ class GroupController {
 
     const group = await this.updateGroupUseCase.execute(grupoId, updateData);
 
-    return res.status(200).json(
-      successResponse(group, 'Grupo actualizado exitosamente')
-    );
+    return res.status(200).json(successResponse(group, 'Grupo actualizado exitosamente'));
   });
 
   /**
@@ -102,14 +96,11 @@ class GroupController {
     const grupoId = parseInt(req.params.id, 10);
     const { estado } = req.body;
 
-    const group = await this.activateDeactivateGroupUseCase.execute(
-      grupoId,
-      estado
-    );
+    const group = await this.activateDeactivateGroupUseCase.execute(grupoId, estado);
 
-    return res.status(200).json(
-      successResponse(group, 'Estado del grupo actualizado exitosamente')
-    );
+    return res
+      .status(200)
+      .json(successResponse(group, 'Estado del grupo actualizado exitosamente'));
   });
 }
 

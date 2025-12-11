@@ -23,20 +23,13 @@ class EnrollStudentUseCase {
     this.enrollmentService.validateEnrollmentData(enrollmentData);
 
     // Validar que el estudiante no esté matriculado en otro grupo activo
-    await this.enrollmentService.validateNoActiveEnrollment(
-      enrollmentData.estudianteId
-    );
+    await this.enrollmentService.validateNoActiveEnrollment(enrollmentData.estudianteId);
 
     // Validar que el grupo tenga cupos disponibles
-    const grupo = await this.enrollmentService.validateAvailableCapacity(
-      enrollmentData.grupoId
-    );
+    const grupo = await this.enrollmentService.validateAvailableCapacity(enrollmentData.grupoId);
 
     // Validar que la modalidad del estudiante coincida con la del grupo
-    await this.enrollmentService.validateModalidadMatch(
-      enrollmentData.estudianteId,
-      grupo
-    );
+    await this.enrollmentService.validateModalidadMatch(enrollmentData.estudianteId, grupo);
 
     // Preparar datos para crear matrícula
     const enrollmentToCreate = {
@@ -48,9 +41,7 @@ class EnrollStudentUseCase {
     };
 
     // Crear matrícula
-    const enrollment = await this.enrollmentRepository.create(
-      enrollmentToCreate
-    );
+    const enrollment = await this.enrollmentRepository.create(enrollmentToCreate);
 
     // Obtener matrícula con relaciones para retornar
     const enrollmentWithRelations = await this.enrollmentRepository.findByIdWithRelations(

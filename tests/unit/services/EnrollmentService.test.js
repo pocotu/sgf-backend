@@ -1,8 +1,5 @@
 const EnrollmentService = require('../../../src/services/EnrollmentService');
-const {
-  ValidationError,
-  BusinessLogicError,
-} = require('../../../src/utils/errors');
+const { ValidationError, BusinessLogicError } = require('../../../src/utils/errors');
 
 describe('EnrollmentService', () => {
   let enrollmentService;
@@ -39,9 +36,7 @@ describe('EnrollmentService', () => {
         fail('Should have thrown ValidationError');
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError);
-        expect(error.details.estudianteId).toBe(
-          'ID del estudiante es requerido'
-        );
+        expect(error.details.estudianteId).toBe('ID del estudiante es requerido');
       }
     });
 
@@ -52,9 +47,9 @@ describe('EnrollmentService', () => {
         montoPagado: 500,
       };
 
-      expect(() =>
-        enrollmentService.validateEnrollmentData(enrollmentData)
-      ).toThrow(ValidationError);
+      expect(() => enrollmentService.validateEnrollmentData(enrollmentData)).toThrow(
+        ValidationError
+      );
     });
 
     it('should validate required grupoId', () => {
@@ -79,9 +74,9 @@ describe('EnrollmentService', () => {
         montoPagado: 500,
       };
 
-      expect(() =>
-        enrollmentService.validateEnrollmentData(enrollmentData)
-      ).toThrow(ValidationError);
+      expect(() => enrollmentService.validateEnrollmentData(enrollmentData)).toThrow(
+        ValidationError
+      );
     });
 
     it('should validate required montoPagado', () => {
@@ -106,9 +101,9 @@ describe('EnrollmentService', () => {
         montoPagado: -100,
       };
 
-      expect(() =>
-        enrollmentService.validateEnrollmentData(enrollmentData)
-      ).toThrow(ValidationError);
+      expect(() => enrollmentService.validateEnrollmentData(enrollmentData)).toThrow(
+        ValidationError
+      );
     });
 
     it('should pass validation with valid data', () => {
@@ -118,9 +113,7 @@ describe('EnrollmentService', () => {
         montoPagado: 500,
       };
 
-      expect(() =>
-        enrollmentService.validateEnrollmentData(enrollmentData)
-      ).not.toThrow();
+      expect(() => enrollmentService.validateEnrollmentData(enrollmentData)).not.toThrow();
     });
   });
 
@@ -128,12 +121,12 @@ describe('EnrollmentService', () => {
     it('should throw error when group not found', async () => {
       mockGroupRepository.findWithEnrollmentCount.mockResolvedValue(null);
 
-      await expect(
-        enrollmentService.validateAvailableCapacity(1)
-      ).rejects.toThrow(BusinessLogicError);
-      await expect(
-        enrollmentService.validateAvailableCapacity(1)
-      ).rejects.toThrow('Grupo no encontrado');
+      await expect(enrollmentService.validateAvailableCapacity(1)).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(enrollmentService.validateAvailableCapacity(1)).rejects.toThrow(
+        'Grupo no encontrado'
+      );
     });
 
     it('should throw error when no capacity available', async () => {
@@ -144,12 +137,12 @@ describe('EnrollmentService', () => {
       };
       mockGroupRepository.findWithEnrollmentCount.mockResolvedValue(grupo);
 
-      await expect(
-        enrollmentService.validateAvailableCapacity(1)
-      ).rejects.toThrow(BusinessLogicError);
-      await expect(
-        enrollmentService.validateAvailableCapacity(1)
-      ).rejects.toThrow('El grupo no tiene cupos disponibles');
+      await expect(enrollmentService.validateAvailableCapacity(1)).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(enrollmentService.validateAvailableCapacity(1)).rejects.toThrow(
+        'El grupo no tiene cupos disponibles'
+      );
     });
 
     it('should return group when capacity is available', async () => {
@@ -172,12 +165,12 @@ describe('EnrollmentService', () => {
 
       const grupo = { modalidad: 'ORDINARIO' };
 
-      await expect(
-        enrollmentService.validateModalidadMatch(1, grupo)
-      ).rejects.toThrow(BusinessLogicError);
-      await expect(
-        enrollmentService.validateModalidadMatch(1, grupo)
-      ).rejects.toThrow('Estudiante no encontrado');
+      await expect(enrollmentService.validateModalidadMatch(1, grupo)).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(enrollmentService.validateModalidadMatch(1, grupo)).rejects.toThrow(
+        'Estudiante no encontrado'
+      );
     });
 
     it('should throw error when modalidad does not match', async () => {
@@ -189,12 +182,10 @@ describe('EnrollmentService', () => {
 
       const grupo = { modalidad: 'PRIMERA_OPCION' };
 
-      await expect(
-        enrollmentService.validateModalidadMatch(1, grupo)
-      ).rejects.toThrow(BusinessLogicError);
-      await expect(
-        enrollmentService.validateModalidadMatch(1, grupo)
-      ).rejects.toThrow(
+      await expect(enrollmentService.validateModalidadMatch(1, grupo)).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(enrollmentService.validateModalidadMatch(1, grupo)).rejects.toThrow(
         'La modalidad del estudiante (ORDINARIO) no coincide con la modalidad del grupo (PRIMERA_OPCION)'
       );
     });
@@ -223,51 +214,41 @@ describe('EnrollmentService', () => {
           nombreGrupo: 'Grupo A',
         },
       };
-      mockEnrollmentRepository.findActiveByStudent.mockResolvedValue(
-        activeEnrollment
-      );
+      mockEnrollmentRepository.findActiveByStudent.mockResolvedValue(activeEnrollment);
 
-      await expect(
-        enrollmentService.validateNoActiveEnrollment(1)
-      ).rejects.toThrow(BusinessLogicError);
-      await expect(
-        enrollmentService.validateNoActiveEnrollment(1)
-      ).rejects.toThrow('El estudiante ya está matriculado en el grupo Grupo A');
+      await expect(enrollmentService.validateNoActiveEnrollment(1)).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(enrollmentService.validateNoActiveEnrollment(1)).rejects.toThrow(
+        'El estudiante ya está matriculado en el grupo Grupo A'
+      );
     });
 
     it('should not throw error when student has no active enrollment', async () => {
       mockEnrollmentRepository.findActiveByStudent.mockResolvedValue(null);
 
-      await expect(
-        enrollmentService.validateNoActiveEnrollment(1)
-      ).resolves.not.toThrow();
+      await expect(enrollmentService.validateNoActiveEnrollment(1)).resolves.not.toThrow();
     });
   });
 
   describe('validateWithdrawalReason', () => {
     it('should throw error when motivo is empty', () => {
-      expect(() =>
-        enrollmentService.validateWithdrawalReason('')
-      ).toThrow(ValidationError);
-      expect(() =>
-        enrollmentService.validateWithdrawalReason('')
-      ).toThrow('Motivo de retiro es requerido');
+      expect(() => enrollmentService.validateWithdrawalReason('')).toThrow(ValidationError);
+      expect(() => enrollmentService.validateWithdrawalReason('')).toThrow(
+        'Motivo de retiro es requerido'
+      );
     });
 
     it('should throw error when motivo is too short', () => {
-      expect(() =>
-        enrollmentService.validateWithdrawalReason('corto')
-      ).toThrow(ValidationError);
-      expect(() =>
-        enrollmentService.validateWithdrawalReason('corto')
-      ).toThrow('Motivo de retiro debe tener al menos 10 caracteres');
+      expect(() => enrollmentService.validateWithdrawalReason('corto')).toThrow(ValidationError);
+      expect(() => enrollmentService.validateWithdrawalReason('corto')).toThrow(
+        'Motivo de retiro debe tener al menos 10 caracteres'
+      );
     });
 
     it('should not throw error with valid motivo', () => {
       expect(() =>
-        enrollmentService.validateWithdrawalReason(
-          'Motivo válido con más de 10 caracteres'
-        )
+        enrollmentService.validateWithdrawalReason('Motivo válido con más de 10 caracteres')
       ).not.toThrow();
     });
   });

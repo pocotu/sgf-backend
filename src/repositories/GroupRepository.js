@@ -120,7 +120,7 @@ class GroupRepository extends BaseRepository {
     ]);
 
     // Agregar cupos disponibles a cada grupo
-    const gruposConCupos = grupos.map((grupo) => ({
+    const gruposConCupos = grupos.map(grupo => ({
       ...grupo,
       matriculasActivas: grupo._count.matriculas,
       cuposDisponibles: grupo.capacidad - grupo._count.matriculas,

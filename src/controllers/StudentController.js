@@ -37,9 +37,7 @@ class StudentController {
 
     const student = await this.createStudentUseCase.execute(studentData);
 
-    return res.status(201).json(
-      successResponse(student, 'Estudiante creado exitosamente')
-    );
+    return res.status(201).json(successResponse(student, 'Estudiante creado exitosamente'));
   });
 
   /**
@@ -74,9 +72,7 @@ class StudentController {
 
     const student = await this.getStudentByIdUseCase.execute(estudianteId);
 
-    return res.status(200).json(
-      successResponse(student, 'Estudiante obtenido exitosamente')
-    );
+    return res.status(200).json(successResponse(student, 'Estudiante obtenido exitosamente'));
   });
 
   /**
@@ -87,14 +83,9 @@ class StudentController {
     const estudianteId = parseInt(req.params.id, 10);
     const updateData = req.body;
 
-    const student = await this.updateStudentUseCase.execute(
-      estudianteId,
-      updateData
-    );
+    const student = await this.updateStudentUseCase.execute(estudianteId, updateData);
 
-    return res.status(200).json(
-      successResponse(student, 'Estudiante actualizado exitosamente')
-    );
+    return res.status(200).json(successResponse(student, 'Estudiante actualizado exitosamente'));
   });
 
   /**
@@ -106,9 +97,7 @@ class StudentController {
 
     const student = await this.deleteStudentUseCase.execute(estudianteId);
 
-    return res.status(200).json(
-      successResponse(student, 'Estudiante eliminado exitosamente')
-    );
+    return res.status(200).json(successResponse(student, 'Estudiante eliminado exitosamente'));
   });
 }
 

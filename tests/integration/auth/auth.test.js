@@ -11,6 +11,15 @@ describe('Authentication Integration Tests', () => {
   let testUser;
 
   beforeAll(async () => {
+    // Clean up any existing test users first
+    await prisma.usuario.deleteMany({
+      where: {
+        dni: {
+          in: ['87654321', '11111111'],
+        },
+      },
+    });
+
     // Create a test user
     const hashedPassword = await bcrypt.hash('12345678', 10);
     testUser = await prisma.usuario.create({
@@ -28,20 +37,45 @@ describe('Authentication Integration Tests', () => {
   });
 
   afterAll(async () => {
-    // Clean up test user
-    await prisma.usuario.delete({
-      where: { usuarioId: testUser.usuarioId },
+    // Clean up test user - use deleteMany to avoid errors if user doesn't exist
+    await prisma.usuario.deleteMany({
+      where: {
+        dni: {
+          in: ['87654321', '11111111'],
+        },
+      },
     });
   });
 
   describe('POST /api/v1/auth/login', () => {
-    it('should login successfully with DNI', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: '87654321',
-          password: '12345678',
+    beforeEach(async () => {
+      // Ensure test user exists before each login test
+      const existingUser = await prisma.usuario.findUnique({
+        where: { dni: '87654321' },
+      });
+
+      if (!existingUser) {
+        const hashedPassword = await bcrypt.hash('12345678', 10);
+        await prisma.usuario.create({
+          data: {
+            dni: '87654321',
+            correo: 'test.auth@example.com',
+            contrasenaHash: hashedPassword,
+            requiereCambioPassword: false,
+            rol: 'estudiante',
+            nombres: 'Test',
+            apellidos: 'User',
+            estado: 'activo',
+          },
         });
+      }
+    });
+
+    it('should login successfully with DNI', async () => {
+      const response = await request(app).post('/api/v1/auth/login').send({
+        identifier: '87654321',
+        password: '12345678',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -56,12 +90,10 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should login successfully with email', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: 'test.auth@example.com',
-          password: '12345678',
-        });
+      const response = await request(app).post('/api/v1/auth/login').send({
+        identifier: 'test.auth@example.com',
+        password: '12345678',
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -69,12 +101,10 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should return 401 for invalid credentials', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: '87654321',
-          password: 'wrongpassword',
-        });
+      const response = await request(app).post('/api/v1/auth/login').send({
+        identifier: '87654321',
+        password: 'wrongpassword',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -82,12 +112,10 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should return 401 for non-existent user', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: '99999999',
-          password: 'password123',
-        });
+      const response = await request(app).post('/api/v1/auth/login').send({
+        identifier: '99999999',
+        password: 'password123',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -96,25 +124,48 @@ describe('Authentication Integration Tests', () => {
 
   describe('POST /api/v1/auth/refresh-token', () => {
     let validRefreshToken;
+    let refreshTestUser;
 
     beforeAll(async () => {
+      // Clean up and create a fresh user for refresh token tests
+      await prisma.usuario.deleteMany({
+        where: { dni: '99887766' },
+      });
+
+      const hashedPassword = await bcrypt.hash('password123', 10);
+      refreshTestUser = await prisma.usuario.create({
+        data: {
+          dni: '99887766',
+          correo: 'refresh.test@example.com',
+          contrasenaHash: hashedPassword,
+          requiereCambioPassword: false,
+          rol: 'estudiante',
+          nombres: 'Refresh',
+          apellidos: 'Test',
+          estado: 'activo',
+        },
+      });
+
       // Get a valid refresh token
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: '87654321',
-          password: '12345678',
-        });
+      const response = await request(app).post('/api/v1/auth/login').send({
+        identifier: '99887766',
+        password: 'password123',
+      });
 
       validRefreshToken = response.body.data.refreshToken;
     });
 
+    afterAll(async () => {
+      // Clean up refresh test user
+      await prisma.usuario.deleteMany({
+        where: { dni: '99887766' },
+      });
+    });
+
     it('should refresh token successfully', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/refresh-token')
-        .send({
-          refreshToken: validRefreshToken,
-        });
+      const response = await request(app).post('/api/v1/auth/refresh-token').send({
+        refreshToken: validRefreshToken,
+      });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -122,20 +173,16 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should return 401 for invalid refresh token', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/refresh-token')
-        .send({
-          refreshToken: 'invalid_token',
-        });
+      const response = await request(app).post('/api/v1/auth/refresh-token').send({
+        refreshToken: 'invalid_token',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
     });
 
     it('should return 401 when refresh token is missing', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/refresh-token')
-        .send({});
+      const response = await request(app).post('/api/v1/auth/refresh-token').send({});
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -163,21 +210,16 @@ describe('Authentication Integration Tests', () => {
       });
 
       // Get temp token
-      const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: '11111111',
-          password: '11111111',
-        });
+      const response = await request(app).post('/api/v1/auth/login').send({
+        identifier: '11111111',
+        password: '11111111',
+      });
 
       tempToken = response.body.tempToken;
     });
 
     afterAll(async () => {
-      // Clean up
-      await prisma.usuario.delete({
-        where: { usuarioId: userRequiringChange.usuarioId },
-      });
+      // Clean up - already handled in main afterAll
     });
 
     it('should change password successfully', async () => {
@@ -208,11 +250,9 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should return 401 without token', async () => {
-      const response = await request(app)
-        .post('/api/v1/auth/change-password-first-login')
-        .send({
-          newPassword: 'NewPass123',
-        });
+      const response = await request(app).post('/api/v1/auth/change-password-first-login').send({
+        newPassword: 'NewPass123',
+      });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);

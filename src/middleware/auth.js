@@ -11,25 +11,19 @@ const { asyncHandler } = require('./errorHandler');
  * Extrae el token del header Authorization y lo valida
  * Adjunta el usuario decodificado a req.user
  */
-const authenticateJWT = (authService) => {
+const authenticateJWT = authService => {
   return asyncHandler((req, res, next) => {
     // Extraer token del header Authorization
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      throw new AuthError(
-        'Token de autenticación requerido',
-        'AUTH_TOKEN_REQUIRED'
-      );
+      throw new AuthError('Token de autenticación requerido', 'AUTH_TOKEN_REQUIRED');
     }
 
     // Verificar formato: "Bearer <token>"
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      throw new AuthError(
-        'Formato de token inválido. Use: Bearer <token>',
-        'AUTH_TOKEN_INVALID'
-      );
+      throw new AuthError('Formato de token inválido. Use: Bearer <token>', 'AUTH_TOKEN_INVALID');
     }
 
     const token = parts[1];
@@ -53,17 +47,12 @@ const authorizeRole = (...allowedRoles) => {
   return (req, res, next) => {
     // Verificar que el usuario esté autenticado
     if (!req.user) {
-      throw new AuthError(
-        'Usuario no autenticado',
-        'AUTH_TOKEN_REQUIRED'
-      );
+      throw new AuthError('Usuario no autenticado', 'AUTH_TOKEN_REQUIRED');
     }
 
     // Verificar que el rol del usuario esté en los roles permitidos
     if (!allowedRoles.includes(req.user.rol)) {
-      throw new ForbiddenError(
-        'No tiene permisos para realizar esta operación'
-      );
+      throw new ForbiddenError('No tiene permisos para realizar esta operación');
     }
 
     next();

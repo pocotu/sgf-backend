@@ -31,22 +31,14 @@ const configureCourseRoutes = (courseController, authService) => {
    * Auth: Admin, Docente
    * Query params: ?area=A&estado=activo&search=matematica&page=1&limit=10
    */
-  router.get(
-    '/',
-    authorizeRole('admin', 'docente'),
-    courseController.list
-  );
+  router.get('/', authorizeRole('admin', 'docente'), courseController.list);
 
   /**
    * GET /api/courses/:id
    * Obtener curso por ID
    * Auth: Admin, Docente
    */
-  router.get(
-    '/:id',
-    authorizeRole('admin', 'docente'),
-    courseController.getById
-  );
+  router.get('/:id', authorizeRole('admin', 'docente'), courseController.getById);
 
   /**
    * PUT /api/courses/:id

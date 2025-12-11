@@ -11,6 +11,7 @@ const StudentRepository = require('../repositories/StudentRepository');
 const CourseRepository = require('../repositories/CourseRepository');
 const GroupRepository = require('../repositories/GroupRepository');
 const EnrollmentRepository = require('../repositories/EnrollmentRepository');
+const AttendanceRepository = require('../repositories/AttendanceRepository');
 
 // Services
 const AuthService = require('../services/AuthService');
@@ -19,6 +20,7 @@ const StudentService = require('../services/StudentService');
 const CourseService = require('../services/CourseService');
 const GroupService = require('../services/GroupService');
 const EnrollmentService = require('../services/EnrollmentService');
+const AttendanceService = require('../services/AttendanceService');
 
 // Use Cases
 const RegisterUserUseCase = require('../use-cases/RegisterUserUseCase');
@@ -44,6 +46,10 @@ const ActivateDeactivateGroupUseCase = require('../use-cases/ActivateDeactivateG
 const EnrollStudentUseCase = require('../use-cases/EnrollStudentUseCase');
 const GetEnrollmentsUseCase = require('../use-cases/GetEnrollmentsUseCase');
 const WithdrawStudentUseCase = require('../use-cases/WithdrawStudentUseCase');
+const RegisterAttendanceUseCase = require('../use-cases/RegisterAttendanceUseCase');
+const RegisterBulkAttendanceUseCase = require('../use-cases/RegisterBulkAttendanceUseCase');
+const GetAttendancesUseCase = require('../use-cases/GetAttendancesUseCase');
+const GetAttendanceSummaryUseCase = require('../use-cases/GetAttendanceSummaryUseCase');
 
 // Controllers
 const AuthController = require('../controllers/AuthController');
@@ -52,6 +58,7 @@ const StudentController = require('../controllers/StudentController');
 const CourseController = require('../controllers/CourseController');
 const GroupController = require('../controllers/GroupController');
 const EnrollmentController = require('../controllers/EnrollmentController');
+const AttendanceController = require('../controllers/AttendanceController');
 
 /**
  * Configurar todas las dependencias
@@ -72,35 +79,30 @@ const configureDependencies = () => {
   container.singleton('courseRepository', () => new CourseRepository());
   container.singleton('groupRepository', () => new GroupRepository());
   container.singleton('enrollmentRepository', () => new EnrollmentRepository());
+  container.singleton('attendanceRepository', () => new AttendanceRepository());
 
   // Registrar Services como singletons
-  container.singleton('authService', (c) => {
-    return new AuthService(
-      c.resolve('userRepository'),
-      jwtConfig
-    );
+  container.singleton('authService', c => {
+    return new AuthService(c.resolve('userRepository'), jwtConfig);
   });
 
-  container.singleton('userService', (c) => {
+  container.singleton('userService', c => {
     return new UserService(c.resolve('userRepository'));
   });
 
-  container.singleton('studentService', (c) => {
-    return new StudentService(
-      c.resolve('studentRepository'),
-      c.resolve('userRepository')
-    );
+  container.singleton('studentService', c => {
+    return new StudentService(c.resolve('studentRepository'), c.resolve('userRepository'));
   });
 
-  container.singleton('courseService', (c) => {
+  container.singleton('courseService', c => {
     return new CourseService(c.resolve('courseRepository'));
   });
 
-  container.singleton('groupService', (c) => {
+  container.singleton('groupService', c => {
     return new GroupService(c.resolve('groupRepository'));
   });
 
-  container.singleton('enrollmentService', (c) => {
+  container.singleton('enrollmentService', c => {
     return new EnrollmentService(
       c.resolve('enrollmentRepository'),
       c.resolve('groupRepository'),
@@ -108,141 +110,140 @@ const configureDependencies = () => {
     );
   });
 
-  // Registrar Use Cases como singletons
-  container.singleton('registerUserUseCase', (c) => {
-    return new RegisterUserUseCase(
-      c.resolve('userRepository'),
-      c.resolve('userService')
+  container.singleton('attendanceService', c => {
+    return new AttendanceService(
+      c.resolve('attendanceRepository'),
+      c.resolve('enrollmentRepository')
     );
   });
 
-  container.singleton('getUsersUseCase', (c) => {
+  // Registrar Use Cases como singletons
+  container.singleton('registerUserUseCase', c => {
+    return new RegisterUserUseCase(c.resolve('userRepository'), c.resolve('userService'));
+  });
+
+  container.singleton('getUsersUseCase', c => {
     return new GetUsersUseCase(c.resolve('userRepository'));
   });
 
-  container.singleton('getUserByIdUseCase', (c) => {
+  container.singleton('getUserByIdUseCase', c => {
     return new GetUserByIdUseCase(c.resolve('userRepository'));
   });
 
-  container.singleton('updateUserUseCase', (c) => {
-    return new UpdateUserUseCase(
-      c.resolve('userRepository'),
-      c.resolve('userService')
-    );
+  container.singleton('updateUserUseCase', c => {
+    return new UpdateUserUseCase(c.resolve('userRepository'), c.resolve('userService'));
   });
 
-  container.singleton('deleteUserUseCase', (c) => {
+  container.singleton('deleteUserUseCase', c => {
     return new DeleteUserUseCase(c.resolve('userRepository'));
   });
 
-  container.singleton('createStudentUseCase', (c) => {
-    return new CreateStudentUseCase(
-      c.resolve('studentRepository'),
-      c.resolve('studentService')
-    );
+  container.singleton('createStudentUseCase', c => {
+    return new CreateStudentUseCase(c.resolve('studentRepository'), c.resolve('studentService'));
   });
 
-  container.singleton('getStudentsUseCase', (c) => {
+  container.singleton('getStudentsUseCase', c => {
     return new GetStudentsUseCase(c.resolve('studentRepository'));
   });
 
-  container.singleton('getStudentByIdUseCase', (c) => {
+  container.singleton('getStudentByIdUseCase', c => {
     return new GetStudentByIdUseCase(c.resolve('studentRepository'));
   });
 
-  container.singleton('updateStudentUseCase', (c) => {
-    return new UpdateStudentUseCase(
-      c.resolve('studentRepository'),
-      c.resolve('studentService')
-    );
+  container.singleton('updateStudentUseCase', c => {
+    return new UpdateStudentUseCase(c.resolve('studentRepository'), c.resolve('studentService'));
   });
 
-  container.singleton('deleteStudentUseCase', (c) => {
-    return new DeleteStudentUseCase(
-      c.resolve('studentRepository'),
-      c.resolve('userRepository')
-    );
+  container.singleton('deleteStudentUseCase', c => {
+    return new DeleteStudentUseCase(c.resolve('studentRepository'), c.resolve('userRepository'));
   });
 
-  container.singleton('createCourseUseCase', (c) => {
-    return new CreateCourseUseCase(
-      c.resolve('courseRepository'),
-      c.resolve('courseService')
-    );
+  container.singleton('createCourseUseCase', c => {
+    return new CreateCourseUseCase(c.resolve('courseRepository'), c.resolve('courseService'));
   });
 
-  container.singleton('getCoursesUseCase', (c) => {
+  container.singleton('getCoursesUseCase', c => {
     return new GetCoursesUseCase(c.resolve('courseRepository'));
   });
 
-  container.singleton('getCourseByIdUseCase', (c) => {
+  container.singleton('getCourseByIdUseCase', c => {
     return new GetCourseByIdUseCase(c.resolve('courseRepository'));
   });
 
-  container.singleton('updateCourseUseCase', (c) => {
-    return new UpdateCourseUseCase(
-      c.resolve('courseRepository'),
-      c.resolve('courseService')
-    );
+  container.singleton('updateCourseUseCase', c => {
+    return new UpdateCourseUseCase(c.resolve('courseRepository'), c.resolve('courseService'));
   });
 
-  container.singleton('deleteCourseUseCase', (c) => {
-    return new DeleteCourseUseCase(
-      c.resolve('courseRepository'),
-      c.resolve('courseService')
-    );
+  container.singleton('deleteCourseUseCase', c => {
+    return new DeleteCourseUseCase(c.resolve('courseRepository'), c.resolve('courseService'));
   });
 
-  container.singleton('createGroupUseCase', (c) => {
-    return new CreateGroupUseCase(
-      c.resolve('groupRepository'),
-      c.resolve('groupService')
-    );
+  container.singleton('createGroupUseCase', c => {
+    return new CreateGroupUseCase(c.resolve('groupRepository'), c.resolve('groupService'));
   });
 
-  container.singleton('getGroupsUseCase', (c) => {
+  container.singleton('getGroupsUseCase', c => {
     return new GetGroupsUseCase(c.resolve('groupRepository'));
   });
 
-  container.singleton('getGroupByIdUseCase', (c) => {
+  container.singleton('getGroupByIdUseCase', c => {
     return new GetGroupByIdUseCase(c.resolve('groupRepository'));
   });
 
-  container.singleton('updateGroupUseCase', (c) => {
-    return new UpdateGroupUseCase(
-      c.resolve('groupRepository'),
-      c.resolve('groupService')
-    );
+  container.singleton('updateGroupUseCase', c => {
+    return new UpdateGroupUseCase(c.resolve('groupRepository'), c.resolve('groupService'));
   });
 
-  container.singleton('activateDeactivateGroupUseCase', (c) => {
+  container.singleton('activateDeactivateGroupUseCase', c => {
     return new ActivateDeactivateGroupUseCase(c.resolve('groupRepository'));
   });
 
-  container.singleton('enrollStudentUseCase', (c) => {
+  container.singleton('enrollStudentUseCase', c => {
     return new EnrollStudentUseCase(
       c.resolve('enrollmentRepository'),
       c.resolve('enrollmentService')
     );
   });
 
-  container.singleton('getEnrollmentsUseCase', (c) => {
+  container.singleton('getEnrollmentsUseCase', c => {
     return new GetEnrollmentsUseCase(c.resolve('enrollmentRepository'));
   });
 
-  container.singleton('withdrawStudentUseCase', (c) => {
+  container.singleton('withdrawStudentUseCase', c => {
     return new WithdrawStudentUseCase(
       c.resolve('enrollmentRepository'),
       c.resolve('enrollmentService')
     );
   });
 
+  container.singleton('registerAttendanceUseCase', c => {
+    return new RegisterAttendanceUseCase(
+      c.resolve('attendanceRepository'),
+      c.resolve('attendanceService')
+    );
+  });
+
+  container.singleton('registerBulkAttendanceUseCase', c => {
+    return new RegisterBulkAttendanceUseCase(
+      c.resolve('attendanceRepository'),
+      c.resolve('attendanceService')
+    );
+  });
+
+  container.singleton('getAttendancesUseCase', c => {
+    return new GetAttendancesUseCase(c.resolve('attendanceRepository'));
+  });
+
+  container.singleton('getAttendanceSummaryUseCase', c => {
+    return new GetAttendanceSummaryUseCase(c.resolve('attendanceRepository'));
+  });
+
   // Registrar Controllers (transient - nueva instancia cada vez)
-  container.register('authController', (c) => {
+  container.register('authController', c => {
     return new AuthController(c.resolve('authService'));
   });
 
-  container.register('userController', (c) => {
+  container.register('userController', c => {
     return new UserController(
       c.resolve('registerUserUseCase'),
       c.resolve('getUsersUseCase'),
@@ -252,7 +253,7 @@ const configureDependencies = () => {
     );
   });
 
-  container.register('studentController', (c) => {
+  container.register('studentController', c => {
     return new StudentController(
       c.resolve('createStudentUseCase'),
       c.resolve('getStudentsUseCase'),
@@ -262,7 +263,7 @@ const configureDependencies = () => {
     );
   });
 
-  container.register('courseController', (c) => {
+  container.register('courseController', c => {
     return new CourseController(
       c.resolve('createCourseUseCase'),
       c.resolve('getCoursesUseCase'),
@@ -272,7 +273,7 @@ const configureDependencies = () => {
     );
   });
 
-  container.register('groupController', (c) => {
+  container.register('groupController', c => {
     return new GroupController(
       c.resolve('createGroupUseCase'),
       c.resolve('getGroupsUseCase'),
@@ -282,11 +283,20 @@ const configureDependencies = () => {
     );
   });
 
-  container.register('enrollmentController', (c) => {
+  container.register('enrollmentController', c => {
     return new EnrollmentController(
       c.resolve('enrollStudentUseCase'),
       c.resolve('getEnrollmentsUseCase'),
       c.resolve('withdrawStudentUseCase')
+    );
+  });
+
+  container.register('attendanceController', c => {
+    return new AttendanceController(
+      c.resolve('registerAttendanceUseCase'),
+      c.resolve('registerBulkAttendanceUseCase'),
+      c.resolve('getAttendancesUseCase'),
+      c.resolve('getAttendanceSummaryUseCase')
     );
   });
 };

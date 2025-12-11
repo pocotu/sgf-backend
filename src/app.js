@@ -77,6 +77,7 @@ const configureStudentRoutes = require('./routes/student.routes');
 const configureCourseRoutes = require('./routes/course.routes');
 const configureGroupRoutes = require('./routes/group.routes');
 const configureEnrollmentRoutes = require('./routes/enrollment.routes');
+const configureAttendanceRoutes = require('./routes/attendance.routes');
 
 const authController = container.resolve('authController');
 const userController = container.resolve('userController');
@@ -84,6 +85,7 @@ const studentController = container.resolve('studentController');
 const courseController = container.resolve('courseController');
 const groupController = container.resolve('groupController');
 const enrollmentController = container.resolve('enrollmentController');
+const attendanceController = container.resolve('attendanceController');
 const authService = container.resolve('authService');
 
 app.use(`${API_PREFIX}/auth`, configureAuthRoutes(authController, authService));
@@ -92,6 +94,7 @@ app.use(`${API_PREFIX}/students`, configureStudentRoutes(studentController, auth
 app.use(`${API_PREFIX}/courses`, configureCourseRoutes(courseController, authService));
 app.use(`${API_PREFIX}/groups`, configureGroupRoutes(groupController, authService));
 app.use(`${API_PREFIX}/enrollments`, configureEnrollmentRoutes(enrollmentController, authService));
+app.use(`${API_PREFIX}/attendances`, configureAttendanceRoutes(attendanceController, authService));
 
 // Import error handling middleware
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');

@@ -30,24 +30,15 @@ class UpdateUserUseCase {
 
     // Prevenir cambios en campos protegidos
     if (updateData.dni !== undefined) {
-      throw new BusinessLogicError(
-        'No se permite cambiar el DNI',
-        'USER_DNI_IMMUTABLE'
-      );
+      throw new BusinessLogicError('No se permite cambiar el DNI', 'USER_DNI_IMMUTABLE');
     }
 
     if (updateData.usuarioId !== undefined) {
-      throw new BusinessLogicError(
-        'No se permite cambiar el ID de usuario',
-        'USER_ID_IMMUTABLE'
-      );
+      throw new BusinessLogicError('No se permite cambiar el ID de usuario', 'USER_ID_IMMUTABLE');
     }
 
     if (updateData.rol !== undefined) {
-      throw new BusinessLogicError(
-        'No se permite cambiar el rol',
-        'USER_ROLE_IMMUTABLE'
-      );
+      throw new BusinessLogicError('No se permite cambiar el rol', 'USER_ROLE_IMMUTABLE');
     }
 
     // Validar datos de actualización
@@ -62,7 +53,7 @@ class UpdateUserUseCase {
     const allowedFields = ['correo', 'nombres', 'apellidos', 'telefono', 'estado'];
     const dataToUpdate = {};
 
-    allowedFields.forEach((field) => {
+    allowedFields.forEach(field => {
       if (updateData[field] !== undefined) {
         dataToUpdate[field] = updateData[field];
       }

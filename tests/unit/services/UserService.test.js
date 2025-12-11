@@ -64,10 +64,10 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow('Errores de validación');
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(
+          'Errores de validación'
+        );
       });
 
       it('should throw ValidationError when DNI is invalid (not 8 digits)', async () => {
@@ -80,8 +80,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when DNI contains non-numeric characters', async () => {
@@ -94,8 +93,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when correo format is invalid', async () => {
@@ -109,8 +107,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when nombres is missing', async () => {
@@ -122,8 +119,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when nombres is empty string', async () => {
@@ -136,8 +132,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when apellidos is missing', async () => {
@@ -149,8 +144,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when apellidos is empty string', async () => {
@@ -163,8 +157,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when rol is missing', async () => {
@@ -176,8 +169,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError when rol is invalid', async () => {
@@ -190,8 +182,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData)).rejects.toThrow(ValidationError);
       });
 
       it('should throw ValidationError with multiple errors', async () => {
@@ -226,8 +217,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData, true))
-          .resolves.not.toThrow();
+        await expect(userService.validateUserData(userData, true)).resolves.not.toThrow();
       });
 
       it('should not require DNI for update', async () => {
@@ -238,8 +228,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData, true))
-          .resolves.not.toThrow();
+        await expect(userService.validateUserData(userData, true)).resolves.not.toThrow();
       });
 
       it('should still validate DNI format if provided', async () => {
@@ -249,8 +238,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData, true))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData, true)).rejects.toThrow(ValidationError);
       });
 
       it('should still validate correo format if provided', async () => {
@@ -260,8 +248,7 @@ describe('UserService', () => {
         };
 
         // Act & Assert
-        await expect(userService.validateUserData(userData, true))
-          .rejects.toThrow(ValidationError);
+        await expect(userService.validateUserData(userData, true)).rejects.toThrow(ValidationError);
       });
     });
   });
@@ -273,8 +260,9 @@ describe('UserService', () => {
       mockUserRepository.emailExists.mockResolvedValue(false);
 
       // Act & Assert
-      await expect(userService.checkUniqueness('12345678', 'test@example.com'))
-        .resolves.not.toThrow();
+      await expect(
+        userService.checkUniqueness('12345678', 'test@example.com')
+      ).resolves.not.toThrow();
       expect(mockUserRepository.dniExists).toHaveBeenCalledWith('12345678', null);
       expect(mockUserRepository.emailExists).toHaveBeenCalledWith('test@example.com', null);
     });
@@ -284,10 +272,12 @@ describe('UserService', () => {
       mockUserRepository.dniExists.mockResolvedValue(true);
 
       // Act & Assert
-      await expect(userService.checkUniqueness('12345678', 'test@example.com'))
-        .rejects.toThrow(BusinessLogicError);
-      await expect(userService.checkUniqueness('12345678', 'test@example.com'))
-        .rejects.toThrow('El DNI ya está registrado');
+      await expect(userService.checkUniqueness('12345678', 'test@example.com')).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(userService.checkUniqueness('12345678', 'test@example.com')).rejects.toThrow(
+        'El DNI ya está registrado'
+      );
     });
 
     it('should throw BusinessLogicError when correo already exists', async () => {
@@ -296,10 +286,12 @@ describe('UserService', () => {
       mockUserRepository.emailExists.mockResolvedValue(true);
 
       // Act & Assert
-      await expect(userService.checkUniqueness('12345678', 'test@example.com'))
-        .rejects.toThrow(BusinessLogicError);
-      await expect(userService.checkUniqueness('12345678', 'test@example.com'))
-        .rejects.toThrow('El correo electrónico ya está registrado');
+      await expect(userService.checkUniqueness('12345678', 'test@example.com')).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(userService.checkUniqueness('12345678', 'test@example.com')).rejects.toThrow(
+        'El correo electrónico ya está registrado'
+      );
     });
 
     it('should exclude specific ID when checking uniqueness', async () => {

@@ -122,11 +122,10 @@ describe('Custom Error Classes', () => {
     });
 
     it('should create business logic error with custom code', () => {
-      const error = new BusinessLogicError(
-        'Grupo sin cupos',
-        'ENROLLMENT_NO_CAPACITY',
-        { available: 0, required: 1 }
-      );
+      const error = new BusinessLogicError('Grupo sin cupos', 'ENROLLMENT_NO_CAPACITY', {
+        available: 0,
+        required: 1,
+      });
 
       expect(error.code).toBe('ENROLLMENT_NO_CAPACITY');
       expect(error.details).toEqual({ available: 0, required: 1 });

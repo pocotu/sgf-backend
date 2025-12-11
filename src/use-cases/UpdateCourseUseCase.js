@@ -51,10 +51,7 @@ class UpdateCourseUseCase {
     }
 
     // Actualizar curso
-    const updatedCourse = await this.courseRepository.update(
-      cursoId,
-      dataToUpdate
-    );
+    const updatedCourse = await this.courseRepository.update(cursoId, dataToUpdate);
 
     return updatedCourse;
   }

@@ -37,9 +37,7 @@ class CourseController {
 
     const course = await this.createCourseUseCase.execute(courseData);
 
-    return res.status(201).json(
-      successResponse(course, 'Curso creado exitosamente')
-    );
+    return res.status(201).json(successResponse(course, 'Curso creado exitosamente'));
   });
 
   /**
@@ -74,9 +72,7 @@ class CourseController {
 
     const course = await this.getCourseByIdUseCase.execute(cursoId);
 
-    return res.status(200).json(
-      successResponse(course, 'Curso obtenido exitosamente')
-    );
+    return res.status(200).json(successResponse(course, 'Curso obtenido exitosamente'));
   });
 
   /**
@@ -87,14 +83,9 @@ class CourseController {
     const cursoId = parseInt(req.params.id, 10);
     const updateData = req.body;
 
-    const course = await this.updateCourseUseCase.execute(
-      cursoId,
-      updateData
-    );
+    const course = await this.updateCourseUseCase.execute(cursoId, updateData);
 
-    return res.status(200).json(
-      successResponse(course, 'Curso actualizado exitosamente')
-    );
+    return res.status(200).json(successResponse(course, 'Curso actualizado exitosamente'));
   });
 
   /**
@@ -106,9 +97,7 @@ class CourseController {
 
     const course = await this.deleteCourseUseCase.execute(cursoId);
 
-    return res.status(200).json(
-      successResponse(course, 'Curso eliminado exitosamente')
-    );
+    return res.status(200).json(successResponse(course, 'Curso eliminado exitosamente'));
   });
 }
 

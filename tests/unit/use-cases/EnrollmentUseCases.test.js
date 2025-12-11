@@ -55,25 +55,14 @@ describe('Enrollment Use Cases', () => {
 
       mockEnrollmentService.validateAvailableCapacity.mockResolvedValue(grupo);
       mockEnrollmentRepository.create.mockResolvedValue(createdEnrollment);
-      mockEnrollmentRepository.findByIdWithRelations.mockResolvedValue(
-        enrollmentWithRelations
-      );
+      mockEnrollmentRepository.findByIdWithRelations.mockResolvedValue(enrollmentWithRelations);
 
       const result = await enrollStudentUseCase.execute(enrollmentData);
 
-      expect(mockEnrollmentService.validateEnrollmentData).toHaveBeenCalledWith(
-        enrollmentData
-      );
-      expect(
-        mockEnrollmentService.validateNoActiveEnrollment
-      ).toHaveBeenCalledWith(1);
-      expect(
-        mockEnrollmentService.validateAvailableCapacity
-      ).toHaveBeenCalledWith(1);
-      expect(mockEnrollmentService.validateModalidadMatch).toHaveBeenCalledWith(
-        1,
-        grupo
-      );
+      expect(mockEnrollmentService.validateEnrollmentData).toHaveBeenCalledWith(enrollmentData);
+      expect(mockEnrollmentService.validateNoActiveEnrollment).toHaveBeenCalledWith(1);
+      expect(mockEnrollmentService.validateAvailableCapacity).toHaveBeenCalledWith(1);
+      expect(mockEnrollmentService.validateModalidadMatch).toHaveBeenCalledWith(1, grupo);
       expect(mockEnrollmentRepository.create).toHaveBeenCalled();
       expect(result).toEqual(enrollmentWithRelations);
     });
@@ -95,12 +84,8 @@ describe('Enrollment Use Cases', () => {
       await enrollStudentUseCase.execute(enrollmentData);
 
       expect(mockEnrollmentService.validateEnrollmentData).toHaveBeenCalled();
-      expect(
-        mockEnrollmentService.validateNoActiveEnrollment
-      ).toHaveBeenCalled();
-      expect(
-        mockEnrollmentService.validateAvailableCapacity
-      ).toHaveBeenCalled();
+      expect(mockEnrollmentService.validateNoActiveEnrollment).toHaveBeenCalled();
+      expect(mockEnrollmentService.validateAvailableCapacity).toHaveBeenCalled();
       expect(mockEnrollmentService.validateModalidadMatch).toHaveBeenCalled();
     });
   });
@@ -113,9 +98,7 @@ describe('Enrollment Use Cases', () => {
       mockEnrollmentRepository = {
         list: jest.fn(),
       };
-      getEnrollmentsUseCase = new GetEnrollmentsUseCase(
-        mockEnrollmentRepository
-      );
+      getEnrollmentsUseCase = new GetEnrollmentsUseCase(mockEnrollmentRepository);
     });
 
     it('should list enrollments with pagination', async () => {
@@ -123,10 +106,7 @@ describe('Enrollment Use Cases', () => {
       const pagination = { page: 1, limit: 10 };
 
       const mockResult = {
-        matriculas: [
-          { matriculaId: 1 },
-          { matriculaId: 2 },
-        ],
+        matriculas: [{ matriculaId: 1 }, { matriculaId: 2 }],
         total: 25,
       };
 
@@ -155,10 +135,7 @@ describe('Enrollment Use Cases', () => {
 
       const result = await getEnrollmentsUseCase.execute({}, {});
 
-      expect(mockEnrollmentRepository.list).toHaveBeenCalledWith(
-        {},
-        { page: 1, limit: 10 }
-      );
+      expect(mockEnrollmentRepository.list).toHaveBeenCalledWith({}, { page: 1, limit: 10 });
       expect(result.pagination.page).toBe(1);
       expect(result.pagination.limit).toBe(10);
     });
@@ -208,45 +185,35 @@ describe('Enrollment Use Cases', () => {
         .mockResolvedValueOnce(enrollmentWithRelations);
       mockEnrollmentRepository.withdraw.mockResolvedValue(updatedEnrollment);
 
-      const result = await withdrawStudentUseCase.execute(
-        matriculaId,
-        motivoRetiro
-      );
+      const result = await withdrawStudentUseCase.execute(matriculaId, motivoRetiro);
 
-      expect(
-        mockEnrollmentService.validateWithdrawalReason
-      ).toHaveBeenCalledWith(motivoRetiro);
-      expect(mockEnrollmentRepository.withdraw).toHaveBeenCalledWith(
-        matriculaId,
-        motivoRetiro
-      );
+      expect(mockEnrollmentService.validateWithdrawalReason).toHaveBeenCalledWith(motivoRetiro);
+      expect(mockEnrollmentRepository.withdraw).toHaveBeenCalledWith(matriculaId, motivoRetiro);
       expect(result).toEqual(enrollmentWithRelations);
     });
 
     it('should throw error when enrollment not found', async () => {
       mockEnrollmentRepository.findByIdWithRelations.mockResolvedValue(null);
 
-      await expect(
-        withdrawStudentUseCase.execute(999, 'Motivo válido')
-      ).rejects.toThrow(NotFoundError);
-      await expect(
-        withdrawStudentUseCase.execute(999, 'Motivo válido')
-      ).rejects.toThrow('Matrícula no encontrada');
+      await expect(withdrawStudentUseCase.execute(999, 'Motivo válido')).rejects.toThrow(
+        NotFoundError
+      );
+      await expect(withdrawStudentUseCase.execute(999, 'Motivo válido')).rejects.toThrow(
+        'Matrícula no encontrada'
+      );
     });
 
     it('should validate withdrawal reason', async () => {
       const enrollment = { matriculaId: 1 };
-      mockEnrollmentRepository.findByIdWithRelations.mockResolvedValue(
-        enrollment
-      );
+      mockEnrollmentRepository.findByIdWithRelations.mockResolvedValue(enrollment);
       mockEnrollmentRepository.withdraw.mockResolvedValue({});
       mockEnrollmentRepository.findByIdWithRelations.mockResolvedValue({});
 
       await withdrawStudentUseCase.execute(1, 'Motivo válido de retiro');
 
-      expect(
-        mockEnrollmentService.validateWithdrawalReason
-      ).toHaveBeenCalledWith('Motivo válido de retiro');
+      expect(mockEnrollmentService.validateWithdrawalReason).toHaveBeenCalledWith(
+        'Motivo válido de retiro'
+      );
     });
   });
 });

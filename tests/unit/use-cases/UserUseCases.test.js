@@ -276,10 +276,8 @@ describe('User Use Cases', () => {
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(getUserByIdUseCase.execute(999))
-        .rejects.toThrow(NotFoundError);
-      await expect(getUserByIdUseCase.execute(999))
-        .rejects.toThrow('Usuario no encontrado');
+      await expect(getUserByIdUseCase.execute(999)).rejects.toThrow(NotFoundError);
+      await expect(getUserByIdUseCase.execute(999)).rejects.toThrow('Usuario no encontrado');
     });
   });
 
@@ -330,8 +328,9 @@ describe('User Use Cases', () => {
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(updateUserUseCase.execute(999, { nombres: 'Test' }))
-        .rejects.toThrow(NotFoundError);
+      await expect(updateUserUseCase.execute(999, { nombres: 'Test' })).rejects.toThrow(
+        NotFoundError
+      );
     });
 
     it('should throw BusinessLogicError when trying to change DNI', async () => {
@@ -340,10 +339,12 @@ describe('User Use Cases', () => {
       mockUserRepository.findById.mockResolvedValue(existingUser);
 
       // Act & Assert
-      await expect(updateUserUseCase.execute(1, { dni: '87654321' }))
-        .rejects.toThrow(BusinessLogicError);
-      await expect(updateUserUseCase.execute(1, { dni: '87654321' }))
-        .rejects.toThrow('No se permite cambiar el DNI');
+      await expect(updateUserUseCase.execute(1, { dni: '87654321' })).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(updateUserUseCase.execute(1, { dni: '87654321' })).rejects.toThrow(
+        'No se permite cambiar el DNI'
+      );
     });
 
     it('should throw BusinessLogicError when trying to change usuarioId', async () => {
@@ -352,10 +353,12 @@ describe('User Use Cases', () => {
       mockUserRepository.findById.mockResolvedValue(existingUser);
 
       // Act & Assert
-      await expect(updateUserUseCase.execute(1, { usuarioId: 2 }))
-        .rejects.toThrow(BusinessLogicError);
-      await expect(updateUserUseCase.execute(1, { usuarioId: 2 }))
-        .rejects.toThrow('No se permite cambiar el ID de usuario');
+      await expect(updateUserUseCase.execute(1, { usuarioId: 2 })).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(updateUserUseCase.execute(1, { usuarioId: 2 })).rejects.toThrow(
+        'No se permite cambiar el ID de usuario'
+      );
     });
 
     it('should throw BusinessLogicError when trying to change rol', async () => {
@@ -364,10 +367,12 @@ describe('User Use Cases', () => {
       mockUserRepository.findById.mockResolvedValue(existingUser);
 
       // Act & Assert
-      await expect(updateUserUseCase.execute(1, { rol: 'admin' }))
-        .rejects.toThrow(BusinessLogicError);
-      await expect(updateUserUseCase.execute(1, { rol: 'admin' }))
-        .rejects.toThrow('No se permite cambiar el rol');
+      await expect(updateUserUseCase.execute(1, { rol: 'admin' })).rejects.toThrow(
+        BusinessLogicError
+      );
+      await expect(updateUserUseCase.execute(1, { rol: 'admin' })).rejects.toThrow(
+        'No se permite cambiar el rol'
+      );
     });
 
     it('should check correo uniqueness when updating correo', async () => {
@@ -427,10 +432,8 @@ describe('User Use Cases', () => {
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(deleteUserUseCase.execute(999))
-        .rejects.toThrow(NotFoundError);
-      await expect(deleteUserUseCase.execute(999))
-        .rejects.toThrow('Usuario no encontrado');
+      await expect(deleteUserUseCase.execute(999)).rejects.toThrow(NotFoundError);
+      await expect(deleteUserUseCase.execute(999)).rejects.toThrow('Usuario no encontrado');
     });
   });
 });

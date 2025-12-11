@@ -32,9 +32,7 @@ class DeleteStudentUseCase {
     await this.userRepository.softDelete(student.usuarioId);
 
     // Obtener estudiante actualizado con datos de usuario
-    const deletedStudent = await this.studentRepository.findByIdWithUser(
-      estudianteId
-    );
+    const deletedStudent = await this.studentRepository.findByIdWithUser(estudianteId);
 
     return deletedStudent;
   }

@@ -34,12 +34,90 @@ describe('Database Integration Tests', () => {
   });
 
   describe('Usuario Model', () => {
-    it('should have seeded users', async () => {
-      const usuarios = await prisma.usuario.findMany();
-      expect(usuarios.length).toBeGreaterThanOrEqual(3);
+    it('should create and query users', async () => {
+      // Clean up test users first
+      await prisma.usuario.deleteMany({
+        where: {
+          dni: {
+            in: ['12345678', '23456789', '34567890'],
+          },
+        },
+      });
+
+      // Create test users
+      await prisma.usuario.create({
+        data: {
+          dni: '12345678',
+          correo: 'admin@sga-p.edu.pe',
+          contrasenaHash: 'hash',
+          rol: 'admin',
+          nombres: 'Admin',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
+      await prisma.usuario.create({
+        data: {
+          dni: '23456789',
+          correo: 'docente@sga-p.edu.pe',
+          contrasenaHash: 'hash',
+          rol: 'docente',
+          nombres: 'Docente',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
+      await prisma.usuario.create({
+        data: {
+          dni: '34567890',
+          correo: 'estudiante@sga-p.edu.pe',
+          contrasenaHash: 'hash',
+          rol: 'estudiante',
+          nombres: 'Estudiante',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
+      const usuarios = await prisma.usuario.findMany({
+        where: {
+          dni: {
+            in: ['12345678', '23456789', '34567890'],
+          },
+        },
+      });
+      expect(usuarios.length).toBe(3);
+
+      // Clean up
+      await prisma.usuario.deleteMany({
+        where: {
+          dni: {
+            in: ['12345678', '23456789', '34567890'],
+          },
+        },
+      });
     });
 
     it('should find admin user', async () => {
+      // Create admin user for this test
+      await prisma.usuario.deleteMany({
+        where: { dni: '12345678' },
+      });
+
+      await prisma.usuario.create({
+        data: {
+          dni: '12345678',
+          correo: 'admin@sga-p.edu.pe',
+          contrasenaHash: 'hash',
+          rol: 'admin',
+          nombres: 'Admin',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
       const admin = await prisma.usuario.findUnique({
         where: { dni: '12345678' },
       });
@@ -47,27 +125,95 @@ describe('Database Integration Tests', () => {
       expect(admin).toBeDefined();
       expect(admin.rol).toBe('admin');
       expect(admin.correo).toBe('admin@sga-p.edu.pe');
+
+      // Clean up
+      await prisma.usuario.deleteMany({
+        where: { dni: '12345678' },
+      });
     });
 
     it('should find docente user', async () => {
+      // Create docente user for this test
+      await prisma.usuario.deleteMany({
+        where: { dni: '23456789' },
+      });
+
+      await prisma.usuario.create({
+        data: {
+          dni: '23456789',
+          correo: 'docente@sga-p.edu.pe',
+          contrasenaHash: 'hash',
+          rol: 'docente',
+          nombres: 'Docente',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
       const docente = await prisma.usuario.findUnique({
         where: { dni: '23456789' },
       });
 
       expect(docente).toBeDefined();
       expect(docente.rol).toBe('docente');
+
+      // Clean up
+      await prisma.usuario.deleteMany({
+        where: { dni: '23456789' },
+      });
     });
 
     it('should find estudiante user', async () => {
+      // Create estudiante user for this test
+      await prisma.usuario.deleteMany({
+        where: { dni: '34567890' },
+      });
+
+      await prisma.usuario.create({
+        data: {
+          dni: '34567890',
+          correo: 'estudiante@sga-p.edu.pe',
+          contrasenaHash: 'hash',
+          rol: 'estudiante',
+          nombres: 'Estudiante',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
       const estudiante = await prisma.usuario.findUnique({
         where: { dni: '34567890' },
       });
 
       expect(estudiante).toBeDefined();
       expect(estudiante.rol).toBe('estudiante');
+
+      // Clean up
+      await prisma.usuario.deleteMany({
+        where: { dni: '34567890' },
+      });
     });
 
     it('should enforce unique DNI constraint', async () => {
+      // Clean up first
+      await prisma.usuario.deleteMany({
+        where: { dni: '12345678' },
+      });
+
+      // Create first user
+      await prisma.usuario.create({
+        data: {
+          dni: '12345678',
+          correo: 'first@test.com',
+          contrasenaHash: 'hash',
+          rol: 'estudiante',
+          nombres: 'Test',
+          apellidos: 'User',
+          estado: 'activo',
+        },
+      });
+
+      // Try to create duplicate - should fail
       await expect(
         prisma.usuario.create({
           data: {
@@ -77,9 +223,15 @@ describe('Database Integration Tests', () => {
             rol: 'estudiante',
             nombres: 'Test',
             apellidos: 'User',
+            estado: 'activo',
           },
         })
       ).rejects.toThrow();
+
+      // Clean up
+      await prisma.usuario.deleteMany({
+        where: { dni: '12345678' },
+      });
     });
 
     it('should enforce unique email constraint', async () => {

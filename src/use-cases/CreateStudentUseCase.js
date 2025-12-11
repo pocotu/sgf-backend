@@ -48,9 +48,7 @@ class CreateStudentUseCase {
     const student = await this.studentRepository.create(studentToCreate);
 
     // Obtener estudiante con datos de usuario
-    const studentWithUser = await this.studentRepository.findByIdWithUser(
-      student.estudianteId
-    );
+    const studentWithUser = await this.studentRepository.findByIdWithUser(student.estudianteId);
 
     return studentWithUser;
   }

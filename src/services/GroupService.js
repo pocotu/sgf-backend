@@ -37,18 +37,14 @@ class GroupService {
     } else if (groupData.modalidad) {
       const validModalidades = ['ORDINARIO', 'PRIMERA_OPCION', 'DIRIMENCIA'];
       if (!validModalidades.includes(groupData.modalidad)) {
-        errors.modalidad =
-          'Modalidad debe ser: ORDINARIO, PRIMERA_OPCION o DIRIMENCIA';
+        errors.modalidad = 'Modalidad debe ser: ORDINARIO, PRIMERA_OPCION o DIRIMENCIA';
       }
     }
 
     // Validar nombre de grupo (requerido en creación)
     if (!isUpdate && !groupData.nombreGrupo) {
       errors.nombreGrupo = 'Nombre del grupo es requerido';
-    } else if (
-      groupData.nombreGrupo &&
-      groupData.nombreGrupo.trim().length === 0
-    ) {
+    } else if (groupData.nombreGrupo && groupData.nombreGrupo.trim().length === 0) {
       errors.nombreGrupo = 'Nombre del grupo no puede estar vacío';
     }
 
@@ -84,10 +80,7 @@ class GroupService {
       timeRegex.test(groupData.horaInicio) &&
       timeRegex.test(groupData.horaFin)
     ) {
-      if (!this.groupRepository.validateSchedule(
-        groupData.horaInicio,
-        groupData.horaFin
-      )) {
+      if (!this.groupRepository.validateSchedule(groupData.horaInicio, groupData.horaFin)) {
         errors.horaFin = 'Hora de fin debe ser mayor que hora de inicio';
       }
     }

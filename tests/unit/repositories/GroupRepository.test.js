@@ -148,11 +148,7 @@ describe('GroupRepository', () => {
       it('should return true when combination exists', async () => {
         prisma.grupo.count.mockResolvedValue(1);
 
-        const result = await repository.existsUniqueCombination(
-          'A',
-          'ORDINARIO',
-          'Grupo 1'
-        );
+        const result = await repository.existsUniqueCombination('A', 'ORDINARIO', 'Grupo 1');
 
         expect(result).toBe(true);
         expect(prisma.grupo.count).toHaveBeenCalledWith({
@@ -163,11 +159,7 @@ describe('GroupRepository', () => {
       it('should return false when combination does not exist', async () => {
         prisma.grupo.count.mockResolvedValue(0);
 
-        const result = await repository.existsUniqueCombination(
-          'A',
-          'ORDINARIO',
-          'Grupo 1'
-        );
+        const result = await repository.existsUniqueCombination('A', 'ORDINARIO', 'Grupo 1');
 
         expect(result).toBe(false);
       });
@@ -175,12 +167,7 @@ describe('GroupRepository', () => {
       it('should exclude specific ID when provided', async () => {
         prisma.grupo.count.mockResolvedValue(0);
 
-        await repository.existsUniqueCombination(
-          'A',
-          'ORDINARIO',
-          'Grupo 1',
-          5
-        );
+        await repository.existsUniqueCombination('A', 'ORDINARIO', 'Grupo 1', 5);
 
         expect(prisma.grupo.count).toHaveBeenCalledWith({
           where: {
@@ -195,16 +182,8 @@ describe('GroupRepository', () => {
       it('should allow same name in different areas', async () => {
         prisma.grupo.count.mockResolvedValue(0);
 
-        const resultA = await repository.existsUniqueCombination(
-          'A',
-          'ORDINARIO',
-          'Grupo 1'
-        );
-        const resultB = await repository.existsUniqueCombination(
-          'B',
-          'ORDINARIO',
-          'Grupo 1'
-        );
+        const resultA = await repository.existsUniqueCombination('A', 'ORDINARIO', 'Grupo 1');
+        const resultB = await repository.existsUniqueCombination('B', 'ORDINARIO', 'Grupo 1');
 
         expect(resultA).toBe(false);
         expect(resultB).toBe(false);
@@ -213,11 +192,7 @@ describe('GroupRepository', () => {
       it('should allow same name in different modalidades', async () => {
         prisma.grupo.count.mockResolvedValue(0);
 
-        const resultORD = await repository.existsUniqueCombination(
-          'A',
-          'ORDINARIO',
-          'Grupo 1'
-        );
+        const resultORD = await repository.existsUniqueCombination('A', 'ORDINARIO', 'Grupo 1');
         const resultPRI = await repository.existsUniqueCombination(
           'A',
           'PRIMERA_OPCION',

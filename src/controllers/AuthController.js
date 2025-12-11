@@ -54,10 +54,7 @@ class AuthController {
     const { newPassword } = req.body;
     const userId = req.user.usuarioId;
 
-    const result = await this.authService.changePasswordFirstLogin(
-      userId,
-      newPassword
-    );
+    const result = await this.authService.changePasswordFirstLogin(userId, newPassword);
 
     return res.status(200).json(
       successResponse(
@@ -79,12 +76,9 @@ class AuthController {
 
     const result = await this.authService.refreshToken(refreshToken);
 
-    return res.status(200).json(
-      successResponse(
-        { token: result.token },
-        'Token renovado exitosamente'
-      )
-    );
+    return res
+      .status(200)
+      .json(successResponse({ token: result.token }, 'Token renovado exitosamente'));
   });
 }
 

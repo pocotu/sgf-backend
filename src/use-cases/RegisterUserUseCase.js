@@ -29,10 +29,7 @@ class RegisterUserUseCase {
     await this.userService.checkUniqueness(userData.dni, userData.correo);
 
     // Hash de la contraseña (DNI por defecto)
-    const contrasenaHash = await bcrypt.hash(
-      userData.dni,
-      this.bcryptSaltRounds
-    );
+    const contrasenaHash = await bcrypt.hash(userData.dni, this.bcryptSaltRounds);
 
     // Preparar datos para crear usuario
     const userToCreate = {
