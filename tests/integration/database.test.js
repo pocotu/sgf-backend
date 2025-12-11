@@ -83,11 +83,24 @@ describe('Database Integration Tests', () => {
     });
 
     it('should enforce unique email constraint', async () => {
+      // Primero crear un usuario con correo
+      await prisma.usuario.create({
+        data: {
+          dni: '88888888',
+          correo: 'unique@test.com',
+          contrasenaHash: 'hash',
+          rol: 'estudiante',
+          nombres: 'First',
+          apellidos: 'User',
+        },
+      });
+
+      // Intentar crear otro con el mismo correo debe fallar
       await expect(
         prisma.usuario.create({
           data: {
             dni: '99999999',
-            correo: 'admin@sga-p.edu.pe', // Email duplicado
+            correo: 'unique@test.com', // Email duplicado
             contrasenaHash: 'hash',
             rol: 'estudiante',
             nombres: 'Test',
@@ -95,6 +108,36 @@ describe('Database Integration Tests', () => {
           },
         })
       ).rejects.toThrow();
+    });
+
+    it('should allow multiple users without email (null)', async () => {
+      // Crear primer usuario sin correo
+      const user1 = await prisma.usuario.create({
+        data: {
+          dni: '77777777',
+          correo: null, // Sin correo
+          contrasenaHash: 'hash',
+          rol: 'estudiante',
+          nombres: 'Student',
+          apellidos: 'One',
+        },
+      });
+
+      // Crear segundo usuario sin correo (debe permitirse)
+      const user2 = await prisma.usuario.create({
+        data: {
+          dni: '66666666',
+          correo: null, // Sin correo también
+          contrasenaHash: 'hash',
+          rol: 'estudiante',
+          nombres: 'Student',
+          apellidos: 'Two',
+        },
+      });
+
+      expect(user1.correo).toBeNull();
+      expect(user2.correo).toBeNull();
+      expect(user1.dni).not.toBe(user2.dni);
     });
   });
 
