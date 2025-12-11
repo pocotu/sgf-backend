@@ -35,7 +35,7 @@ describe('App - Basic Tests', () => {
       const response = await request(app).get('/api/v1').expect('Content-Type', /json/).expect(200);
 
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toContain('SGA-P Backend API');
+      expect(response.body.message).toContain('Lumen Backend API');
       expect(response.body).toHaveProperty('version');
       expect(response.body).toHaveProperty('environment');
       expect(response.body).toHaveProperty('health');
@@ -134,7 +134,7 @@ describe('App - Basic Tests', () => {
       const response = await request(app).get('/api/v1').expect(200);
 
       expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toContain('SGA-P Backend API');
+      expect(response.body.message).toContain('Lumen Backend API');
     });
 
     it('should include health endpoint in response', async () => {

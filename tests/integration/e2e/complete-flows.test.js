@@ -108,8 +108,10 @@ describe('E2E Integration Tests - Complete Flows', () => {
       .send({ identifier: '10000003', password: 'Password123' });
     estudianteToken = estudianteLogin.body.data.token;
 
-    // Create base test data needed by multiple flows
-    // Create course
+    /*
+     * Create base test data needed by multiple flows
+     * Create course
+     */
     curso = await prisma.curso.create({
       data: {
         nombre: 'Matemática E2E',

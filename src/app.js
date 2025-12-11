@@ -11,6 +11,11 @@ const requestLogger = require('./middleware/requestLogger');
 const app = express();
 const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 
+// Trust proxy - Required for Render and other reverse proxies
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Log application startup
 logger.info('Starting Lumen Backend API', {
   environment: process.env.NODE_ENV,
