@@ -66,8 +66,5 @@
   },
   "engines": {
     "node": ">=18.14.0"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
 }
