@@ -31,15 +31,14 @@ try {
     stdio: 'inherit',
     env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL },
   });
-  
+
   logger.info('Seeding test data...');
   execSync('node prisma/seed.js', {
     stdio: 'inherit',
     env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL },
   });
-  
+
   logger.success('Test database configured successfully');
-  
 } catch (error) {
   logger.error(`Setup failed: ${error.message}`);
   console.error('\nTroubleshooting:');

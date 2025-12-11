@@ -19,7 +19,7 @@ logger.info(`Database: ${dbUrl}`);
 
 if (shouldRun) {
   logger.warn('Executing database migrations');
-  
+
   try {
     if (!process.env.DATABASE_URL) {
       throw new Error('DATABASE_URL not configured');
@@ -27,7 +27,6 @@ if (shouldRun) {
 
     execSync('npx prisma migrate deploy', { stdio: 'inherit' });
     logger.success('Migrations completed successfully');
-    
   } catch (error) {
     logger.error(`Migration failed: ${error.message}`);
     process.exit(1);
