@@ -27,8 +27,10 @@ class DeleteStudentUseCase {
       throw new NotFoundError('Estudiante no encontrado');
     }
 
-    // Realizar soft delete del usuario asociado
-    // Esto marcará el usuario como inactivo
+    /*
+     * Realizar soft delete del usuario asociado
+     * Esto marcará el usuario como inactivo
+     */
     await this.userRepository.softDelete(student.usuarioId);
 
     // Obtener estudiante actualizado con datos de usuario

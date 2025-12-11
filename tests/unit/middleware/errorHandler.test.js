@@ -27,6 +27,7 @@ describe('Error Handler Middleware', () => {
       method: 'GET',
       originalUrl: '/api/test',
       ip: '127.0.0.1',
+      get: jest.fn().mockReturnValue('test-user-agent'),
     };
 
     res = {

@@ -20,7 +20,7 @@ describe('Attendance Integration Tests', () => {
     // Crear usuarios de prueba
     const hashedPassword = await bcrypt.hash('Password123', 10);
 
-    const adminUser = await prisma.usuario.create({
+    const _adminUser = await prisma.usuario.create({
       data: {
         dni: '11111111',
         correo: 'admin@test.com',
@@ -33,7 +33,7 @@ describe('Attendance Integration Tests', () => {
       },
     });
 
-    const docenteUser = await prisma.usuario.create({
+    const _docenteUser = await prisma.usuario.create({
       data: {
         dni: '22222222',
         correo: 'docente@test.com',

@@ -5,40 +5,41 @@
 
 const { AppError } = require('../utils/errors');
 const { errorResponse } = require('../utils/response');
+const logger = require('../config/logger');
 
 /**
- * Logger de errores
- * En producción, esto debería usar Winston u otro sistema de logging
+ * Logger de errores usando Winston
  * @param {Error} error - Error a registrar
  * @param {Object} req - Request de Express
  */
 const logError = (error, req) => {
-  const errorLog = {
-    timestamp: new Date().toISOString(),
+  const context = {
     method: req.method,
     url: req.originalUrl,
     ip: req.ip,
-    error: {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      statusCode: error.statusCode,
-    },
+    userAgent: req.get('user-agent'),
   };
 
-  // En desarrollo, mostrar stack trace
-  if (process.env.NODE_ENV === 'development') {
-    errorLog.stack = error.stack;
+  // Incluir usuario si está autenticado
+  if (req.user) {
+    context.userId = req.user.usuarioId;
+    context.userRole = req.user.rol;
   }
 
-  // Log según severidad
-  if (error.statusCode >= 500) {
-    console.error('ERROR:', JSON.stringify(errorLog, null, 2));
-  } else if (error.statusCode >= 400) {
-    console.warn('WARNING:', JSON.stringify(errorLog, null, 2));
-  } else {
-    console.log('INFO:', JSON.stringify(errorLog, null, 2));
+  // Incluir body en desarrollo (sin passwords)
+  if (process.env.NODE_ENV === 'development' && req.body) {
+    const sanitizedBody = { ...req.body };
+    if (sanitizedBody.password) {
+      sanitizedBody.password = '***';
+    }
+    if (sanitizedBody.newPassword) {
+      sanitizedBody.newPassword = '***';
+    }
+    context.body = sanitizedBody;
   }
+
+  // Log usando Winston
+  logger.logError(error, context);
 };
 
 /**

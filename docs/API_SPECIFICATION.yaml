@@ -1,0 +1,409 @@
+openapi: 3.0.3
+info:
+  title: SGA-P Backend API
+  description: |
+    Sistema de Gestión Integral para Academias Preuniversitarias (SGA-P)
+    
+    API REST para gestión de academias preuniversitarias con funcionalidades de:
+    - Autenticación JWT con roles (admin, docente, estudiante)
+    - Gestión de usuarios y estudiantes
+    - Gestión de cursos, grupos y matrículas
+    - Control de asistencia
+    - Programación de evaluaciones y registro de notas
+    - Cálculo de rankings académicos
+  version: 1.0.0
+  contact:
+    name: Equipo SGA-P
+    email: soporte@sga-p.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor de desarrollo local
+  - url: https://api.sga-p.com/api
+    description: Servidor de producción
+
+tags:
+  - name: Authentication
+    description: Endpoints de autenticación y gestión de tokens
+  - name: Users
+    description: Gestión de usuarios del sistema
+  - name: Students
+    description: Gestión de estudiantes
+  - name: Courses
+    description: Gestión de cursos por área académica
+  - name: Groups
+    description: Gestión de grupos de estudiantes
+  - name: Enrollments
+    description: Gestión de matrículas
+  - name: Attendance
+    description: Control de asistencia
+  - name: Evaluations
+    description: Programación de evaluaciones
+  - name: Grades
+    description: Registro de notas
+  - name: Rankings
+    description: Cálculo de rankings académicos
+  - name: Health
+    description: Health check del sistema
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtenido del endpoint /auth/login
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_FAILED
+            message:
+              type: string
+              example: Error de validación
+            details:
+              type: object
+
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - data
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+        message:
+          type: string
+
+    PaginatedResponse:
+      type: object
+      required:
+        - success
+        - data
+        - pagination
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 100
+            totalPages:
+              type: integer
+              example: 10
+
+
+    Usuario:
+      type: object
+      properties:
+        usuarioId:
+          type: integer
+          example: 1
+        dni:
+          type: string
+          pattern: '^\d{8}$'
+          example: "12345678"
+        correo:
+          type: string
+          format: email
+          example: "usuario@email.com"
+        nombres:
+          type: string
+          example: "Juan"
+        apellidos:
+          type: string
+          example: "Pérez García"
+        telefono:
+          type: string
+          example: "987654321"
+        rol:
+          type: string
+          enum: [admin, docente, estudiante]
+          example: "estudiante"
+        estado:
+          type: string
+          enum: [activo, inactivo]
+          example: "activo"
+        requiereCambioPassword:
+          type: boolean
+          example: true
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    Estudiante:
+      type: object
+      properties:
+        estudianteId:
+          type: integer
+          example: 1
+        usuarioId:
+          type: integer
+          example: 1
+        codigoInterno:
+          type: string
+          pattern: '^\d{4}-[A-D]-(ORD|PRI|DIR)-\d{3}$'
+          example: "2025-A-ORD-001"
+        modalidad:
+          type: string
+          enum: [ORDINARIO, PRIMERA_OPCION, DIRIMENCIA]
+          example: "ORDINARIO"
+        usuario:
+          $ref: '#/components/schemas/Usuario'
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+
+    Curso:
+      type: object
+      properties:
+        cursoId:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: "Matemática"
+        area:
+          type: string
+          enum: [A, B, C, D]
+          example: "A"
+        descripcion:
+          type: string
+          example: "Curso de matemática para área A"
+        estado:
+          type: string
+          enum: [activo, inactivo]
+          example: "activo"
+        fechaCreacion:
+          type: string
+          format: date-time
+
+    Grupo:
+      type: object
+      properties:
+        grupoId:
+          type: integer
+          example: 1
+        area:
+          type: string
+          enum: [A, B, C, D]
+          example: "A"
+        modalidad:
+          type: string
+          enum: [ORDINARIO, PRIMERA_OPCION, DIRIMENCIA]
+          example: "ORDINARIO"
+        nombreGrupo:
+          type: string
+          example: "Grupo 1"
+        dias:
+          type: string
+          example: "Lunes, Miércoles, Viernes"
+        horaInicio:
+          type: string
+          format: time
+          example: "08:00"
+        horaFin:
+          type: string
+          format: time
+          example: "12:00"
+        capacidad:
+          type: integer
+          example: 30
+        cuposDisponibles:
+          type: integer
+          example: 5
+        estado:
+          type: string
+          enum: [ACTIVO, INACTIVO]
+          example: "ACTIVO"
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+
+    Matricula:
+      type: object
+      properties:
+        matriculaId:
+          type: integer
+          example: 1
+        estudianteId:
+          type: integer
+          example: 1
+        grupoId:
+          type: integer
+          example: 1
+        fechaMatricula:
+          type: string
+          format: date
+          example: "2025-01-15"
+        montoPagado:
+          type: number
+          format: decimal
+          example: 500.00
+        estado:
+          type: string
+          enum: [MATRICULADO, RETIRADO]
+          example: "MATRICULADO"
+        fechaRetiro:
+          type: string
+          format: date
+          nullable: true
+        motivoRetiro:
+          type: string
+          nullable: true
+        estudiante:
+          $ref: '#/components/schemas/Estudiante'
+        grupo:
+          $ref: '#/components/schemas/Grupo'
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    Asistencia:
+      type: object
+      properties:
+        asistenciaId:
+          type: integer
+          example: 1
+        estudianteId:
+          type: integer
+          example: 1
+        grupoId:
+          type: integer
+          example: 1
+        fechaClase:
+          type: string
+          format: date
+          example: "2025-01-15"
+        estado:
+          type: string
+          enum: [PRESENTE, TARDANZA, AUSENTE]
+          example: "PRESENTE"
+        horaRegistro:
+          type: string
+          format: time
+          example: "08:15"
+        observaciones:
+          type: string
+          nullable: true
+        fechaCreacion:
+          type: string
+          format: date-time
+
+
+    Evaluacion:
+      type: object
+      properties:
+        evaluacionId:
+          type: integer
+          example: 1
+        grupoId:
+          type: integer
+          example: 1
+        numeroSemana:
+          type: integer
+          minimum: 1
+          maximum: 52
+          example: 1
+        fechaEvaluacion:
+          type: string
+          format: date
+          example: "2025-01-20"
+        descripcion:
+          type: string
+          example: "Evaluación semanal 1"
+        duracionMinutos:
+          type: integer
+          example: 120
+        estado:
+          type: string
+          enum: [PROGRAMADA, EN_CURSO, FINALIZADA, CANCELADA]
+          example: "PROGRAMADA"
+        grupo:
+          $ref: '#/components/schemas/Grupo'
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    Nota:
+      type: object
+      properties:
+        notaId:
+          type: integer
+          example: 1
+        evaluacionId:
+          type: integer
+          example: 1
+        estudianteId:
+          type: integer
+          example: 1
+        cursoId:
+          type: integer
+          example: 1
+        nota:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 20
+          example: 18.5
+        observaciones:
+          type: string
+          nullable: true
+        curso:
+          $ref: '#/components/schemas/Curso'
+        fechaCreacion:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+

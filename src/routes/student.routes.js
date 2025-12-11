@@ -51,8 +51,10 @@ const configureStudentRoutes = (studentController, authService) => {
 
       // Estudiante solo puede ver su propio perfil
       if (currentUserRole === 'estudiante') {
-        // Necesitamos verificar que el estudianteId corresponde al usuario actual
-        // Esto se puede hacer obteniendo el estudiante y comparando usuarioId
+        /*
+         * Necesitamos verificar que el estudianteId corresponde al usuario actual
+         * Esto se puede hacer obteniendo el estudiante y comparando usuarioId
+         */
         const { container } = require('../config/dependencies');
         const studentRepository = container.resolve('studentRepository');
 
@@ -61,7 +63,7 @@ const configureStudentRoutes = (studentController, authService) => {
           if (student && student.usuarioId === req.user.usuarioId) {
             return next();
           }
-        } catch (error) {
+        } catch (_error) {
           // Si hay error, continuar al siguiente middleware que manejará el error
         }
       }

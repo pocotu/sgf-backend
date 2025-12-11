@@ -1,0 +1,71 @@
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check del sistema
+      description: Verifica el estado del servidor y la conexión a la base de datos
+      responses:
+        '200':
+          description: Sistema funcionando correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  database:
+                    type: string
+                    example: "connected"
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Iniciar sesión
+      description: |
+        Autenticación con DNI (8 dígitos) o correo electrónico.
+        Si es el primer login, retorna tempToken y requiere cambio de contraseña.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+                - password
+              properties:
+                identifier:
+                  type: string
+                  description: DNI de 8 dígitos o correo electrónico
+                  example: "12345678"
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Primer login - requiere cambio de contraseña
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      requiresPasswordChange:
+                        type: boolean
+                        example: true
+                      tempToken:
+                        type: string
+                      message:
+                        type: string
+                        example: "Debe cambiar su contraseña"

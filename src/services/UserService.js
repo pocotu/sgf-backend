@@ -3,8 +3,7 @@
  * Maneja la lógica de negocio para gestión de usuarios
  */
 
-const bcrypt = require('bcryptjs');
-const { ValidationError, NotFoundError, BusinessLogicError } = require('../utils/errors');
+const { ValidationError, BusinessLogicError } = require('../utils/errors');
 const { isValidDni, isValidEmail, isValidRole } = require('../utils/validators');
 
 class UserService {

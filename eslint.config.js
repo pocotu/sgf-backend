@@ -228,6 +228,52 @@ module.exports = [
       'max-lines': 'off',
     },
   },
+  // Configuración específica para servicios y repositorios (lógica de negocio compleja)
+  {
+    files: ['src/services/**/*.js', 'src/repositories/**/*.js', 'src/use-cases/**/*.js'],
+    rules: {
+      complexity: ['warn', { max: 25 }], // Permitir mayor complejidad en validaciones
+      'max-statements': ['warn', { max: 40 }],
+      'max-lines-per-function': ['warn', { max: 80, skipBlankLines: true, skipComments: true }],
+      'require-await': 'off', // Algunos métodos async no necesitan await
+    },
+  },
+  // Configuración específica para middleware y validadores
+  {
+    files: ['src/middleware/**/*.js', 'src/validators/**/*.js'],
+    rules: {
+      complexity: ['warn', { max: 30 }],
+      'max-statements': ['warn', { max: 40 }],
+      'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
+      'consistent-return': 'off', // Middleware puede no retornar siempre
+    },
+  },
+  // Configuración específica para controladores
+  {
+    files: ['src/controllers/**/*.js'],
+    rules: {
+      'max-params': ['warn', { max: 5 }], // Controladores pueden tener más dependencias
+      'max-lines-per-function': ['warn', { max: 60, skipBlankLines: true, skipComments: true }],
+    },
+  },
+  // Configuración específica para archivos de dependencias
+  {
+    files: ['src/config/dependencies.js', 'src/config/container.js'],
+    rules: {
+      'max-lines': 'off',
+      'max-lines-per-function': 'off',
+      'max-statements': 'off',
+      'no-restricted-syntax': 'off', // Necesita instanciar PrismaClient
+    },
+  },
+  // Configuración específica para archivos de documentación/ejemplos
+  {
+    files: ['docs/**/*.js', 'examples/**/*.js'],
+    rules: {
+      'no-console': 'off',
+      'no-undef': 'off',
+    },
+  },
   // Archivos a ignorar
   {
     ignores: [

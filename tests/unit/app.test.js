@@ -8,8 +8,25 @@ describe('App - Basic Tests', () => {
 
       expect(response.body).toHaveProperty('status', 'OK');
       expect(response.body).toHaveProperty('timestamp');
+    });
+  });
+
+  describe('GET /api/v1/health', () => {
+    it('should return detailed health check', async () => {
+      const response = await request(app)
+        .get('/api/v1/health')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('status');
+      expect(response.body).toHaveProperty('timestamp');
       expect(response.body).toHaveProperty('environment');
       expect(response.body).toHaveProperty('version');
+      expect(response.body).toHaveProperty('uptime');
+      expect(response.body).toHaveProperty('checks');
+      expect(response.body.checks).toHaveProperty('database');
+      expect(response.body.checks).toHaveProperty('memory');
+      expect(response.body.checks).toHaveProperty('process');
     });
   });
 

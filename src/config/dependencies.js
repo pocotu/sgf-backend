@@ -12,6 +12,8 @@ const CourseRepository = require('../repositories/CourseRepository');
 const GroupRepository = require('../repositories/GroupRepository');
 const EnrollmentRepository = require('../repositories/EnrollmentRepository');
 const AttendanceRepository = require('../repositories/AttendanceRepository');
+const EvaluationRepository = require('../repositories/EvaluationRepository');
+const GradeRepository = require('../repositories/GradeRepository');
 
 // Services
 const AuthService = require('../services/AuthService');
@@ -21,6 +23,9 @@ const CourseService = require('../services/CourseService');
 const GroupService = require('../services/GroupService');
 const EnrollmentService = require('../services/EnrollmentService');
 const AttendanceService = require('../services/AttendanceService');
+const EvaluationService = require('../services/EvaluationService');
+const GradeService = require('../services/GradeService');
+const RankingService = require('../services/RankingService');
 
 // Use Cases
 const RegisterUserUseCase = require('../use-cases/RegisterUserUseCase');
@@ -50,6 +55,17 @@ const RegisterAttendanceUseCase = require('../use-cases/RegisterAttendanceUseCas
 const RegisterBulkAttendanceUseCase = require('../use-cases/RegisterBulkAttendanceUseCase');
 const GetAttendancesUseCase = require('../use-cases/GetAttendancesUseCase');
 const GetAttendanceSummaryUseCase = require('../use-cases/GetAttendanceSummaryUseCase');
+const ScheduleEvaluationUseCase = require('../use-cases/ScheduleEvaluationUseCase');
+const GetEvaluationsUseCase = require('../use-cases/GetEvaluationsUseCase');
+const GetEvaluationByIdUseCase = require('../use-cases/GetEvaluationByIdUseCase');
+const UpdateEvaluationUseCase = require('../use-cases/UpdateEvaluationUseCase');
+const CancelEvaluationUseCase = require('../use-cases/CancelEvaluationUseCase');
+const RegisterGradeUseCase = require('../use-cases/RegisterGradeUseCase');
+const RegisterBulkGradesUseCase = require('../use-cases/RegisterBulkGradesUseCase');
+const GetGradesUseCase = require('../use-cases/GetGradesUseCase');
+const GetStudentGradesUseCase = require('../use-cases/GetStudentGradesUseCase');
+const GetGroupRankingUseCase = require('../use-cases/GetGroupRankingUseCase');
+const GetStudentPositionUseCase = require('../use-cases/GetStudentPositionUseCase');
 
 // Controllers
 const AuthController = require('../controllers/AuthController');
@@ -59,6 +75,10 @@ const CourseController = require('../controllers/CourseController');
 const GroupController = require('../controllers/GroupController');
 const EnrollmentController = require('../controllers/EnrollmentController');
 const AttendanceController = require('../controllers/AttendanceController');
+const EvaluationController = require('../controllers/EvaluationController');
+const GradeController = require('../controllers/GradeController');
+const RankingController = require('../controllers/RankingController');
+const HealthController = require('../controllers/HealthController');
 
 /**
  * Configurar todas las dependencias
@@ -80,6 +100,8 @@ const configureDependencies = () => {
   container.singleton('groupRepository', () => new GroupRepository());
   container.singleton('enrollmentRepository', () => new EnrollmentRepository());
   container.singleton('attendanceRepository', () => new AttendanceRepository());
+  container.singleton('evaluationRepository', () => new EvaluationRepository());
+  container.singleton('gradeRepository', () => new GradeRepository());
 
   // Registrar Services como singletons
   container.singleton('authService', c => {
@@ -115,6 +137,23 @@ const configureDependencies = () => {
       c.resolve('attendanceRepository'),
       c.resolve('enrollmentRepository')
     );
+  });
+
+  container.singleton('evaluationService', c => {
+    return new EvaluationService(c.resolve('evaluationRepository'), c.resolve('groupRepository'));
+  });
+
+  container.singleton('gradeService', c => {
+    return new GradeService(
+      c.resolve('gradeRepository'),
+      c.resolve('enrollmentRepository'),
+      c.resolve('evaluationRepository'),
+      c.resolve('courseRepository')
+    );
+  });
+
+  container.singleton('rankingService', c => {
+    return new RankingService(c.resolve('gradeRepository'), c.resolve('enrollmentRepository'));
   });
 
   // Registrar Use Cases como singletons
@@ -238,6 +277,62 @@ const configureDependencies = () => {
     return new GetAttendanceSummaryUseCase(c.resolve('attendanceRepository'));
   });
 
+  container.singleton('scheduleEvaluationUseCase', c => {
+    return new ScheduleEvaluationUseCase(
+      c.resolve('evaluationRepository'),
+      c.resolve('evaluationService')
+    );
+  });
+
+  container.singleton('getEvaluationsUseCase', c => {
+    return new GetEvaluationsUseCase(c.resolve('evaluationRepository'));
+  });
+
+  container.singleton('getEvaluationByIdUseCase', c => {
+    return new GetEvaluationByIdUseCase(c.resolve('evaluationRepository'));
+  });
+
+  container.singleton('updateEvaluationUseCase', c => {
+    return new UpdateEvaluationUseCase(
+      c.resolve('evaluationRepository'),
+      c.resolve('evaluationService')
+    );
+  });
+
+  container.singleton('cancelEvaluationUseCase', c => {
+    return new CancelEvaluationUseCase(
+      c.resolve('evaluationRepository'),
+      c.resolve('evaluationService')
+    );
+  });
+
+  container.singleton('registerGradeUseCase', c => {
+    return new RegisterGradeUseCase(c.resolve('gradeRepository'), c.resolve('gradeService'));
+  });
+
+  container.singleton('registerBulkGradesUseCase', c => {
+    return new RegisterBulkGradesUseCase(c.resolve('gradeRepository'), c.resolve('gradeService'));
+  });
+
+  container.singleton('getGradesUseCase', c => {
+    return new GetGradesUseCase(c.resolve('gradeRepository'));
+  });
+
+  container.singleton('getStudentGradesUseCase', c => {
+    return new GetStudentGradesUseCase(c.resolve('gradeRepository'));
+  });
+
+  container.singleton('getGroupRankingUseCase', c => {
+    return new GetGroupRankingUseCase(c.resolve('rankingService'), c.resolve('groupRepository'));
+  });
+
+  container.singleton('getStudentPositionUseCase', c => {
+    return new GetStudentPositionUseCase(
+      c.resolve('rankingService'),
+      c.resolve('studentRepository')
+    );
+  });
+
   // Registrar Controllers (transient - nueva instancia cada vez)
   container.register('authController', c => {
     return new AuthController(c.resolve('authService'));
@@ -298,6 +393,38 @@ const configureDependencies = () => {
       c.resolve('getAttendancesUseCase'),
       c.resolve('getAttendanceSummaryUseCase')
     );
+  });
+
+  container.register('evaluationController', c => {
+    return new EvaluationController(
+      c.resolve('scheduleEvaluationUseCase'),
+      c.resolve('getEvaluationsUseCase'),
+      c.resolve('getEvaluationByIdUseCase'),
+      c.resolve('updateEvaluationUseCase'),
+      c.resolve('cancelEvaluationUseCase')
+    );
+  });
+
+  container.register('gradeController', c => {
+    return new GradeController(
+      c.resolve('registerGradeUseCase'),
+      c.resolve('registerBulkGradesUseCase'),
+      c.resolve('getGradesUseCase'),
+      c.resolve('getStudentGradesUseCase')
+    );
+  });
+
+  container.register('rankingController', c => {
+    return new RankingController(
+      c.resolve('getGroupRankingUseCase'),
+      c.resolve('getStudentPositionUseCase')
+    );
+  });
+
+  container.register('healthController', () => {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    return new HealthController(prisma);
   });
 };
 

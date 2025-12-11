@@ -5,9 +5,18 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const logger = require('./config/logger');
+const requestLogger = require('./middleware/requestLogger');
 
 const app = express();
 const API_PREFIX = process.env.API_PREFIX || '/api/v1';
+
+// Log application startup
+logger.info('Starting SGA-P Backend API', {
+  environment: process.env.NODE_ENV,
+  nodeVersion: process.version,
+  platform: process.platform,
+});
 
 // Security middleware
 app.use(helmet());
@@ -41,18 +50,21 @@ const bodyLimit = process.env.BODY_LIMIT || '10mb';
 app.use(express.json({ limit: bodyLimit }));
 app.use(express.urlencoded({ extended: true, limit: bodyLimit }));
 
-// Logging middleware
+// Request logging middleware (Winston)
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined'));
+  app.use(requestLogger);
 }
 
-// Health check endpoint
+// Morgan for development (console output)
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Basic health check endpoint (for load balancers)
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    version: require('../package.json').version,
   });
 });
 
@@ -78,6 +90,10 @@ const configureCourseRoutes = require('./routes/course.routes');
 const configureGroupRoutes = require('./routes/group.routes');
 const configureEnrollmentRoutes = require('./routes/enrollment.routes');
 const configureAttendanceRoutes = require('./routes/attendance.routes');
+const configureEvaluationRoutes = require('./routes/evaluation.routes');
+const configureGradeRoutes = require('./routes/grade.routes');
+const configureRankingRoutes = require('./routes/ranking.routes');
+const configureHealthRoutes = require('./routes/health.routes');
 
 const authController = container.resolve('authController');
 const userController = container.resolve('userController');
@@ -86,8 +102,16 @@ const courseController = container.resolve('courseController');
 const groupController = container.resolve('groupController');
 const enrollmentController = container.resolve('enrollmentController');
 const attendanceController = container.resolve('attendanceController');
+const evaluationController = container.resolve('evaluationController');
+const gradeController = container.resolve('gradeController');
+const rankingController = container.resolve('rankingController');
+const healthController = container.resolve('healthController');
 const authService = container.resolve('authService');
 
+// Health check routes (no authentication required)
+app.use(`${API_PREFIX}/health`, configureHealthRoutes(healthController));
+
+// Application routes (with authentication)
 app.use(`${API_PREFIX}/auth`, configureAuthRoutes(authController, authService));
 app.use(`${API_PREFIX}/users`, configureUserRoutes(userController, authService));
 app.use(`${API_PREFIX}/students`, configureStudentRoutes(studentController, authService));
@@ -95,6 +119,9 @@ app.use(`${API_PREFIX}/courses`, configureCourseRoutes(courseController, authSer
 app.use(`${API_PREFIX}/groups`, configureGroupRoutes(groupController, authService));
 app.use(`${API_PREFIX}/enrollments`, configureEnrollmentRoutes(enrollmentController, authService));
 app.use(`${API_PREFIX}/attendances`, configureAttendanceRoutes(attendanceController, authService));
+app.use(`${API_PREFIX}/evaluations`, configureEvaluationRoutes(evaluationController, authService));
+app.use(`${API_PREFIX}/grades`, configureGradeRoutes(gradeController, authService));
+app.use(`${API_PREFIX}/rankings`, configureRankingRoutes(rankingController, authService));
 
 // Import error handling middleware
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');

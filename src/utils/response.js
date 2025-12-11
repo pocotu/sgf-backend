@@ -1,6 +1,44 @@
 /**
  * Utilidades para respuestas API consistentes
+ * Implementa formato estándar según Requirement 14
  */
+
+const { serializeDates } = require('./serializers');
+
+/**
+ * Serializar datos recursivamente
+ * @param {*} data - Datos a serializar
+ * @returns {*} Datos serializados
+ */
+const serializeData = data => {
+  if (!data) {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map(item => serializeData(item));
+  }
+
+  if (typeof data === 'object' && data !== null && !(data instanceof Date)) {
+    const serialized = serializeDates(data);
+
+    // Recursively serialize nested objects
+    const result = {};
+    for (const key in serialized) {
+      if (Object.prototype.hasOwnProperty.call(serialized, key)) {
+        const value = serialized[key];
+        if (typeof value === 'object' && value !== null && !(value instanceof Date)) {
+          result[key] = serializeData(value);
+        } else {
+          result[key] = value;
+        }
+      }
+    }
+    return result;
+  }
+
+  return data;
+};
 
 /**
  * Respuesta exitosa
@@ -12,7 +50,7 @@
 const successResponse = (data, message = null, pagination = null) => {
   const response = {
     success: true,
-    data,
+    data: serializeData(data),
   };
 
   if (message) {
@@ -63,9 +101,9 @@ const paginatedResponse = ({ data, page, limit, total, message = null }) => {
   const totalPages = Math.ceil(total / limit);
 
   return successResponse(data, message, {
-    page,
-    limit,
-    total,
+    page: Number(page),
+    limit: Number(limit),
+    total: Number(total),
     totalPages,
   });
 };
@@ -74,4 +112,5 @@ module.exports = {
   successResponse,
   errorResponse,
   paginatedResponse,
+  serializeData,
 };
