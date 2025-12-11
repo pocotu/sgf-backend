@@ -12,7 +12,7 @@ const app = express();
 const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 
 // Log application startup
-logger.info('Starting SGA-P Backend API', {
+logger.info('Starting Lumen Backend API', {
   environment: process.env.NODE_ENV,
   nodeVersion: process.version,
   platform: process.platform,
@@ -71,7 +71,7 @@ app.get('/health', (req, res) => {
 // Welcome endpoint
 app.get(API_PREFIX, (req, res) => {
   res.json({
-    message: 'SGA-P Backend API - Sistema de Gestion Integral para Academias Preuniversitarias',
+    message: 'Lumen Backend API - Sistema de Gestion Integral para Academias Preuniversitarias',
     version: require('../package.json').version,
     environment: process.env.NODE_ENV,
     health: `${req.protocol}://${req.get('host')}/health`,

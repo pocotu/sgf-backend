@@ -1,4 +1,4 @@
-# SGA-P Backend
+# Lumen Backend
 
 > Sistema de Gestión Integral para Academias Preuniversitarias - API REST
 

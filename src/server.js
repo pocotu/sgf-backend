@@ -26,7 +26,7 @@ if (require.main === module) {
 
     if (nodeEnv !== 'production') {
       console.log('================================================================');
-      console.log('   SGA-P Backend - Sistema de Gestion Academias              ');
+      console.log('   Lumen Backend - Sistema de Gestion Academias              ');
       console.log('================================================================');
       console.log('');
       console.log(`[*] Entorno:      ${nodeEnv}`);

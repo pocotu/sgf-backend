@@ -1,7 +1,7 @@
 {
-  "name": "sga-p-backend",
+  "name": "lumen-backend",
   "version": "1.0.0",
-  "description": "Sistema de Gestión Integral para Academias Preuniversitarias (SGA-P) - Backend API",
+  "description": "Sistema de Gestión Integral para Academias Preuniversitarias (Lumen) - Backend API",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -32,14 +32,14 @@
     "ci:local": "npm run lint && npm run format:check && npx prisma validate && npm run build && npm test"
   },
   "keywords": [
-    "sga-p",
+    "lumen",
     "academias-preuniversitarias",
     "educación-perú",
     "gestión-académica",
     "tutorías",
     "roles"
   ],
-  "author": "Equipo SGA-P",
+  "author": "Equipo Lumen",
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^6.19.1",
