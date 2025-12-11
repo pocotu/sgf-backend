@@ -1,45 +1,50 @@
 #!/usr/bin/env node
+
 /**
- * Script para configurar la base de datos de test
- * Ejecutar con: npm run test:setup
- *
- * Prisma se encarga de:
- * - Crear la BD si no existe
- * - Aplicar migraciones
- * - Generar el cliente
+ * Test database setup script
+ * Configures test database with migrations and seed data
  */
 
 const { execSync } = require('child_process');
 const path = require('path');
+const Logger = require('./utils/logger');
 
-// Cargar variables de entorno de test
 require('dotenv').config({ path: path.join(__dirname, '..', '.env.test') });
 
-console.log('[SETUP] Configurando base de datos de test...\n');
-console.log('[INFO] Base de datos:', process.env.DATABASE_URL?.replace(/:[^:@]+@/, ':****@'), '\n');
+const logger = new Logger('SETUP');
+const dbUrl = process.env.DATABASE_URL || '';
+const dbName = logger.extractDbName(dbUrl);
+
+logger.info(`Database: ${logger.maskCredentials(dbUrl)}`);
+logger.info(`Database name: ${dbName}`);
+
+// Security validation
+if (!dbName.includes('test')) {
+  logger.error(`Security check failed: database name must contain 'test'`);
+  logger.error(`Current database: ${dbName}`);
+  process.exit(1);
+}
 
 try {
-  // Prisma migrate dev crea la BD automáticamente si no existe
-  console.log('[MIGRATE] Aplicando migraciones (Prisma creara la BD si no existe)...');
+  logger.info('Applying migrations...');
   execSync('npx prisma migrate dev --skip-seed', {
     stdio: 'inherit',
     env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL },
   });
-  console.log('[OK] Migraciones aplicadas\n');
-
-  // Ejecutar seed
-  console.log('[SEED] Poblando datos de prueba...');
+  
+  logger.info('Seeding test data...');
   execSync('node prisma/seed.js', {
     stdio: 'inherit',
     env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL },
   });
-  console.log('[OK] Datos de prueba creados\n');
-
-  console.log('[OK] Base de datos de test configurada correctamente!');
-  console.log('\n[INFO] Comandos utiles:');
-  console.log('   npm run test:reset  - Resetear BD de test');
-  console.log('   npm test            - Ejecutar tests');
+  
+  logger.success('Test database configured successfully');
+  
 } catch (error) {
-  console.error('[ERROR] Error configurando base de datos de test:', error.message);
+  logger.error(`Setup failed: ${error.message}`);
+  console.error('\nTroubleshooting:');
+  console.error('  1. Verify MySQL is running');
+  console.error('  2. Check credentials in .env.test');
+  console.error('  3. Ensure user has CREATE DATABASE permission');
   process.exit(1);
 }

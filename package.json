@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "build": "npx prisma generate",
+    "build": "node scripts/conditional-migrate.js && npx prisma generate",
     "postinstall": "npx prisma generate",
     "deploy": "npx prisma migrate deploy && npx prisma generate",
     "pretest": "node scripts/check-test-env.js",
