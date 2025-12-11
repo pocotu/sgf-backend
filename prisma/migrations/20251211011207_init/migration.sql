@@ -2,8 +2,9 @@
 CREATE TABLE `usuarios` (
     `usuario_id` INTEGER NOT NULL AUTO_INCREMENT,
     `dni` VARCHAR(8) NOT NULL,
-    `correo` VARCHAR(100) NOT NULL,
+    `correo` VARCHAR(100) NULL,
     `contrasena_hash` VARCHAR(255) NOT NULL,
+    `requiere_cambio_password` BOOLEAN NOT NULL DEFAULT true,
     `rol` ENUM('admin', 'docente', 'estudiante') NOT NULL,
     `nombres` VARCHAR(100) NOT NULL,
     `apellidos` VARCHAR(100) NOT NULL,
@@ -58,8 +59,8 @@ CREATE TABLE `grupos` (
     `modalidad` ENUM('ORDINARIO', 'PRIMERA_OPCION', 'DIRIMENCIA') NOT NULL,
     `nombre_grupo` VARCHAR(50) NOT NULL,
     `dias` VARCHAR(50) NOT NULL,
-    `hora_inicio` TIME NOT NULL,
-    `hora_fin` TIME NOT NULL,
+    `hora_inicio` TIME(0) NOT NULL,
+    `hora_fin` TIME(0) NOT NULL,
     `capacidad` INTEGER NOT NULL DEFAULT 30,
     `estado` ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -98,7 +99,7 @@ CREATE TABLE `asistencias` (
     `grupo_id` INTEGER NOT NULL,
     `fecha_clase` DATE NOT NULL,
     `estado` ENUM('PRESENTE', 'TARDANZA', 'AUSENTE') NOT NULL,
-    `hora_registro` TIME NULL,
+    `hora_registro` TIME(0) NULL,
     `observaciones` TEXT NULL,
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -165,10 +166,10 @@ ALTER TABLE `asistencias` ADD CONSTRAINT `asistencias_grupo_id_fkey` FOREIGN KEY
 ALTER TABLE `evaluaciones` ADD CONSTRAINT `evaluaciones_grupo_id_fkey` FOREIGN KEY (`grupo_id`) REFERENCES `grupos`(`grupo_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `notas` ADD CONSTRAINT `notas_curso_id_fkey` FOREIGN KEY (`curso_id`) REFERENCES `cursos`(`curso_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `notas` ADD CONSTRAINT `notas_estudiante_id_fkey` FOREIGN KEY (`estudiante_id`) REFERENCES `estudiantes`(`estudiante_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `notas` ADD CONSTRAINT `notas_evaluacion_id_fkey` FOREIGN KEY (`evaluacion_id`) REFERENCES `evaluaciones`(`evaluacion_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `notas` ADD CONSTRAINT `notas_curso_id_fkey` FOREIGN KEY (`curso_id`) REFERENCES `cursos`(`curso_id`) ON DELETE CASCADE ON UPDATE CASCADE;
