@@ -36,12 +36,16 @@ class Logger {
   }
 
   maskCredentials(url) {
-    if (!url) return 'NOT_SET';
+    if (!url) {
+      return 'NOT_SET';
+    }
     return url.replace(/:[^:@]+@/, ':****@');
   }
 
   extractDbName(url) {
-    if (!url) return 'unknown';
+    if (!url) {
+      return 'unknown';
+    }
     const match = url.split('/').pop()?.split('?')[0];
     return match || 'unknown';
   }
