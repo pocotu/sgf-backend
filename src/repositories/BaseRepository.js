@@ -50,11 +50,23 @@ class BaseRepository {
   }
 
   /**
-   * Eliminar por ID
+   * Eliminar por ID (hard delete)
    */
   delete(id) {
     return this.model.delete({
       where: { [this.getIdField()]: id },
+    });
+  }
+
+  /**
+   * Soft delete - actualizar estado a inactivo
+   * @param {number} id - ID del registro
+   * @returns {Promise<Object>} Registro actualizado
+   */
+  softDelete(id) {
+    return this.model.update({
+      where: { [this.getIdField()]: id },
+      data: { estado: 'inactivo' },
     });
   }
 

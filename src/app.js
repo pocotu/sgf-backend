@@ -66,31 +66,41 @@ app.get(API_PREFIX, (req, res) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Route not found',
-    message: `Cannot ${req.method} ${req.originalUrl}`,
-    availableEndpoints: {
-      health: '/health',
-      api: API_PREFIX,
-    },
-  });
-});
+// Configure dependencies
+const { configureDependencies, container } = require('./config/dependencies');
+configureDependencies();
 
-// Global error handler
-app.use((err, _req, res, _next) => {
-  console.error('Error:', err);
+// Configure routes
+const configureAuthRoutes = require('./routes/auth.routes');
+const configureUserRoutes = require('./routes/user.routes');
+const configureStudentRoutes = require('./routes/student.routes');
+const configureCourseRoutes = require('./routes/course.routes');
+const configureGroupRoutes = require('./routes/group.routes');
+const configureEnrollmentRoutes = require('./routes/enrollment.routes');
 
-  const statusCode = err.statusCode || err.status || 500;
-  const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message;
+const authController = container.resolve('authController');
+const userController = container.resolve('userController');
+const studentController = container.resolve('studentController');
+const courseController = container.resolve('courseController');
+const groupController = container.resolve('groupController');
+const enrollmentController = container.resolve('enrollmentController');
+const authService = container.resolve('authService');
 
-  res.status(statusCode).json({
-    error: true,
-    message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-  });
-});
+app.use(`${API_PREFIX}/auth`, configureAuthRoutes(authController, authService));
+app.use(`${API_PREFIX}/users`, configureUserRoutes(userController, authService));
+app.use(`${API_PREFIX}/students`, configureStudentRoutes(studentController, authService));
+app.use(`${API_PREFIX}/courses`, configureCourseRoutes(courseController, authService));
+app.use(`${API_PREFIX}/groups`, configureGroupRoutes(groupController, authService));
+app.use(`${API_PREFIX}/enrollments`, configureEnrollmentRoutes(enrollmentController, authService));
+
+// Import error handling middleware
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+
+// 404 handler - debe ir antes del error handler
+app.use(notFoundHandler);
+
+// Global error handler - debe ser el último middleware
+app.use(errorHandler);
 
 // Export app (el servidor se inicia en src/server.js)
 module.exports = app;

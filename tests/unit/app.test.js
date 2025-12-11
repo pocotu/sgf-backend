@@ -32,10 +32,13 @@ describe('App - Basic Tests', () => {
         .expect('Content-Type', /json/)
         .expect(404);
 
-      expect(response.body).toHaveProperty('error', 'Route not found');
-      expect(response.body).toHaveProperty('message');
-      expect(response.body.message).toContain('Cannot GET');
-      expect(response.body).toHaveProperty('availableEndpoints');
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toHaveProperty('code', 'ROUTE_NOT_FOUND');
+      expect(response.body.error).toHaveProperty('message');
+      expect(response.body.error.message).toContain('GET');
+      expect(response.body.error).toHaveProperty('details');
+      expect(response.body.error.details).toHaveProperty('method', 'GET');
     });
 
     it('should return 404 for POST to non-existent routes', async () => {
@@ -44,8 +47,9 @@ describe('App - Basic Tests', () => {
         .expect('Content-Type', /json/)
         .expect(404);
 
-      expect(response.body).toHaveProperty('error', 'Route not found');
-      expect(response.body.message).toContain('Cannot POST');
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body.error).toHaveProperty('code', 'ROUTE_NOT_FOUND');
+      expect(response.body.error.message).toContain('POST');
     });
   });
 
@@ -56,8 +60,10 @@ describe('App - Basic Tests', () => {
         .expect('Content-Type', /json/)
         .expect(404);
 
+      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('error');
-      expect(response.body).toHaveProperty('message');
+      expect(response.body.error).toHaveProperty('code', 'ROUTE_NOT_FOUND');
+      expect(response.body.error).toHaveProperty('message');
     });
 
     it('should handle different HTTP methods', async () => {
@@ -66,7 +72,8 @@ describe('App - Basic Tests', () => {
         .expect('Content-Type', /json/)
         .expect(404);
 
-      expect(response.body.message).toContain('Cannot DELETE');
+      expect(response.body).toHaveProperty('success', false);
+      expect(response.body.error.message).toContain('DELETE');
     });
   });
 

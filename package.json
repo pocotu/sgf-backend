@@ -11,6 +11,8 @@
     "deploy": "npx prisma migrate deploy && npx prisma generate",
     "pretest": "node scripts/check-test-env.js",
     "test": "jest",
+    "test:unit": "jest tests/unit --runInBand --forceExit",
+    "test:integration": "jest tests/integration --runInBand --forceExit",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:setup": "node scripts/setup-test-db.js",

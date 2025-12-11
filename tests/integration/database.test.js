@@ -83,6 +83,15 @@ describe('Database Integration Tests', () => {
     });
 
     it('should enforce unique email constraint', async () => {
+      // Limpiar usuarios de prueba si existen
+      await prisma.usuario.deleteMany({
+        where: {
+          dni: {
+            in: ['88888888', '99999999'],
+          },
+        },
+      });
+
       // Primero crear un usuario con correo
       await prisma.usuario.create({
         data: {
@@ -108,9 +117,27 @@ describe('Database Integration Tests', () => {
           },
         })
       ).rejects.toThrow();
+
+      // Limpiar después del test
+      await prisma.usuario.deleteMany({
+        where: {
+          dni: {
+            in: ['88888888', '99999999'],
+          },
+        },
+      });
     });
 
     it('should allow multiple users without email (null)', async () => {
+      // Limpiar usuarios de prueba si existen
+      await prisma.usuario.deleteMany({
+        where: {
+          dni: {
+            in: ['77777777', '66666666'],
+          },
+        },
+      });
+
       // Crear primer usuario sin correo
       const user1 = await prisma.usuario.create({
         data: {
@@ -138,6 +165,15 @@ describe('Database Integration Tests', () => {
       expect(user1.correo).toBeNull();
       expect(user2.correo).toBeNull();
       expect(user1.dni).not.toBe(user2.dni);
+
+      // Limpiar después del test
+      await prisma.usuario.deleteMany({
+        where: {
+          dni: {
+            in: ['77777777', '66666666'],
+          },
+        },
+      });
     });
   });
 

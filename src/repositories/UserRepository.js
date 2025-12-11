@@ -77,6 +77,20 @@ class UserRepository extends BaseRepository {
     }
     return this.exists(where);
   }
+
+  /**
+   * Buscar usuario por DNI o correo electrónico
+   * @param {string} identifier - DNI (8 dígitos) o correo electrónico
+   * @returns {Promise<Object|null>} Usuario encontrado o null
+   */
+  findByIdentifier(identifier) {
+    // Si el identifier tiene 8 dígitos, buscar por DNI
+    if (/^\d{8}$/.test(identifier)) {
+      return this.findByDni(identifier);
+    }
+    // Si no, buscar por correo
+    return this.findByEmail(identifier);
+  }
 }
 
 module.exports = UserRepository;

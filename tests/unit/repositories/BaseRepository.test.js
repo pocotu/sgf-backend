@@ -101,6 +101,21 @@ describe('BaseRepository', () => {
     });
   });
 
+  describe('softDelete', () => {
+    it('should soft delete record by setting estado to inactivo', async () => {
+      const expected = { id: 1, estado: 'inactivo' };
+      mockModel.update.mockResolvedValue(expected);
+
+      const result = await repository.softDelete(1);
+
+      expect(mockModel.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { estado: 'inactivo' },
+      });
+      expect(result).toEqual(expected);
+    });
+  });
+
   describe('count', () => {
     it('should count all records', async () => {
       mockModel.count.mockResolvedValue(5);
