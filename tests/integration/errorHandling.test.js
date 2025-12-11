@@ -31,6 +31,7 @@ describe('Error Handling Integration Tests', () => {
       const methods = ['get', 'post', 'put', 'delete', 'patch'];
 
       for (const method of methods) {
+        // eslint-disable-next-line no-await-in-loop
         const response = await request(app)[method]('/api/v1/test-endpoint').expect(404);
 
         expect(response.body.success).toBe(false);

@@ -18,6 +18,7 @@ class GroupService {
    * @param {Object} groupData - Datos del grupo
    * @param {boolean} isUpdate - Si es actualización
    */
+  // eslint-disable-next-line complexity
   validateGroupData(groupData, isUpdate = false) {
     const errors = {};
 

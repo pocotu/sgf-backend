@@ -22,13 +22,14 @@ logger.info(`Database: ${dbUrl}`);
 if (shouldRunMigrations) {
   logger.warn('Executing database migrations');
 
+  const maxRetries = 3;
+
   try {
     if (!process.env.DATABASE_URL) {
       throw new Error('DATABASE_URL not configured');
     }
 
     // Add connection timeout and retry logic
-    const maxRetries = 3;
     let attempt = 0;
     let success = false;
 
@@ -44,6 +45,7 @@ if (shouldRunMigrations) {
         success = true;
         logger.success('Migrations completed successfully');
       } catch (error) {
+        // eslint-disable-next-line max-depth
         if (attempt < maxRetries) {
           logger.warn(`Migration attempt ${attempt} failed, retrying in 5 seconds...`);
           execSync('sleep 5', { stdio: 'inherit' });

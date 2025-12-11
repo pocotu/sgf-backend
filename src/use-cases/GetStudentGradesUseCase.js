@@ -64,6 +64,7 @@ class GetStudentGradesUseCase {
 
     // Calcular promedio por evaluación
     for (const evalId in notasPorEvaluacion) {
+      // eslint-disable-next-line no-await-in-loop
       const promedio = await this.gradeRepository.calculateAverageByEvaluation(
         parseInt(evalId, 10),
         estudianteId

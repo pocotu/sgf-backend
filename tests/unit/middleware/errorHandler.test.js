@@ -12,7 +12,7 @@ const {
   ValidationError,
   AuthError,
   NotFoundError,
-  AppError,
+  AppError: _AppError,
 } = require('../../../src/utils/errors');
 
 describe('Error Handler Middleware', () => {
@@ -220,6 +220,7 @@ describe('Error Handler Middleware', () => {
 
     it('should handle synchronous errors thrown in function', async () => {
       const error = new ValidationError('Sync error');
+      // eslint-disable-next-line require-await
       const asyncFn = async () => {
         throw error;
       };

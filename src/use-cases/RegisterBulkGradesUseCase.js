@@ -48,6 +48,7 @@ class RegisterBulkGradesUseCase {
       this.gradeService.validateGradeData(gradeData);
 
       // Validar reglas de negocio
+      // eslint-disable-next-line no-await-in-loop
       await this.gradeService.validateGradeBusinessRules(gradeData);
     }
 

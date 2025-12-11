@@ -14,6 +14,7 @@ class HealthController {
    * Health check básico
    * GET /health
    */
+  // eslint-disable-next-line require-await
   async getHealth(req, res) {
     try {
       const health = {
@@ -138,6 +139,7 @@ class HealthController {
    * Liveness check - verifica si el servicio está vivo
    * GET /api/health/live
    */
+  // eslint-disable-next-line require-await
   async getLiveness(req, res) {
     // Simple check que el proceso está respondiendo
     logger.debug('Liveness check passed', { ip: req.ip });

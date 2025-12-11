@@ -40,6 +40,7 @@ describe('AttendanceRepository', () => {
 
       const mockResult = { count: 2 };
 
+      // eslint-disable-next-line require-await
       prisma.$transaction.mockImplementation(async callback => {
         const tx = {
           asistencia: {

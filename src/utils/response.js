@@ -10,6 +10,7 @@ const { serializeDates } = require('./serializers');
  * @param {*} data - Datos a serializar
  * @returns {*} Datos serializados
  */
+// eslint-disable-next-line complexity
 const serializeData = data => {
   if (!data) {
     return data;

@@ -12,13 +12,13 @@ describe('E2E Integration Tests - Complete Flows', () => {
   let adminToken;
   let docenteToken;
   let estudianteToken;
-  let adminUser;
-  let docenteUser;
+  let _adminUser;
+  let _docenteUser;
   let estudianteUser;
   let estudiante;
   let curso;
   let grupo;
-  let matricula;
+  let _matricula;
   let evaluacion;
 
   beforeAll(async () => {
@@ -53,7 +53,7 @@ describe('E2E Integration Tests - Complete Flows', () => {
     // Create test users
     const hashedPassword = await bcrypt.hash('Password123', 10);
 
-    adminUser = await prisma.usuario.create({
+    _adminUser = await prisma.usuario.create({
       data: {
         dni: '10000001',
         correo: 'admin.e2e@test.com',
@@ -66,7 +66,7 @@ describe('E2E Integration Tests - Complete Flows', () => {
       },
     });
 
-    docenteUser = await prisma.usuario.create({
+    _docenteUser = await prisma.usuario.create({
       data: {
         dni: '10000002',
         correo: 'docente.e2e@test.com',
@@ -144,7 +144,7 @@ describe('E2E Integration Tests - Complete Flows', () => {
     });
 
     // Create enrollment
-    matricula = await prisma.matricula.create({
+    _matricula = await prisma.matricula.create({
       data: {
         estudianteId: estudiante.estudianteId,
         grupoId: grupo.grupoId,

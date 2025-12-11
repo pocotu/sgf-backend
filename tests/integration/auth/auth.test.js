@@ -8,7 +8,7 @@ const prisma = require('../../../src/config/database');
 const bcrypt = require('bcryptjs');
 
 describe('Authentication Integration Tests', () => {
-  let testUser;
+  let _testUser;
 
   beforeAll(async () => {
     // Clean up any existing test users first
@@ -22,7 +22,7 @@ describe('Authentication Integration Tests', () => {
 
     // Create a test user
     const hashedPassword = await bcrypt.hash('12345678', 10);
-    testUser = await prisma.usuario.create({
+    _testUser = await prisma.usuario.create({
       data: {
         dni: '87654321',
         correo: 'test.auth@example.com',
@@ -124,7 +124,7 @@ describe('Authentication Integration Tests', () => {
 
   describe('POST /api/v1/auth/refresh-token', () => {
     let validRefreshToken;
-    let refreshTestUser;
+    let _refreshTestUser;
 
     beforeAll(async () => {
       // Clean up and create a fresh user for refresh token tests
@@ -133,7 +133,7 @@ describe('Authentication Integration Tests', () => {
       });
 
       const hashedPassword = await bcrypt.hash('password123', 10);
-      refreshTestUser = await prisma.usuario.create({
+      _refreshTestUser = await prisma.usuario.create({
         data: {
           dni: '99887766',
           correo: 'refresh.test@example.com',
@@ -190,13 +190,13 @@ describe('Authentication Integration Tests', () => {
   });
 
   describe('POST /api/v1/auth/change-password-first-login', () => {
-    let userRequiringChange;
+    let _userRequiringChange;
     let tempToken;
 
     beforeAll(async () => {
       // Create user requiring password change
       const hashedPassword = await bcrypt.hash('11111111', 10);
-      userRequiringChange = await prisma.usuario.create({
+      _userRequiringChange = await prisma.usuario.create({
         data: {
           dni: '11111111',
           correo: 'change.password@example.com',
