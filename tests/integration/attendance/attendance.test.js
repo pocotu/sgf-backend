@@ -15,7 +15,13 @@ describe('Attendance Integration Tests', () => {
     await prisma.matricula.deleteMany({});
     await prisma.estudiante.deleteMany({});
     await prisma.grupo.deleteMany({});
-    await prisma.usuario.deleteMany({});
+    await prisma.usuario.deleteMany({
+      where: {
+        dni: {
+          in: ['11111111', '22222222', '33333333'],
+        },
+      },
+    });
 
     // Crear usuarios de prueba
     const hashedPassword = await bcrypt.hash('Password123', 10);
@@ -111,7 +117,13 @@ describe('Attendance Integration Tests', () => {
     await prisma.matricula.deleteMany({});
     await prisma.estudiante.deleteMany({});
     await prisma.grupo.deleteMany({});
-    await prisma.usuario.deleteMany({});
+    await prisma.usuario.deleteMany({
+      where: {
+        dni: {
+          in: ['11111111', '22222222', '33333333'],
+        },
+      },
+    });
     await prisma.$disconnect();
   });
 
