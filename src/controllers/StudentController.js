@@ -37,7 +37,13 @@ class StudentController {
 
     const student = await this.createStudentUseCase.execute(studentData);
 
-    return res.status(201).json(successResponse(student, 'Estudiante creado exitosamente'));
+    // Serializar estudiante
+    const { serializeEstudiante } = require('../utils/serializers');
+    const serializedStudent = serializeEstudiante(student);
+
+    return res
+      .status(201)
+      .json(successResponse(serializedStudent, 'Estudiante creado exitosamente'));
   });
 
   /**
@@ -52,9 +58,13 @@ class StudentController {
 
     const result = await this.getStudentsUseCase.execute(filters, pagination);
 
+    // Serializar estudiantes
+    const { serializeArray, serializeEstudiante } = require('../utils/serializers');
+    const serializedStudents = serializeArray(result.estudiantes, serializeEstudiante);
+
     return res.status(200).json(
       paginatedResponse({
-        data: result.estudiantes,
+        data: serializedStudents,
         page: result.pagination.page,
         limit: result.pagination.limit,
         total: result.pagination.total,
@@ -72,7 +82,13 @@ class StudentController {
 
     const student = await this.getStudentByIdUseCase.execute(estudianteId);
 
-    return res.status(200).json(successResponse(student, 'Estudiante obtenido exitosamente'));
+    // Serializar estudiante
+    const { serializeEstudiante } = require('../utils/serializers');
+    const serializedStudent = serializeEstudiante(student);
+
+    return res
+      .status(200)
+      .json(successResponse(serializedStudent, 'Estudiante obtenido exitosamente'));
   });
 
   /**
@@ -85,7 +101,13 @@ class StudentController {
 
     const student = await this.updateStudentUseCase.execute(estudianteId, updateData);
 
-    return res.status(200).json(successResponse(student, 'Estudiante actualizado exitosamente'));
+    // Serializar estudiante
+    const { serializeEstudiante } = require('../utils/serializers');
+    const serializedStudent = serializeEstudiante(student);
+
+    return res
+      .status(200)
+      .json(successResponse(serializedStudent, 'Estudiante actualizado exitosamente'));
   });
 
   /**
@@ -97,7 +119,13 @@ class StudentController {
 
     const student = await this.deleteStudentUseCase.execute(estudianteId);
 
-    return res.status(200).json(successResponse(student, 'Estudiante eliminado exitosamente'));
+    // Serializar estudiante
+    const { serializeEstudiante } = require('../utils/serializers');
+    const serializedStudent = serializeEstudiante(student);
+
+    return res
+      .status(200)
+      .json(successResponse(serializedStudent, 'Estudiante eliminado exitosamente'));
   });
 }
 

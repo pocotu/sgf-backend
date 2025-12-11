@@ -37,7 +37,11 @@ class UserController {
 
     const user = await this.registerUserUseCase.execute(userData);
 
-    return res.status(201).json(successResponse(user, 'Usuario creado exitosamente'));
+    // Serializar usuario
+    const { serializeUsuario } = require('../utils/serializers');
+    const serializedUser = serializeUsuario(user);
+
+    return res.status(201).json(successResponse(serializedUser, 'Usuario creado exitosamente'));
   });
 
   /**
@@ -52,9 +56,13 @@ class UserController {
 
     const result = await this.getUsersUseCase.execute(filters, pagination);
 
+    // Serializar usuarios
+    const { serializeArray, serializeUsuario } = require('../utils/serializers');
+    const serializedUsers = serializeArray(result.usuarios, serializeUsuario);
+
     return res.status(200).json(
       paginatedResponse({
-        data: result.usuarios,
+        data: serializedUsers,
         page: result.pagination.page,
         limit: result.pagination.limit,
         total: result.pagination.total,
@@ -72,7 +80,11 @@ class UserController {
 
     const user = await this.getUserByIdUseCase.execute(usuarioId);
 
-    return res.status(200).json(successResponse(user, 'Usuario obtenido exitosamente'));
+    // Serializar usuario
+    const { serializeUsuario } = require('../utils/serializers');
+    const serializedUser = serializeUsuario(user);
+
+    return res.status(200).json(successResponse(serializedUser, 'Usuario obtenido exitosamente'));
   });
 
   /**
@@ -85,7 +97,13 @@ class UserController {
 
     const user = await this.updateUserUseCase.execute(usuarioId, updateData);
 
-    return res.status(200).json(successResponse(user, 'Usuario actualizado exitosamente'));
+    // Serializar usuario
+    const { serializeUsuario } = require('../utils/serializers');
+    const serializedUser = serializeUsuario(user);
+
+    return res
+      .status(200)
+      .json(successResponse(serializedUser, 'Usuario actualizado exitosamente'));
   });
 
   /**
@@ -97,7 +115,11 @@ class UserController {
 
     const user = await this.deleteUserUseCase.execute(usuarioId);
 
-    return res.status(200).json(successResponse(user, 'Usuario eliminado exitosamente'));
+    // Serializar usuario
+    const { serializeUsuario } = require('../utils/serializers');
+    const serializedUser = serializeUsuario(user);
+
+    return res.status(200).json(successResponse(serializedUser, 'Usuario eliminado exitosamente'));
   });
 }
 
