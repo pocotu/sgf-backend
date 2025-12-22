@@ -9,9 +9,11 @@ const { asyncHandler } = require('../middleware/errorHandler');
 class AuthController {
   /**
    * @param {Object} authService - Servicio de autenticación
+   * @param {Object} registerUserUseCase - Caso de uso para registrar usuarios
    */
-  constructor(authService) {
+  constructor(authService, registerUserUseCase) {
     this.authService = authService;
+    this.registerUserUseCase = registerUserUseCase;
   }
 
   /**
@@ -23,7 +25,7 @@ class AuthController {
 
     const result = await this.authService.login(identifier, password);
 
-    // Si requiere cambio de contraseña
+    // Si requiere cambio de contraseña (primer login)
     if (result.requiresPasswordChange) {
       return res.status(200).json({
         success: true,
@@ -79,6 +81,22 @@ class AuthController {
     return res
       .status(200)
       .json(successResponse({ token: result.token }, 'Token renovado exitosamente'));
+  });
+
+  /**
+   * POST /api/auth/register
+   * Registrar nuevo usuario (solo admin)
+   */
+  register = asyncHandler(async (req, res) => {
+    const userData = req.body;
+
+    const user = await this.registerUserUseCase.execute(userData);
+
+    // Serializar usuario
+    const { serializeUsuario } = require('../utils/serializers');
+    const serializedUser = serializeUsuario(user);
+
+    return res.status(201).json(successResponse(serializedUser, 'Usuario creado exitosamente'));
   });
 }
 

@@ -335,7 +335,7 @@ const configureDependencies = () => {
 
   // Registrar Controllers (transient - nueva instancia cada vez)
   container.register('authController', c => {
-    return new AuthController(c.resolve('authService'));
+    return new AuthController(c.resolve('authService'), c.resolve('registerUserUseCase'));
   });
 
   container.register('userController', c => {
