@@ -22,7 +22,6 @@ class AuthController {
     const { identifier, password } = req.body;
 
     const result = await this.authService.login(identifier, password);
-
     // Si requiere cambio de contraseña
     if (result.requiresPasswordChange) {
       return res.status(200).json({

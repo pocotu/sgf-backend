@@ -213,3 +213,21 @@ enum EstadoEvaluacion {
   FINALIZADA
   CANCELADA
 }
+
+/// Vista SQL: estudiantes_completa
+/// Combina información de usuarios y estudiantes para consultas optimizadas
+/// Se crea automáticamente en el seed
+model EstudiantesCompleta {
+  estudianteId  Int     @id @map("estudianteId")
+  usuarioId     Int     @map("usuarioId")
+  dni           String?
+  correo        String?
+  nombres       String?
+  apellidos     String?
+  telefono      String?
+  estadoUsuario String? @map("estadoUsuario")
+  codigoInterno String? @map("codigoInterno")
+  modalidad     String?
+
+  @@map("estudiantes_completa")
+}

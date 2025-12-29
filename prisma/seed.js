@@ -530,6 +530,49 @@ async function main() {
   console.log(`  - Evaluaciones: ${evaluaciones.length}`);
   console.log(`  - Asistencias: ${asistencias.length}`);
   console.log(`  - Notas: ${notas.length}`);
+
+  // ========================================
+  // VISTA: estudiantes_completa
+  // ========================================
+  console.log('\n[SEED] Creando vista estudiantes_completa...');
+  try {
+    // Verificar si existe como tabla y eliminarla
+    const rows = await prisma.$queryRawUnsafe(`
+      SELECT TABLE_TYPE FROM information_schema.tables
+      WHERE table_schema = DATABASE() AND TABLE_NAME = 'estudiantes_completa'
+    `);
+    
+    if (rows && rows.length > 0) {
+      const tableType = rows[0].TABLE_TYPE || rows[0].table_type;
+      if (tableType === 'BASE TABLE') {
+        await prisma.$executeRawUnsafe('DROP TABLE IF EXISTS estudiantes_completa');
+        console.log('[SEED] Eliminada tabla estudiantes_completa (no era VIEW)');
+      }
+    }
+    
+    // Crear la vista
+    await prisma.$executeRawUnsafe(`
+      CREATE OR REPLACE VIEW estudiantes_completa AS
+      SELECT
+        e.estudiante_id AS estudianteId,
+        e.usuario_id AS usuarioId,
+        u.dni,
+        u.correo,
+        u.nombres,
+        u.apellidos,
+        u.telefono,
+        u.estado AS estadoUsuario,
+        e.codigo_interno AS codigoInterno,
+        e.modalidad
+      FROM estudiantes e
+      INNER JOIN usuarios u ON e.usuario_id = u.usuario_id
+    `);
+    console.log('[SEED] Vista estudiantes_completa creada');
+  } catch (error) {
+    console.error('[ERROR] Error creando vista estudiantes_completa:', error.message);
+    throw error;
+  }
+
   console.log('\n[CREDENTIALS] Credenciales de prueba:');
   console.log('  Todos los usuarios: Password: password123');
   console.log('  Admin:      DNI: 12345678');

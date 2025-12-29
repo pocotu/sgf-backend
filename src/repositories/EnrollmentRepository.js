@@ -5,6 +5,7 @@
 
 const BaseRepository = require('./BaseRepository');
 const prisma = require('../config/database');
+const { BusinessLogicError } = require('../utils/errors');
 
 class EnrollmentRepository extends BaseRepository {
   constructor() {
@@ -161,6 +162,68 @@ class EnrollmentRepository extends BaseRepository {
         fechaRetiro: new Date(),
         motivoRetiro,
       },
+    });
+  }
+
+  /**
+   * Matricular estudiante con validaciones (transacción)
+   * Validaciones: grupo existe, cupos disponibles, no duplicado en mismo grupo
+   * @param {number} estudianteId - ID del estudiante
+   * @param {number} grupoId - ID del grupo
+   * @param {number} monto - Monto pagado
+   * @returns {Promise<Object>} Resultado con matrícula creada
+   */
+  async enrollWithValidation(estudianteId, grupoId, monto = 0) {
+    return prisma.$transaction(async tx => {
+      // 1. Validar que el grupo exista
+      const grupo = await tx.grupo.findUnique({
+        where: { grupoId: parseInt(grupoId, 10) },
+      });
+
+      if (!grupo) {
+        throw new BusinessLogicError('Grupo no encontrado', 'GROUP_NOT_FOUND');
+      }
+
+      // 2. Validar cupos disponibles
+      const inscritos = await tx.matricula.count({
+        where: {
+          grupoId: parseInt(grupoId, 10),
+          estado: 'MATRICULADO',
+        },
+      });
+
+      if (inscritos >= grupo.capacidad) {
+        throw new BusinessLogicError('El grupo no tiene cupos disponibles', 'ENROLLMENT_NO_CAPACITY');
+      }
+
+      // 3. Validar que no esté matriculado en el mismo grupo
+      const existeMismoGrupo = await tx.matricula.count({
+        where: {
+          estudianteId: parseInt(estudianteId, 10),
+          grupoId: parseInt(grupoId, 10),
+          estado: 'MATRICULADO',
+        },
+      });
+
+      if (existeMismoGrupo > 0) {
+        throw new BusinessLogicError(
+          `El estudiante ya está matriculado en el grupo ${grupo.nombreGrupo}`,
+          'ENROLLMENT_ALREADY_ENROLLED'
+        );
+      }
+
+      // 4. Crear la matrícula
+      const nueva = await tx.matricula.create({
+        data: {
+          estudianteId: parseInt(estudianteId, 10),
+          grupoId: parseInt(grupoId, 10),
+          fechaMatricula: new Date(),
+          montoPagado: parseFloat(monto) || 0,
+          estado: 'MATRICULADO',
+        },
+      });
+
+      return nueva;
     });
   }
 }

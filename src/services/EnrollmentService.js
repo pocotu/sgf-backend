@@ -54,18 +54,30 @@ class EnrollmentService {
   }
 
   /**
-   * Validar que el grupo tenga cupos disponibles
-   * @param {number} grupoId - ID del grupo
+   * Validar que el estudiante existe
+   * @param {number} estudianteId - ID del estudiante
+   * @returns {Promise<Object>} Estudiante
    */
-  async validateAvailableCapacity(grupoId) {
-    const grupo = await this.groupRepository.findWithEnrollmentCount(grupoId);
+  async validateStudentExists(estudianteId) {
+    const estudiante = await this.studentRepository.findByIdWithUser(estudianteId);
+
+    if (!estudiante) {
+      throw new BusinessLogicError('Estudiante no encontrado', 'STUDENT_NOT_FOUND');
+    }
+
+    return estudiante;
+  }
+
+  /**
+   * Validar que el grupo existe
+   * @param {number} grupoId - ID del grupo
+   * @returns {Promise<Object>} Grupo
+   */
+  async validateGroupExists(grupoId) {
+    const grupo = await this.groupRepository.findById(grupoId);
 
     if (!grupo) {
       throw new BusinessLogicError('Grupo no encontrado', 'GROUP_NOT_FOUND');
-    }
-
-    if (grupo.cuposDisponibles <= 0) {
-      throw new BusinessLogicError('El grupo no tiene cupos disponibles', 'ENROLLMENT_NO_CAPACITY');
     }
 
     return grupo;
@@ -73,37 +85,14 @@ class EnrollmentService {
 
   /**
    * Validar que la modalidad del estudiante coincida con la del grupo
-   * @param {number} estudianteId - ID del estudiante
+   * @param {Object} estudiante - Objeto del estudiante
    * @param {Object} grupo - Objeto del grupo
    */
-  async validateModalidadMatch(estudianteId, grupo) {
-    const estudiante = await this.studentRepository.findByIdWithUser(estudianteId);
-
-    if (!estudiante) {
-      throw new BusinessLogicError('Estudiante no encontrado', 'STUDENT_NOT_FOUND');
-    }
-
+  validateModalidadMatch(estudiante, grupo) {
     if (estudiante.modalidad !== grupo.modalidad) {
       throw new BusinessLogicError(
         `La modalidad del estudiante (${estudiante.modalidad}) no coincide con la modalidad del grupo (${grupo.modalidad})`,
         'ENROLLMENT_MODALIDAD_MISMATCH'
-      );
-    }
-
-    return estudiante;
-  }
-
-  /**
-   * Validar que el estudiante no esté matriculado en otro grupo activo
-   * @param {number} estudianteId - ID del estudiante
-   */
-  async validateNoActiveEnrollment(estudianteId) {
-    const activeEnrollment = await this.enrollmentRepository.findActiveByStudent(estudianteId);
-
-    if (activeEnrollment) {
-      throw new BusinessLogicError(
-        `El estudiante ya está matriculado en el grupo ${activeEnrollment.grupo.nombreGrupo}`,
-        'ENROLLMENT_ALREADY_ENROLLED'
       );
     }
   }
