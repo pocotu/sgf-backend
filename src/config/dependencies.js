@@ -14,6 +14,8 @@ const EnrollmentRepository = require('../repositories/EnrollmentRepository');
 const AttendanceRepository = require('../repositories/AttendanceRepository');
 const EvaluationRepository = require('../repositories/EvaluationRepository');
 const GradeRepository = require('../repositories/GradeRepository');
+const EstudianteCompletaRepository = require('../repositories/EstudianteCompletaRepository');
+const RankingRepository = require('../repositories/RankingRepository');
 
 // Services
 const AuthService = require('../services/AuthService');
@@ -79,6 +81,7 @@ const EvaluationController = require('../controllers/EvaluationController');
 const GradeController = require('../controllers/GradeController');
 const RankingController = require('../controllers/RankingController');
 const HealthController = require('../controllers/HealthController');
+const EstudianteCompletaController = require('../controllers/EstudianteCompletaController');
 
 /**
  * Configurar todas las dependencias
@@ -98,7 +101,7 @@ const configureDependencies = () => {
   container.singleton('studentRepository', () => new StudentRepository());
   container.singleton('courseRepository', () => new CourseRepository());
   container.singleton('groupRepository', () => new GroupRepository());
-  container.singleton('enrollmentRepository', () => new EnrollmentRepository());
+  container.singleton('estudianteCompletaRepository', () => new EstudianteCompletaRepository());  container.singleton('rankingRepository', () => new RankingRepository());  container.singleton('enrollmentRepository', () => new EnrollmentRepository());
   container.singleton('attendanceRepository', () => new AttendanceRepository());
   container.singleton('evaluationRepository', () => new EvaluationRepository());
   container.singleton('gradeRepository', () => new GradeRepository());
@@ -153,7 +156,7 @@ const configureDependencies = () => {
   });
 
   container.singleton('rankingService', c => {
-    return new RankingService(c.resolve('gradeRepository'), c.resolve('enrollmentRepository'));
+    return new RankingService(c.resolve('rankingRepository'), c.resolve('groupRepository'));
   });
 
   // Registrar Use Cases como singletons
@@ -323,14 +326,11 @@ const configureDependencies = () => {
   });
 
   container.singleton('getGroupRankingUseCase', c => {
-    return new GetGroupRankingUseCase(c.resolve('rankingService'), c.resolve('groupRepository'));
+    return new GetGroupRankingUseCase(c.resolve('rankingService'));
   });
 
   container.singleton('getStudentPositionUseCase', c => {
-    return new GetStudentPositionUseCase(
-      c.resolve('rankingService'),
-      c.resolve('studentRepository')
-    );
+    return new GetStudentPositionUseCase(c.resolve('rankingService'));
   });
 
   // Registrar Controllers (transient - nueva instancia cada vez)
@@ -425,6 +425,12 @@ const configureDependencies = () => {
     const { PrismaClient } = require('@prisma/client');
     const prisma = new PrismaClient();
     return new HealthController(prisma);
+  });
+
+  container.register('estudianteCompletaController', c => {
+    return new EstudianteCompletaController(
+      c.resolve('estudianteCompletaRepository')
+    );
   });
 };
 

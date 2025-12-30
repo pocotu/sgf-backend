@@ -99,6 +99,7 @@ const configureEvaluationRoutes = require('./routes/evaluation.routes');
 const configureGradeRoutes = require('./routes/grade.routes');
 const configureRankingRoutes = require('./routes/ranking.routes');
 const configureHealthRoutes = require('./routes/health.routes');
+const configureEstudianteCompletaRoutes = require('./routes/estudianteCompleta.routes');
 
 const authController = container.resolve('authController');
 const userController = container.resolve('userController');
@@ -111,6 +112,7 @@ const evaluationController = container.resolve('evaluationController');
 const gradeController = container.resolve('gradeController');
 const rankingController = container.resolve('rankingController');
 const healthController = container.resolve('healthController');
+const estudianteCompletaController = container.resolve('estudianteCompletaController');
 const authService = container.resolve('authService');
 
 // Health check routes (no authentication required)
@@ -127,6 +129,7 @@ app.use(`${API_PREFIX}/attendances`, configureAttendanceRoutes(attendanceControl
 app.use(`${API_PREFIX}/evaluations`, configureEvaluationRoutes(evaluationController, authService));
 app.use(`${API_PREFIX}/grades`, configureGradeRoutes(gradeController, authService));
 app.use(`${API_PREFIX}/rankings`, configureRankingRoutes(rankingController, authService));
+app.use(`${API_PREFIX}/estudiantes-completa`, configureEstudianteCompletaRoutes(estudianteCompletaController, authService));
 
 // Import error handling middleware
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');

@@ -21,7 +21,7 @@ class RankingController {
    * Obtener ranking de un grupo
    */
   getGroupRanking = asyncHandler(async (req, res) => {
-    const grupoId = parseInt(req.params.grupoId, 10);
+    const grupoId = req.params.grupoId ? parseInt(req.params.grupoId, 10) : null;
     const evaluacionId = req.query.evaluacionId ? parseInt(req.query.evaluacionId, 10) : null;
 
     const ranking = await this.getGroupRankingUseCase.execute(grupoId, evaluacionId);
@@ -37,9 +37,14 @@ class RankingController {
    */
   getStudentPosition = asyncHandler(async (req, res) => {
     const estudianteId = parseInt(req.params.estudianteId, 10);
+    const grupoId = req.query.grupoId ? parseInt(req.query.grupoId, 10) : null;
     const evaluacionId = req.query.evaluacionId ? parseInt(req.query.evaluacionId, 10) : null;
 
-    const position = await this.getStudentPositionUseCase.execute(estudianteId, evaluacionId);
+    const position = await this.getStudentPositionUseCase.execute(
+      estudianteId,
+      grupoId,
+      evaluacionId
+    );
 
     return res
       .status(200)

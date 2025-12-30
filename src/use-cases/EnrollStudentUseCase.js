@@ -22,33 +22,49 @@ class EnrollStudentUseCase {
     // Validar datos básicos
     this.enrollmentService.validateEnrollmentData(enrollmentData);
 
-    // Validar que el estudiante no esté matriculado en otro grupo activo
-    await this.enrollmentService.validateNoActiveEnrollment(enrollmentData.estudianteId);
-
-    // Validar que el grupo tenga cupos disponibles
-    const grupo = await this.enrollmentService.validateAvailableCapacity(enrollmentData.grupoId);
-
     // Validar que la modalidad del estudiante coincida con la del grupo
-    await this.enrollmentService.validateModalidadMatch(enrollmentData.estudianteId, grupo);
+    const estudiante = await this.enrollmentService.validateStudentExists(
+      enrollmentData.estudianteId
+    );
+    const grupo = await this.enrollmentService.validateGroupExists(enrollmentData.grupoId);
+    await this.enrollmentService.validateModalidadMatch(estudiante, grupo);
 
-    // Preparar datos para crear matrícula
-    const enrollmentToCreate = {
-      estudianteId: enrollmentData.estudianteId,
-      grupoId: enrollmentData.grupoId,
-      fechaMatricula: new Date(),
-      montoPagado: parseFloat(enrollmentData.montoPagado),
-      estado: 'MATRICULADO',
-    };
-
-    // Crear matrícula
-    const enrollment = await this.enrollmentRepository.create(enrollmentToCreate);
+    // Matricular usando el método del repositorio con validaciones integradas
+    const enrollment = await this.enrollmentRepository.enrollWithValidation(
+      enrollmentData.estudianteId,
+      enrollmentData.grupoId,
+      enrollmentData.montoPagado
+    );
 
     // Obtener matrícula con relaciones para retornar
     const enrollmentWithRelations = await this.enrollmentRepository.findByIdWithRelations(
       enrollment.matriculaId
     );
 
-    return enrollmentWithRelations;
+    // Transformar y limpiar respuesta
+    return {
+      matriculaId: enrollmentWithRelations.matriculaId,
+      estudianteId: enrollmentWithRelations.estudianteId,
+      grupoId: enrollmentWithRelations.grupoId,
+      fechaMatricula: enrollmentWithRelations.fechaMatricula,
+      montoPagado: parseFloat(enrollmentWithRelations.montoPagado),
+      estado: enrollmentWithRelations.estado,
+      estudiante: {
+        estudianteId: enrollmentWithRelations.estudiante.estudianteId,
+        codigoInterno: enrollmentWithRelations.estudiante.codigoInterno,
+        modalidad: enrollmentWithRelations.estudiante.modalidad,
+        nombres: enrollmentWithRelations.estudiante.usuario.nombres,
+        apellidos: enrollmentWithRelations.estudiante.usuario.apellidos,
+        dni: enrollmentWithRelations.estudiante.usuario.dni,
+      },
+      grupo: {
+        grupoId: enrollmentWithRelations.grupo.grupoId,
+        nombreGrupo: enrollmentWithRelations.grupo.nombreGrupo,
+        area: enrollmentWithRelations.grupo.area,
+        modalidad: enrollmentWithRelations.grupo.modalidad,
+        capacidad: enrollmentWithRelations.grupo.capacidad,
+      },
+    };
   }
 }
 
