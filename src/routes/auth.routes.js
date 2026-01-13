@@ -41,6 +41,13 @@ const configureAuthRoutes = (authController, authService) => {
    */
   router.post('/refresh-token', authController.refreshToken);
 
+  /**
+   * POST /api/auth/register
+   * Registrar nuevo usuario
+   * Body: { dni, nombres, apellidos, correo, telefono, rol }
+   */
+  router.post('/register', authController.register);
+
   return router;
 };
 

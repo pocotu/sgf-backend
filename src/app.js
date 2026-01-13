@@ -33,12 +33,22 @@ const allowedOrigins =
     ? corsOrigin.split(',').map(origin => origin.trim())
     : corsOrigin.split(',').map(origin => origin.trim());
 
+console.log('[CORS] Allowed origins:', allowedOrigins);
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      console.log('[CORS] Request from origin:', origin);
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log('[CORS] Origin not allowed:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
-);
+);;
 
 // Rate limiting
 const limiter = rateLimit({
